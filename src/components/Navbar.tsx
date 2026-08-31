@@ -155,36 +155,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               window.location.hash = 'hero';
             }
           }}
-          className="flex items-center gap-2.5 sm:gap-3.5 group focus:outline-none shrink-0"
+          className="flex items-center group focus:outline-none shrink-0"
           id="brand-logo"
         >
-          <div className="relative w-9 h-9 sm:w-[40px] sm:h-[40px] rounded-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-sky-500 p-[1px] shadow-lg shadow-violet-600/30 group-hover:shadow-violet-500/50 transition-all duration-300">
-            <div className={`w-full h-full ${isLight ? 'bg-white' : 'bg-[#09090c]'} rounded-[13px] flex items-center justify-center`}>
-              <span className="relative flex h-2.5 w-2.5 sm:h-3 sm:w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 sm:h-3 sm:w-3 bg-violet-500"></span>
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className={`text-[17px] sm:text-[20px] font-bold tracking-tight font-display ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                ARTIFY
-              </span>
-              <span className="text-[17px] sm:text-[20px] font-bold tracking-tight bg-gradient-to-r from-[#7822ff] via-[#6432f8] to-[#4f46e5] bg-clip-text text-transparent font-display">
-                SOLUTIONS
-              </span>
-            </div>
-            <span
-              className={`text-[10px] sm:text-[12px] font-['Georgia',_serif] italic font-normal tracking-wide -mt-0.5 bg-gradient-to-r ${
-                isLight
-                  ? 'from-violet-700 via-indigo-600 to-sky-600'
-                  : 'from-violet-400 via-indigo-300 to-sky-400'
-              } bg-clip-text text-transparent`}
-            >
-              AI Powered Future Solutions
-            </span>
-          </div>
+          <img
+            src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
+            alt="Artify Sols"
+            className="h-9 sm:h-11 w-auto object-contain"
+          />
         </a>
 
         {/* Desktop Navigation Links (>= 768px) with AI Solutions Mega Dropdown */}
@@ -576,24 +554,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className={`p-4 sm:p-5 border-b flex items-center justify-between gap-3 ${
               isLight ? 'border-slate-100 bg-slate-50/50' : 'border-white/[0.08] bg-[#0d0d16]/50'
             }`}>
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-600/30 text-white font-bold text-xs">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1">
-                    <span className={`text-base font-bold tracking-tight font-display ${isLight ? 'text-slate-950' : 'text-white'}`}>
-                      ARTIFY
-                    </span>
-                    <span className="text-base font-bold tracking-tight bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent font-display">
-                      SOLUTIONS
-                    </span>
-                  </div>
-                  <span className={`text-[10px] block font-['Georgia',_serif] italic ${isLight ? 'text-violet-700' : 'text-violet-400'}`}>
-                    AI-Native Enterprise Engineering
-                  </span>
-                </div>
-              </div>
+              <img
+                src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
+                alt="Artify Sols"
+                className="h-8 w-auto object-contain"
+              />
 
               <button
                 onClick={() => setSideMenuOpen(false)}

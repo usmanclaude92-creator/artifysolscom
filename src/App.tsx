@@ -47,7 +47,7 @@ function MainAppContent() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = safeGetLocalStorage('artify_theme');
     if (saved === 'light' || saved === 'dark') return saved;
-    return 'dark';
+    return 'light';
   });
 
   // Dynamic Route State
