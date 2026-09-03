@@ -596,7 +596,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
                 {/* Slug Customizer */}
                 <div className="flex items-center gap-2">
                   <span className={`text-[11px] font-mono-code shrink-0 ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>
-                    https://artifysols.com#blog-
+                    https://artifysols.com/blog/
                   </span>
                   <input
                     type="text"

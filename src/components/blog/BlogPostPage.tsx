@@ -226,9 +226,9 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   // Compute Share URL
   const getArticleShareUrl = () => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}${window.location.pathname}#blog-${post.slug}`;
+      return `${window.location.origin}/blog/${post.slug}`;
     }
-    return `https://artifysols.com#blog-${post.slug}`;
+    return `https://artifysols.com/blog/${post.slug}`;
   };
 
   const handleCopyLink = async () => {

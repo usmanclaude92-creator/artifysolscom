@@ -527,10 +527,14 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {relatedProducts.map((p) => (
-              <div
+              <a
                 key={p.id}
-                onClick={() => onSelectProduct(p)}
-                className="p-6 rounded-2xl bg-[#0c0c14] border border-white/[0.08] hover:border-violet-500/40 cursor-pointer transition-all duration-200 hover:-translate-y-1"
+                href={`/ai-solutions/${p.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSelectProduct(p);
+                }}
+                className="block p-6 rounded-2xl bg-[#0c0c14] border border-white/[0.08] hover:border-violet-500/40 cursor-pointer transition-all duration-200 hover:-translate-y-1"
               >
                 <div className="text-xs font-bold text-violet-400 font-mono-code mb-1">
                   {p.categoryLabel}
@@ -545,7 +549,7 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
                   <span>Explore</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
-              </div>
+              </a>
             ))}
           </div>
         </div>

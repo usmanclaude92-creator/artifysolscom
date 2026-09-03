@@ -42,8 +42,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const isLight = theme === 'light';
 
   return (
-    <div
-      onClick={() => onSelectProduct(product)}
+    <a
+      href={`/ai-solutions/${product.slug}`}
+      onClick={(e) => {
+        e.preventDefault();
+        onSelectProduct(product);
+      }}
       id={`ai-product-card-${product.slug}`}
       className={`group cursor-pointer rounded-2xl border p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 relative overflow-hidden ${
         isLight
@@ -168,6 +172,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <ArrowRight className="w-4 h-4" />
         </span>
       </div>
-    </div>
+    </a>
   );
 };

@@ -119,9 +119,9 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({
 
   const getArticleShareUrl = () => {
     if (typeof window !== 'undefined') {
-      return `${window.location.origin}${window.location.pathname}#blog-${post?.slug || ''}`;
+      return `${window.location.origin}/blog/${post?.slug || ''}`;
     }
-    return `https://artifysolutions.com#blog-${post?.slug || ''}`;
+    return `https://artifysols.com/blog/${post?.slug || ''}`;
   };
 
   const handleCopyLink = async () => {
@@ -592,7 +592,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({
                 <div className="truncate font-mono-code text-[11px]">
                   <span className="opacity-60">Canonical: </span>
                   <span className="text-sky-400">
-                    {post.seo?.canonicalUrl || `https://artifysols.com#blog-${post.slug}`}
+                    {post.seo?.canonicalUrl || `https://artifysols.com/blog/${post.slug}`}
                   </span>
                 </div>
               </div>

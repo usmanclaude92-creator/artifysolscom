@@ -432,7 +432,7 @@ export const SeoMetaEditor: React.FC<SeoMetaEditorProps> = ({
                 type="text"
                 value={canonicalUrl}
                 onChange={(e) => handleUpdate({ canonicalUrl: e.target.value })}
-                placeholder="https://artifysols.com#blog-slug"
+                placeholder="https://artifysols.com/blog/slug"
                 className={`w-full px-3 py-2 rounded-xl text-xs border outline-none font-mono-code ${
                   isLight
                     ? 'bg-white border-slate-200 text-slate-900 focus:border-violet-500 shadow-sm'

@@ -505,22 +505,30 @@ export const BlogPage: React.FC<BlogPageProps> = ({
             <span>Latest News:</span>
           </div>
           <div className="truncate text-xs text-zinc-300">
-            <span
-              onClick={() => handleOpenReader(posts[1] || posts[0])}
+            <a
+              href={`/blog/${(posts[1] || posts[0])?.slug || ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpenReader(posts[1] || posts[0]);
+              }}
               className="cursor-pointer hover:underline text-violet-400 font-semibold inline-flex items-center gap-1"
             >
               Artify Kernel V3.0 is live with dual-engine model routing and real-time agent memory mesh
               <ChevronRight className="w-3 h-3" />
-            </span>
+            </a>
           </div>
         </div>
 
         {/* Spotlight Featured Article Card */}
         {featuredPost && (
-          <div
-            onClick={() => handleOpenReader(featuredPost)}
+          <a
+            href={`/blog/${featuredPost.slug}`}
+            onClick={(e) => {
+              e.preventDefault();
+              handleOpenReader(featuredPost);
+            }}
             id="featured-article-card"
-            className={`group relative rounded-2xl sm:rounded-3xl border overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.005] ${
+            className={`group relative rounded-2xl sm:rounded-3xl border overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.005] block ${
               isLight
                 ? 'bg-gradient-to-br from-white via-violet-50/40 to-indigo-50/30 border-slate-200 shadow-xl hover:shadow-2xl hover:border-violet-300'
                 : 'bg-gradient-to-br from-[#0c0c14] via-[#10101c] to-[#0a0a0f] border-violet-500/30 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(139,92,246,0.15)] hover:border-violet-400/50'
@@ -645,7 +653,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                 </div>
               </div>
             </div>
-          </div>
+          </a>
         )}
 
         {/* Filter Controls & Search Bar */}
@@ -767,14 +775,21 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               {filteredPosts.map((post) => (
                 <div
                   key={post.id}
-                  onClick={() => handleOpenReader(post)}
-                  className={`group rounded-2xl border overflow-hidden flex flex-col justify-between cursor-pointer transition-all duration-200 hover:scale-[1.01] ${
+                  className={`group rounded-2xl border overflow-hidden flex flex-col justify-between transition-all duration-200 hover:scale-[1.01] ${
                     isLight
                       ? 'bg-white border-slate-200 hover:border-violet-400 hover:shadow-xl'
                       : 'bg-[#0d0d14] border-white/[0.08] hover:border-violet-500/40 hover:bg-[#10101c] shadow-lg'
                   }`}
                 >
                   {/* Article Card Cover Image */}
+                  <a
+                    href={`/blog/${post.slug}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOpenReader(post);
+                    }}
+                    className="block cursor-pointer"
+                  >
                   {post.coverImage ? (
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/40">
                       <img
@@ -825,9 +840,17 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                       <span className="text-[10px] text-zinc-400 font-mono-code">{post.readTime}</span>
                     </div>
                   )}
+                  </a>
 
                   <div className="p-6 space-y-3.5 flex-1 flex flex-col justify-between">
-                    <div>
+                    <a
+                      href={`/blog/${post.slug}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleOpenReader(post);
+                      }}
+                      className="block cursor-pointer"
+                    >
                       {/* Top Metadata if no image */}
                       {!post.coverImage && (
                         <div className="flex items-center justify-between gap-2 text-[11px] mb-2">
@@ -862,7 +885,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                       >
                         {post.excerpt}
                       </p>
-                    </div>
+                    </a>
 
                     {/* Footer Author & Reactions */}
                     <div
@@ -913,7 +936,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            const url = `${window.location.origin}${window.location.pathname}#blog-${post.slug}`;
+                            const url = `${window.location.origin}/blog/${post.slug}`;
                             const text = `Read "${post.title}" via @ArtifySolutions`;
                             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=450');
                           }}
@@ -930,7 +953,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            const url = `${window.location.origin}${window.location.pathname}#blog-${post.slug}`;
+                            const url = `${window.location.origin}/blog/${post.slug}`;
                             window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank', 'noopener,noreferrer,width=600,height=600');
                           }}
                           title="Share on LinkedIn"

@@ -433,7 +433,7 @@ The future of enterprise AI does not belong to monolithic one-size-fits-all mode
       metaTitle: 'Apex Logistics Case Study: 74% Support Deflection with Autonomous AI Fleets',
       metaDescription: 'How Apex Logistics deployed Artify autonomous agent fleets to handle 60,000+ monthly shipments, reducing support response times to 18 seconds.',
       focusKeywords: ['Apex Logistics case study', 'autonomous agent fleets', 'logistics customer support AI', 'TMS automation'],
-      canonicalUrl: 'https://artifysols.com#blog-case-study-apex-logistics-autonomous-support-fleet',
+      canonicalUrl: 'https://artifysols.com/blog/case-study-apex-logistics-autonomous-support-fleet',
       ogTitle: 'Apex Logistics Case Study: 74% Support Deflection with Autonomous AI Fleets',
       ogDescription: 'Real-world case study on autonomous AI fleets handling 60,000+ monthly container shipments with zero hallucinations.',
       ogType: 'article',
@@ -499,7 +499,7 @@ export const INITIAL_BLOG_DRAFTS: BlogPost[] = [
       metaTitle: 'Deterministic Guardrails: Stopping Multi-Turn Prompt Injections in Agentic RPA',
       metaDescription: 'Discover how AST command sanitizers and hardware enclave isolation safeguard mission-critical ERP databases against adversarial prompt injections.',
       focusKeywords: ['prompt injection defense', 'agentic RPA security', 'deterministic guardrails', 'enterprise LLM safety'],
-      canonicalUrl: 'https://artifysols.com#blog-deterministic-guardrails-preventing-prompt-injection-enterprise-rpa',
+      canonicalUrl: 'https://artifysols.com/blog/deterministic-guardrails-preventing-prompt-injection-enterprise-rpa',
       ogTitle: 'Stopping Multi-Turn Prompt Injections in Agentic RPA | Artify Research',
       ogDescription: 'Empirical analysis of AST token firewalls and hardware enclave isolation for high-privilege autonomous agents.',
       ogType: 'article',
@@ -554,7 +554,7 @@ When autonomous agent systems are granted write permissions to enterprise databa
       metaTitle: 'Benchmarking Sub-100ms Distributed Vector Indexing on Edge Clusters | Artify',
       metaDescription: 'Comprehensive benchmark comparison of HNSW vs IVFFlat algorithms under 50,000 QPS workloads for real-time autonomous agent context retrieval.',
       focusKeywords: ['vector indexing benchmark', 'HNSW vs IVFFlat', 'distributed vector search', 'edge AI clusters'],
-      canonicalUrl: 'https://artifysols.com#blog-benchmarking-sub-100ms-distributed-vector-indexing-edge',
+      canonicalUrl: 'https://artifysols.com/blog/benchmarking-sub-100ms-distributed-vector-indexing-edge',
       ogTitle: 'Benchmarking Sub-100ms Distributed Vector Indexing on Edge Clusters',
       ogDescription: 'Performance benchmarks comparing HNSW, IVFFlat, and Quantized Graph Search under sustained 50,000 QPS query loads.',
       ogType: 'article',
@@ -633,7 +633,7 @@ export const saveStoredBlogDrafts = (drafts: BlogPost[]): void => {
 export const generateSeoStructuredData = (post: BlogPost): string => {
   const schemaType = post.seo?.schemaType || (post.type === 'News' ? 'NewsArticle' : 'TechArticle');
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://artifysols.com';
-  const url = post.seo?.canonicalUrl || `${baseUrl}#blog-${post.slug}`;
+  const url = post.seo?.canonicalUrl || `${baseUrl}/blog/${post.slug}`;
   
   const wordCount = post.content ? post.content.trim().split(/\s+/).length : 600;
   const ratingValue = post.rating || 4.9;
