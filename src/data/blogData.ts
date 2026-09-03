@@ -1,5 +1,5 @@
-import { BlogPost, BlogCategory } from '../types';
-import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage';
+import { BlogPost, BlogCategory } from '../types.js';
+import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage.js';
 
 export const BLOG_CATEGORIES: BlogCategory[] = [
   'All',

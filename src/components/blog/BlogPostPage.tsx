@@ -103,8 +103,8 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
       onBackToHome();
     } else {
       onBackToHub();
-      if (typeof window !== 'undefined') {
-        window.location.hash = '#hero';
+      if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+        window.history.pushState({}, '', '/');
       }
     }
   };

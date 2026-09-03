@@ -43,6 +43,28 @@ import { ConsultantMessage, AiProductItem, AppRoute } from './types';
 import { AI_PRODUCTS, getAiProductBySlug } from './data/aiProductsData';
 import { updatePageSeo } from './utils/seo';
 
+// Maps a real, crawlable pathname to the app's internal route state.
+// Keeping this as a single source of truth means every nav entry point
+// (initial load, back/forward, programmatic navigation) resolves the same way.
+function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } {
+  const path = (pathname || '/').replace(/\/+$/, '') || '/';
+
+  if (path.startsWith('/ai-solutions/')) {
+    return { route: 'product-detail', slug: decodeURIComponent(path.replace('/ai-solutions/', '')) };
+  }
+  if (path === '/ai-solutions') return { route: 'ai-solutions' };
+  if (path === '/services') return { route: 'services' };
+  if (path === '/industries') return { route: 'industries' };
+  if (path === '/case-studies') return { route: 'case-studies' };
+  if (path === '/about') return { route: 'about' };
+  if (path === '/contact') return { route: 'contact' };
+  if (path === '/privacy') return { route: 'privacy' };
+  if (path === '/terms') return { route: 'terms' };
+  if (path === '/blog' || path.startsWith('/blog/')) return { route: 'blog' };
+
+  return { route: 'home' };
+}
+
 function MainAppContent() {
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = safeGetLocalStorage('artify_theme');
@@ -50,90 +72,56 @@ function MainAppContent() {
     return 'light';
   });
 
-  // Dynamic Route State
+  // Dynamic Route State — derived from the real pathname so every route has
+  // a distinct, crawlable, bookmarkable URL instead of a hash fragment.
   const [activeRoute, setActiveRoute] = useState<AppRoute>(() => {
     if (typeof window !== 'undefined') {
-      const hash = window.location.hash;
-      if (hash.startsWith('#ai-solutions/')) return 'product-detail';
-      if (hash === '#ai-solutions') return 'ai-solutions';
-      if (hash === '#services') return 'services';
-      if (hash === '#industries-page') return 'industries';
-      if (hash === '#case-studies-page') return 'case-studies';
-      if (hash === '#about-page') return 'about';
-      if (hash === '#contact-page') return 'contact';
-      if (hash === '#privacy-policy') return 'privacy';
-      if (hash === '#terms') return 'terms';
-      if (hash.startsWith('#blog')) return 'blog';
+      return getRouteFromPath(window.location.pathname).route;
     }
     return 'home';
   });
 
   const [activeProductSlug, setActiveProductSlug] = useState<string>(() => {
-    if (typeof window !== 'undefined' && window.location.hash.startsWith('#ai-solutions/')) {
-      return window.location.hash.replace('#ai-solutions/', '');
+    if (typeof window !== 'undefined') {
+      const { route, slug } = getRouteFromPath(window.location.pathname);
+      if (route === 'product-detail' && slug) return slug;
     }
     return AI_PRODUCTS[0].slug;
   });
 
   const { isPortalOpen, isAuthModalOpen } = useAuth();
 
-  // Listen to hash changes for browser forward/back buttons
+  // Listen for browser back/forward navigation (popstate fires for
+  // history.pushState-driven route changes, not hashchange).
   useEffect(() => {
-    const handleHashChange = () => {
+    const handlePopState = () => {
       if (typeof window === 'undefined') return;
-      const hash = window.location.hash;
+      const { route, slug } = getRouteFromPath(window.location.pathname);
 
-      if (hash.startsWith('#ai-solutions/')) {
-        const slug = hash.replace('#ai-solutions/', '');
+      if (route === 'product-detail' && slug) {
         setActiveProductSlug(slug);
         setActiveRoute('product-detail');
-      } else if (hash === '#ai-solutions') {
+      } else if (route === 'ai-solutions') {
         setActiveRoute('ai-solutions');
         updatePageSeo({
           title: 'AI Solutions Built for the Next Generation of Business',
           description: 'Explore the full Artify Solutions AI product suite, autonomous agent swarms, and enterprise neural RAG engines.',
           canonicalUrl: 'https://artifysols.com/ai-solutions',
         });
-      } else if (hash === '#services') {
-        setActiveRoute('services');
-      } else if (hash === '#industries-page') {
-        setActiveRoute('industries');
-      } else if (hash === '#case-studies-page') {
-        setActiveRoute('case-studies');
-      } else if (hash === '#about-page') {
-        setActiveRoute('about');
-      } else if (hash === '#contact-page') {
-        setActiveRoute('contact');
-      } else if (hash === '#privacy-policy') {
-        setActiveRoute('privacy');
-      } else if (hash === '#terms') {
-        setActiveRoute('terms');
-      } else if (hash.startsWith('#blog')) {
-        setActiveRoute('blog');
-      } else if (
-        hash === '' ||
-        hash === '#hero' ||
-        hash === '#what-we-build' ||
-        hash === '#ai-agents' ||
-        hash === '#orchestration' ||
-        hash === '#industries' ||
-        hash === '#functions' ||
-        hash === '#methodology' ||
-        hash === '#command-center' ||
-        hash === '#about' ||
-        hash === '#contact'
-      ) {
+      } else if (route === 'home') {
         setActiveRoute('home');
         updatePageSeo({
           title: 'Artify Solutions - Enterprise AI Products & Autonomous Systems Architecture',
           description: 'Artify Solutions transforms business operations with autonomous AI agent swarms, hybrid neural RAG engines, and real-time enterprise event meshes.',
           canonicalUrl: 'https://artifysols.com',
         });
+      } else {
+        setActiveRoute(route);
       }
     };
 
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   // Theme synchronization
@@ -182,16 +170,23 @@ function MainAppContent() {
     setIsBuilderOpen(true);
   };
 
-  const navigateToRoute = (route: AppRoute, hash: string) => {
+  // Navigates using real History API paths (not hash fragments) so every
+  // route is a distinct, crawlable, shareable URL.
+  const navigateToRoute = (route: AppRoute, path: string) => {
     setActiveRoute(route);
-    window.location.hash = hash;
+    if (typeof window !== 'undefined' && window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSelectProduct = (product: AiProductItem) => {
     setActiveProductSlug(product.slug);
     setActiveRoute('product-detail');
-    window.location.hash = `#ai-solutions/${product.slug}`;
+    const path = `/ai-solutions/${product.slug}`;
+    if (typeof window !== 'undefined' && window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -202,7 +197,10 @@ function MainAppContent() {
     } else {
       setActiveProductSlug(slug);
       setActiveRoute('product-detail');
-      window.location.hash = `#ai-solutions/${slug}`;
+      const path = `/ai-solutions/${slug}`;
+      if (typeof window !== 'undefined' && window.location.pathname !== path) {
+        window.history.pushState({}, '', path);
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -218,11 +216,11 @@ function MainAppContent() {
         return;
       }
     }
-    navigateToRoute('contact', '#contact-page');
+    navigateToRoute('contact', '/contact');
   };
 
   const handleNavigateToCapabilities = () => {
-    navigateToRoute('ai-solutions', '#ai-solutions');
+    navigateToRoute('ai-solutions', '/ai-solutions');
   };
 
   const handleCompleteBrief = (brief: any) => {
@@ -253,12 +251,13 @@ function MainAppContent() {
         onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
         onOpenConsultant={() => setIsConsultantOpen(true)}
         onNavigateToContact={handleNavigateToContact}
-        onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '#ai-solutions')}
-        onNavigateToServices={() => navigateToRoute('services', '#services')}
-        onNavigateToIndustries={() => navigateToRoute('industries', '#industries-page')}
-        onNavigateToCaseStudies={() => navigateToRoute('case-studies', '#case-studies-page')}
-        onNavigateToAbout={() => navigateToRoute('about', '#about-page')}
-        onNavigateToBlog={() => navigateToRoute('blog', '#blog')}
+        onNavigateToHome={() => navigateToRoute('home', '/')}
+        onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+        onNavigateToServices={() => navigateToRoute('services', '/services')}
+        onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}
+        onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
+        onNavigateToAbout={() => navigateToRoute('about', '/about')}
+        onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
         onSelectProduct={handleSelectProduct}
         activeRoute={activeRoute}
         theme={theme}
@@ -280,7 +279,7 @@ function MainAppContent() {
         {activeRoute === 'product-detail' && (
           <AiProductDetailPage
             productSlug={activeProductSlug}
-            onBackToSolutions={() => navigateToRoute('ai-solutions', '#ai-solutions')}
+            onBackToSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
             onSelectProduct={handleSelectProduct}
             onOpenConsultant={() => setIsConsultantOpen(true)}
             onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
@@ -294,7 +293,7 @@ function MainAppContent() {
             onOpenConsultant={() => setIsConsultantOpen(true)}
             onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
             onNavigateToContact={handleNavigateToContact}
-            onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '#ai-solutions')}
+            onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
             theme={theme}
           />
         )}
@@ -318,7 +317,7 @@ function MainAppContent() {
         {activeRoute === 'about' && (
           <AboutPage
             onNavigateToContact={handleNavigateToContact}
-            onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '#ai-solutions')}
+            onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
             theme={theme}
           />
         )}
@@ -338,7 +337,7 @@ function MainAppContent() {
         {activeRoute === 'blog' && (
           <BlogPage
             theme={theme}
-            onBackToHome={() => navigateToRoute('home', '#hero')}
+            onBackToHome={() => navigateToRoute('home', '/')}
             onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
             onOpenConsultant={() => setIsConsultantOpen(true)}
             onToggleTheme={handleToggleTheme}
@@ -373,7 +372,7 @@ function MainAppContent() {
                   </div>
 
                   <button
-                    onClick={() => navigateToRoute('ai-solutions', '#ai-solutions')}
+                    onClick={() => navigateToRoute('ai-solutions', '/ai-solutions')}
                     className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start md:self-auto transition-all"
                   >
                     <span>View All 8 AI Products</span>
@@ -485,7 +484,7 @@ function MainAppContent() {
 
             {/* 19. Blog Preview */}
             <BlogPreviewSection
-              onNavigateToBlog={() => navigateToRoute('blog', '#blog')}
+              onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
             />
 
             {/* 20. About & Vision */}
@@ -499,14 +498,14 @@ function MainAppContent() {
 
       {/* Global Footer */}
       <Footer
-        onNavigateToBlog={() => navigateToRoute('blog', '#blog')}
-        onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '#ai-solutions')}
-        onNavigateToServices={() => navigateToRoute('services', '#services')}
-        onNavigateToIndustries={() => navigateToRoute('industries', '#industries-page')}
-        onNavigateToCaseStudies={() => navigateToRoute('case-studies', '#case-studies-page')}
-        onNavigateToAbout={() => navigateToRoute('about', '#about-page')}
+        onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
+        onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+        onNavigateToServices={() => navigateToRoute('services', '/services')}
+        onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}
+        onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
+        onNavigateToAbout={() => navigateToRoute('about', '/about')}
         onNavigateToContact={handleNavigateToContact}
-        onNavigateToLegal={(type) => navigateToRoute(type, `#${type === 'privacy' ? 'privacy-policy' : 'terms'}`)}
+        onNavigateToLegal={(type) => navigateToRoute(type, `/${type === 'privacy' ? 'privacy' : 'terms'}`)}
         onSelectProduct={handleSelectProduct}
         onOpenSitemap={() => setIsSitemapOpen(true)}
       />
@@ -521,7 +520,12 @@ function MainAppContent() {
         }}
         onNavigateToBlog={(slug) => {
           setIsSitemapOpen(false);
-          navigateToRoute('blog', `#blog/${slug}`);
+          setActiveRoute('blog');
+          const path = `/blog/${slug}`;
+          if (typeof window !== 'undefined' && window.location.pathname !== path) {
+            window.history.pushState({}, '', path);
+          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
 

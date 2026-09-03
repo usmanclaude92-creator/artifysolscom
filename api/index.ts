@@ -1,6 +1,6 @@
 import express from "express";
 import { GoogleGenAI } from "@google/genai";
-import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap";
+import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
 
 const app = express();
 app.use(express.json());

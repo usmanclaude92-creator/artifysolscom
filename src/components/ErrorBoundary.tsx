@@ -35,7 +35,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   private handleGoHome = () => {
     if (typeof window !== 'undefined') {
-      window.location.hash = '#hero';
+      window.history.pushState({}, '', '/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
       this.setState({ hasError: false, error: null });
     }
   };

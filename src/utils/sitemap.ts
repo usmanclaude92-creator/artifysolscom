@@ -1,6 +1,6 @@
-import { INITIAL_BLOG_POSTS, BLOG_CATEGORIES } from '../data/blogData';
-import { AI_PRODUCTS, AI_PRODUCT_CATEGORIES } from '../data/aiProductsData';
-import { BlogPost, AiProductItem } from '../types';
+import { INITIAL_BLOG_POSTS, BLOG_CATEGORIES } from '../data/blogData.js';
+import { AI_PRODUCTS, AI_PRODUCT_CATEGORIES } from '../data/aiProductsData.js';
+import { BlogPost, AiProductItem } from '../types.js';
 
 export const DEFAULT_BASE_URL = 'https://artifysols.com';
 
@@ -129,14 +129,6 @@ export function getSitemapUrlList(
       priority: 0.8,
       type: 'core',
       title: 'Request AI Project Brief & Architect Consultation',
-    },
-    {
-      loc: `${baseUrl}/portal`,
-      lastmod: currentDate,
-      changefreq: 'weekly',
-      priority: 0.7,
-      type: 'portal',
-      title: 'Client Collaboration Portal & Telemetry Hub',
     }
   );
 

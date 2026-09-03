@@ -422,7 +422,10 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                   type="button"
                   onClick={() => {
                     closeAuthModal();
-                    window.location.hash = '#about-page';
+                    if (typeof window !== 'undefined' && window.location.pathname !== '/about') {
+                      window.history.pushState({}, '', '/about');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                    }
                     setTimeout(() => {
                       const el = document.getElementById('partner-access-policy');
                       if (el) el.scrollIntoView({ behavior: 'smooth' });

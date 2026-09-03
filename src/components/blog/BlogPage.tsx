@@ -122,27 +122,28 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     return posts.find((p) => p.featured) || posts[0];
   }, [posts]);
 
-  // Handle URL hash changes for deep linking to individual articles
+  // Deep-link individual articles via a real path (/blog/<slug>) so each
+  // post has its own crawlable, indexable URL instead of a hash fragment.
   useEffect(() => {
-    const handleHash = () => {
+    const handlePath = () => {
       if (typeof window === 'undefined') return;
-      const hash = window.location.hash;
-      if (hash.startsWith('#blog-')) {
-        const slug = hash.replace('#blog-', '');
+      const path = window.location.pathname.replace(/\/+$/, '') || '/';
+      if (path.startsWith('/blog/')) {
+        const slug = decodeURIComponent(path.replace('/blog/', ''));
         const found =
           posts.find((p) => p.slug === slug || p.id === slug) ||
           drafts.find((d) => d.slug === slug || d.id === slug);
         if (found) {
           setActivePost(found);
         }
-      } else if (hash === '#blog' && activePost) {
+      } else if (path === '/blog' && activePost) {
         setActivePost(null);
       }
     };
 
-    handleHash();
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
+    handlePath();
+    window.addEventListener('popstate', handlePath);
+    return () => window.removeEventListener('popstate', handlePath);
   }, [posts, drafts]);
 
   // Update SEO metadata for the Blog Hub Feed when no individual post is active
@@ -199,7 +200,10 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       setActivePost(post);
     }
     if (typeof window !== 'undefined') {
-      window.location.hash = `#blog-${post.slug}`;
+      const path = `/blog/${post.slug}`;
+      if (window.location.pathname !== path) {
+        window.history.pushState({}, '', path);
+      }
     }
   };
 
@@ -315,8 +319,8 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           theme={theme}
           onBackToHub={() => {
             setActivePost(null);
-            if (typeof window !== 'undefined') {
-              window.location.hash = '#blog';
+            if (typeof window !== 'undefined' && window.location.pathname !== '/blog') {
+              window.history.pushState({}, '', '/blog');
             }
           }}
           onBackToHome={onBackToHome}

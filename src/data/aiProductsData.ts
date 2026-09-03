@@ -1,4 +1,4 @@
-import { AiProductItem, AiProductCategoryType } from '../types';
+import { AiProductItem, AiProductCategoryType } from '../types.js';
 
 export interface ProductCategoryOption {
   id: AiProductCategoryType;

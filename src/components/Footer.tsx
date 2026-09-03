@@ -99,22 +99,34 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2 text-xs">
               {AI_PRODUCTS.slice(0, 5).map((p) => (
                 <li key={p.id}>
-                  <button
-                    onClick={() => onSelectProduct && onSelectProduct(p)}
+                  <a
+                    href={`/ai-solutions/${p.slug}`}
+                    onClick={(e) => {
+                      if (onSelectProduct) {
+                        e.preventDefault();
+                        onSelectProduct(p);
+                      }
+                    }}
                     className="text-left text-zinc-400 hover:text-white transition-colors flex items-center justify-between w-full"
                   >
                     <span>{p.name}</span>
-                  </button>
+                  </a>
                 </li>
               ))}
               <li className="pt-1">
-                <button
-                  onClick={onNavigateToAiSolutions}
+                <a
+                  href="/ai-solutions"
+                  onClick={(e) => {
+                    if (onNavigateToAiSolutions) {
+                      e.preventDefault();
+                      onNavigateToAiSolutions();
+                    }
+                  }}
                   className="text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1"
                 >
                   <span>All 8 Products</span>
                   <ArrowRight className="w-3 h-3" />
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -126,53 +138,89 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <button
-                  onClick={onNavigateToServices}
+                <a
+                  href="/services"
+                  onClick={(e) => {
+                    if (onNavigateToServices) {
+                      e.preventDefault();
+                      onNavigateToServices();
+                    }
+                  }}
                   className="text-left hover:text-white transition-colors"
                 >
                   Enterprise Services
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={onNavigateToIndustries}
+                <a
+                  href="/industries"
+                  onClick={(e) => {
+                    if (onNavigateToIndustries) {
+                      e.preventDefault();
+                      onNavigateToIndustries();
+                    }
+                  }}
                   className="text-left hover:text-white transition-colors"
                 >
                   Industries Matrix
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={onNavigateToCaseStudies}
+                <a
+                  href="/case-studies"
+                  onClick={(e) => {
+                    if (onNavigateToCaseStudies) {
+                      e.preventDefault();
+                      onNavigateToCaseStudies();
+                    }
+                  }}
                   className="text-left hover:text-white transition-colors"
                 >
                   Case Studies & Blueprints
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={onNavigateToAbout}
+                <a
+                  href="/about"
+                  onClick={(e) => {
+                    if (onNavigateToAbout) {
+                      e.preventDefault();
+                      onNavigateToAbout();
+                    }
+                  }}
                   className="text-left hover:text-white transition-colors"
                 >
                   About & Security
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={onNavigateToBlog}
+                <a
+                  href="/blog"
+                  onClick={(e) => {
+                    if (onNavigateToBlog) {
+                      e.preventDefault();
+                      onNavigateToBlog();
+                    }
+                  }}
                   className="text-left text-violet-400 hover:text-violet-300 font-semibold transition-colors flex items-center gap-1"
                 >
                   <span>Blog & Research</span>
                   <span className="text-[9px] bg-violet-500/20 text-violet-300 px-1 rounded font-mono-code">New</span>
-                </button>
+                </a>
               </li>
               <li>
-                <button
-                  onClick={onNavigateToContact}
+                <a
+                  href="/contact"
+                  onClick={(e) => {
+                    if (onNavigateToContact) {
+                      e.preventDefault();
+                      onNavigateToContact();
+                    }
+                  }}
                   className="text-left hover:text-white transition-colors"
                 >
                   Talk to Artify Solutions
-                </button>
+                </a>
               </li>
             </ul>
           </div>
@@ -283,19 +331,31 @@ export const Footer: React.FC<FooterProps> = ({
           <div className="flex items-center gap-3 flex-wrap">
             <span>© {new Date().getFullYear()} Artify Solutions. All rights reserved.</span>
             <span>•</span>
-            <button
-              onClick={() => onNavigateToLegal && onNavigateToLegal('privacy')}
+            <a
+              href="/privacy"
+              onClick={(e) => {
+                if (onNavigateToLegal) {
+                  e.preventDefault();
+                  onNavigateToLegal('privacy');
+                }
+              }}
               className="hover:text-white transition-colors underline-offset-2 hover:underline"
             >
               Privacy Policy
-            </button>
+            </a>
             <span>•</span>
-            <button
-              onClick={() => onNavigateToLegal && onNavigateToLegal('terms')}
+            <a
+              href="/terms"
+              onClick={(e) => {
+                if (onNavigateToLegal) {
+                  e.preventDefault();
+                  onNavigateToLegal('terms');
+                }
+              }}
               className="hover:text-white transition-colors underline-offset-2 hover:underline"
             >
               Terms of Service
-            </button>
+            </a>
             <span>•</span>
             <button
               onClick={() => onOpenSitemap && onOpenSitemap()}

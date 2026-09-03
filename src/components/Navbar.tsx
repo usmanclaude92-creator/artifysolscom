@@ -36,6 +36,7 @@ interface NavbarProps {
   onOpenSolutionBuilder: () => void;
   onOpenConsultant: () => void;
   onNavigateToContact: () => void;
+  onNavigateToHome?: () => void;
   onNavigateToBlog?: () => void;
   onNavigateToAiSolutions?: () => void;
   onNavigateToServices?: () => void;
@@ -63,6 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSolutionBuilder,
   onOpenConsultant,
   onNavigateToContact,
+  onNavigateToHome,
   onNavigateToBlog,
   onNavigateToAiSolutions,
   onNavigateToServices,
@@ -127,8 +129,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const handleProductSelect = (product: AiProductItem) => {
+  const handleProductSelect = (product: AiProductItem, e?: React.MouseEvent) => {
     if (onSelectProduct) {
+      if (e) e.preventDefault();
       onSelectProduct(product);
       setSideMenuOpen(false);
       setSolutionsDropdownOpen(false);
@@ -148,13 +151,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="w-full px-4 sm:px-6 lg:px-[5%] xl:px-[7%] flex items-center justify-between gap-3 sm:gap-4">
         {/* Brand Logo */}
         <a
-          href="#hero"
-          onClick={(e) => {
-            if (activeRoute !== 'home' && onNavigateToAbout) {
-              // Navigate back to home
-              window.location.hash = 'hero';
-            }
-          }}
+          href="/"
+          onClick={(e) => handleRouteClick(e, onNavigateToHome)}
           className="flex items-center group focus:outline-none shrink-0"
           id="brand-logo"
         >
@@ -221,13 +219,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </span>
                   </div>
                   <div className="flex items-center gap-4 text-xs">
-                    <button
+                    <a
+                      href="/ai-solutions"
                       onClick={(e) => handleRouteClick(e, onNavigateToAiSolutions)}
                       className="font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
                     >
                       <span>Explore Full Solutions Catalog</span>
                       <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                    </a>
                   </div>
                 </div>
 
@@ -236,9 +235,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {AI_PRODUCTS.map((prod) => {
                     const Icon = PRODUCT_ICONS[prod.icon] || Bot;
                     return (
-                      <div
+                      <a
                         key={prod.id}
-                        onClick={() => handleProductSelect(prod)}
+                        href={`/ai-solutions/${prod.slug}`}
+                        onClick={(e) => handleProductSelect(prod, e)}
                         className={`p-3.5 rounded-xl cursor-pointer transition-all duration-200 flex flex-col justify-between border ${
                           isLight
                             ? 'bg-slate-50/70 border-slate-200/80 hover:bg-white hover:border-violet-400 hover:shadow-md'
@@ -280,7 +280,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             <ChevronRight className="w-3 h-3" />
                           </span>
                         </div>
-                      </div>
+                      </a>
                     );
                   })}
                 </div>
@@ -326,7 +326,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Services Link */}
-          <button
+          <a
+            href="/services"
             onClick={(e) => handleRouteClick(e, onNavigateToServices)}
             className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'services'
@@ -337,10 +338,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             Services
-          </button>
+          </a>
 
           {/* Industries Link */}
-          <button
+          <a
+            href="/industries"
             onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
             className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'industries'
@@ -351,10 +353,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             Industries
-          </button>
+          </a>
 
           {/* Case Studies Link */}
-          <button
+          <a
+            href="/case-studies"
             onClick={(e) => handleRouteClick(e, onNavigateToCaseStudies)}
             className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'case-studies'
@@ -365,10 +368,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             Case Studies
-          </button>
+          </a>
 
           {/* About Link */}
-          <button
+          <a
+            href="/about"
             onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
             className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'about'
@@ -379,10 +383,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             About
-          </button>
+          </a>
 
           {/* Blog & News Link */}
-          <button
+          <a
+            href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
             className={`text-xs lg:text-[13px] xl:text-[13.5px] font-semibold px-3.5 lg:px-4 xl:px-4.5 py-1.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5 ${
               activeRoute === 'blog'
@@ -397,7 +402,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
             </span>
             <span>Blog & News</span>
-          </button>
+          </a>
         </nav>
 
         {/* Desktop Right Controls (>= 768px) */}
@@ -436,7 +441,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Contact / Build With AI Button */}
-          <button
+          <a
+            href="/contact"
             onClick={(e) => handleRouteClick(e, onNavigateToContact)}
             id="nav-build-with-ai-btn"
             className={`group relative inline-flex items-center gap-1.5 text-xs font-semibold px-3 lg:px-3.5 py-2 rounded-lg border shadow-sm transition-all active:scale-[0.98] ${
@@ -449,7 +455,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <span>Talk to Us</span>
             <ArrowRight className="w-3.5 h-3.5 text-violet-400 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+          </a>
 
           {/* Client Portal / Login Button */}
           {user ? (
@@ -593,28 +599,31 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                   {mobileProductsOpen && (
                     <div className="p-2 pt-0 space-y-1 border-t border-white/[0.06] bg-black/30">
-                      <button
+                      <a
+                        href="/ai-solutions"
                         onClick={(e) => handleRouteClick(e, onNavigateToAiSolutions)}
-                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-violet-400 hover:bg-violet-600/20"
+                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-violet-400 hover:bg-violet-600/20 block"
                       >
                         → All AI Solutions Overview
-                      </button>
+                      </a>
                       {AI_PRODUCTS.map((p) => (
-                        <button
+                        <a
                           key={p.id}
-                          onClick={() => handleProductSelect(p)}
+                          href={`/ai-solutions/${p.slug}`}
+                          onClick={(e) => handleProductSelect(p, e)}
                           className="w-full text-left px-3 py-1.5 rounded-lg text-xs text-zinc-300 hover:bg-white/[0.06] flex items-center justify-between"
                         >
                           <span>{p.name}</span>
                           <span className="text-[10px] text-zinc-500 font-mono-code">{p.categoryLabel}</span>
-                        </button>
+                        </a>
                       ))}
                     </div>
                   )}
                 </div>
 
                 {/* Services */}
-                <button
+                <a
+                  href="/services"
                   onClick={(e) => handleRouteClick(e, onNavigateToServices)}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
                 >
@@ -623,10 +632,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>Enterprise Services</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
-                </button>
+                </a>
 
                 {/* Industries */}
-                <button
+                <a
+                  href="/industries"
                   onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
                 >
@@ -635,10 +645,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>Industry Solutions (14 Sectors)</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
-                </button>
+                </a>
 
                 {/* Case Studies */}
-                <button
+                <a
+                  href="/case-studies"
                   onClick={(e) => handleRouteClick(e, onNavigateToCaseStudies)}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
                 >
@@ -647,10 +658,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>Case Studies & Architectures</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
-                </button>
+                </a>
 
                 {/* About */}
-                <button
+                <a
+                  href="/about"
                   onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
                 >
@@ -659,10 +671,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>About & Security</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
-                </button>
+                </a>
 
                 {/* Blog */}
-                <button
+                <a
+                  href="/blog"
                   onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-violet-600/20 text-violet-300 border border-violet-500/30"
                 >
@@ -671,7 +684,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>Blog & Research</span>
                   </div>
                   <span className="text-[10px] font-mono-code bg-violet-500/40 px-2 py-0.5 rounded">NEW</span>
-                </button>
+                </a>
               </div>
 
               {/* Theme Toggle */}
@@ -702,13 +715,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Interactive Solution Wizard</span>
               </button>
 
-              <button
+              <a
+                href="/contact"
                 onClick={(e) => handleRouteClick(e, onNavigateToContact)}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-violet-600 text-white font-semibold text-xs shadow-lg shadow-violet-600/30"
               >
                 <span>Talk to Artify Solutions</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </a>
             </div>
           </aside>
         </div>
