@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustStatement } from './components/TrustStatement';
@@ -20,28 +20,61 @@ import { TechnologyStack } from './components/TechnologyStack';
 import { AboutAndVision } from './components/AboutAndVision';
 import { ContactAndBrief } from './components/ContactAndBrief';
 import { Footer } from './components/Footer';
-import { InteractiveAiConsultant } from './components/InteractiveAiConsultant';
-import { SolutionBuilderWizard } from './components/SolutionBuilderWizard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AuthModal } from './components/portal/AuthModal';
-import { ClientPortal } from './components/portal/ClientPortal';
-import { BlogPage } from './components/blog/BlogPage';
 import { BlogPreviewSection } from './components/BlogPreviewSection';
-import { AiSolutionsPage } from './components/solutions/AiSolutionsPage';
-import { AiProductDetailPage } from './components/solutions/AiProductDetailPage';
-import { ServicesPage } from './components/pages/ServicesPage';
-import { IndustriesPage } from './components/pages/IndustriesPage';
-import { CaseStudiesPage } from './components/pages/CaseStudiesPage';
-import { AboutPage } from './components/pages/AboutPage';
-import { ContactPage } from './components/pages/ContactPage';
-import { LegalPage } from './components/pages/LegalPage';
-import { SitemapModal } from './components/SitemapModal';
 import { Bot, Sparkles, ArrowRight, MessageSquare, Zap, Cpu, Layers } from 'lucide-react';
 import { playHoverSound } from './utils/soundEffects';
 import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
 import { ConsultantMessage, AiProductItem, AppRoute } from './types';
 import { AI_PRODUCTS, getAiProductBySlug } from './data/aiProductsData';
 import { updatePageSeo } from './utils/seo';
+
+// Code-splitting: the home route is the only one eagerly bundled. Every other
+// route, the client portal (which pulls in the chart library) and the modal
+// overlays are fetched on demand, keeping them out of the initial payload.
+const AiSolutionsPage = lazy(() =>
+  import('./components/solutions/AiSolutionsPage').then((m) => ({ default: m.AiSolutionsPage }))
+);
+const AiProductDetailPage = lazy(() =>
+  import('./components/solutions/AiProductDetailPage').then((m) => ({ default: m.AiProductDetailPage }))
+);
+const ServicesPage = lazy(() =>
+  import('./components/pages/ServicesPage').then((m) => ({ default: m.ServicesPage }))
+);
+const IndustriesPage = lazy(() =>
+  import('./components/pages/IndustriesPage').then((m) => ({ default: m.IndustriesPage }))
+);
+const CaseStudiesPage = lazy(() =>
+  import('./components/pages/CaseStudiesPage').then((m) => ({ default: m.CaseStudiesPage }))
+);
+const AboutPage = lazy(() =>
+  import('./components/pages/AboutPage').then((m) => ({ default: m.AboutPage }))
+);
+const ContactPage = lazy(() =>
+  import('./components/pages/ContactPage').then((m) => ({ default: m.ContactPage }))
+);
+const LegalPage = lazy(() =>
+  import('./components/pages/LegalPage').then((m) => ({ default: m.LegalPage }))
+);
+const BlogPage = lazy(() =>
+  import('./components/blog/BlogPage').then((m) => ({ default: m.BlogPage }))
+);
+const ClientPortal = lazy(() =>
+  import('./components/portal/ClientPortal').then((m) => ({ default: m.ClientPortal }))
+);
+const InteractiveAiConsultant = lazy(() =>
+  import('./components/InteractiveAiConsultant').then((m) => ({ default: m.InteractiveAiConsultant }))
+);
+const SolutionBuilderWizard = lazy(() =>
+  import('./components/SolutionBuilderWizard').then((m) => ({ default: m.SolutionBuilderWizard }))
+);
+const SitemapModal = lazy(() =>
+  import('./components/SitemapModal').then((m) => ({ default: m.SitemapModal }))
+);
+
+// Reserves viewport height so a route swap never causes layout shift.
+const RouteFallback = () => <div className="min-h-screen" aria-hidden="true" />;
 
 // Maps a real, crawlable pathname to the app's internal route state.
 // Keeping this as a single source of truth means every nav entry point
@@ -232,7 +265,9 @@ function MainAppContent() {
   if (isPortalOpen) {
     return (
       <div className={theme === 'light' ? 'theme-light' : 'theme-dark'}>
-        <ClientPortal theme={theme} onToggleTheme={handleToggleTheme} />
+        <Suspense fallback={<RouteFallback />}>
+          <ClientPortal theme={theme} onToggleTheme={handleToggleTheme} />
+        </Suspense>
         {isAuthModalOpen && <AuthModal theme={theme} />}
       </div>
     );
@@ -266,6 +301,7 @@ function MainAppContent() {
 
       {/* Main Multi-Page Dynamic Switch */}
       <main>
+        <Suspense fallback={<RouteFallback />}>
         {activeRoute === 'ai-solutions' && (
           <AiSolutionsPage
             onSelectProduct={handleSelectProduct}
@@ -494,6 +530,7 @@ function MainAppContent() {
             <ContactAndBrief prefilledBrief={prefilledBrief} />
           </>
         )}
+        </Suspense>
       </main>
 
       {/* Global Footer */}
@@ -510,40 +547,52 @@ function MainAppContent() {
         onOpenSitemap={() => setIsSitemapOpen(true)}
       />
 
-      {/* Dynamic XML Sitemap Inspector Modal */}
-      <SitemapModal
-        isOpen={isSitemapOpen}
-        onClose={() => setIsSitemapOpen(false)}
-        onNavigateToProduct={(slug) => {
-          setIsSitemapOpen(false);
-          handleSelectProductBySlug(slug);
-        }}
-        onNavigateToBlog={(slug) => {
-          setIsSitemapOpen(false);
-          setActiveRoute('blog');
-          const path = `/blog/${slug}`;
-          if (typeof window !== 'undefined' && window.location.pathname !== path) {
-            window.history.pushState({}, '', path);
-          }
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-      />
+      {/* Overlay modals. Each is mounted only while open so its chunk is
+          fetched on first use rather than shipped in the initial bundle.
+          All three already returned null when closed, so gating the mount
+          here preserves their existing behaviour. */}
+      <Suspense fallback={null}>
+        {/* Dynamic XML Sitemap Inspector Modal */}
+        {isSitemapOpen && (
+          <SitemapModal
+            isOpen={isSitemapOpen}
+            onClose={() => setIsSitemapOpen(false)}
+            onNavigateToProduct={(slug) => {
+              setIsSitemapOpen(false);
+              handleSelectProductBySlug(slug);
+            }}
+            onNavigateToBlog={(slug) => {
+              setIsSitemapOpen(false);
+              setActiveRoute('blog');
+              const path = `/blog/${slug}`;
+              if (typeof window !== 'undefined' && window.location.pathname !== path) {
+                window.history.pushState({}, '', path);
+              }
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
+        )}
 
-      {/* Interactive AI Consultant Modal */}
-      <InteractiveAiConsultant
-        isOpen={isConsultantOpen}
-        onClose={() => setIsConsultantOpen(false)}
-        messages={consultantMessages}
-        onMessagesChange={setConsultantMessages}
-      />
+        {/* Interactive AI Consultant Modal */}
+        {isConsultantOpen && (
+          <InteractiveAiConsultant
+            isOpen={isConsultantOpen}
+            onClose={() => setIsConsultantOpen(false)}
+            messages={consultantMessages}
+            onMessagesChange={setConsultantMessages}
+          />
+        )}
 
-      {/* Solution Builder Wizard Modal */}
-      <SolutionBuilderWizard
-        isOpen={isBuilderOpen}
-        onClose={() => setIsBuilderOpen(false)}
-        initialIndustryId={builderInitialIndustry}
-        onCompleteBrief={handleCompleteBrief}
-      />
+        {/* Solution Builder Wizard Modal */}
+        {isBuilderOpen && (
+          <SolutionBuilderWizard
+            isOpen={isBuilderOpen}
+            onClose={() => setIsBuilderOpen(false)}
+            initialIndustryId={builderInitialIndustry}
+            onCompleteBrief={handleCompleteBrief}
+          />
+        )}
+      </Suspense>
 
       {/* Auth Modal */}
       <AuthModal theme={theme} />

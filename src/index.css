@@ -795,3 +795,19 @@ body.theme-light *::-webkit-scrollbar-thumb:active {
   box-shadow: 0 12px 25px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.02) !important;
 }
 
+
+/* 18. Off-screen rendering skip
+   The long-scroll pages stack ~20 full-width sections. Style and layout for
+   all of them was being computed up front, which dominated main-thread time
+   on first load. content-visibility lets the browser skip that work until a
+   section approaches the viewport.
+
+   The first three sections are excluded so above-the-fold content (and the
+   LCP element) is never deferred. contain-intrinsic-size uses the `auto`
+   keyword so the browser remembers each section's real height after it has
+   been rendered once, which keeps the scrollbar stable and avoids
+   introducing layout shift. */
+main > section:nth-child(n + 4) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1600px;
+}
