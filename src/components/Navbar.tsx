@@ -156,11 +156,21 @@ export const Navbar: React.FC<NavbarProps> = ({
           className="flex items-center group focus:outline-none shrink-0"
           id="brand-logo"
         >
-          <img
-            src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
-            alt="Artify Sols"
-            className="h-9 sm:h-11 w-auto object-contain"
-          />
+          {/* WebP is ~60% smaller than the PNG; the PNG stays as the
+              fallback for browsers that don't support it. */}
+          <picture>
+            <source
+              srcSet={isLight ? '/logo-header-light.webp' : '/logo-header-dark.webp'}
+              type="image/webp"
+            />
+            <img
+              src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
+              alt="Artify Sols"
+              width={418}
+              height={132}
+              className="h-9 sm:h-11 w-auto object-contain"
+            />
+          </picture>
         </a>
 
         {/* Desktop Navigation Links (>= 768px) with AI Solutions Mega Dropdown */}
@@ -560,11 +570,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className={`p-4 sm:p-5 border-b flex items-center justify-between gap-3 ${
               isLight ? 'border-slate-100 bg-slate-50/50' : 'border-white/[0.08] bg-[#0d0d16]/50'
             }`}>
-              <img
-                src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
-                alt="Artify Sols"
-                className="h-8 w-auto object-contain"
-              />
+              <picture>
+                <source
+                  srcSet={isLight ? '/logo-header-light.webp' : '/logo-header-dark.webp'}
+                  type="image/webp"
+                />
+                <img
+                  src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
+                  alt="Artify Sols"
+                  width={418}
+                  height={132}
+                  className="h-8 w-auto object-contain"
+                />
+              </picture>
 
               <button
                 onClick={() => setSideMenuOpen(false)}
