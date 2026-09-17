@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   Cpu,
   Layers,
@@ -60,13 +61,35 @@ export const TechnologyStack: React.FC = () => {
         </div>
 
         {/* 4 Tech Categories */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 },
+            },
+          }}
+        >
           {stackCategories.map((cat, idx) => {
             const Icon = cat.icon;
             return (
-              <div
+              <motion.div
                 key={idx}
-                className="p-6 rounded-2xl bg-[#09090e] border border-white/[0.08] hover:border-violet-500/40 transition-colors flex flex-col justify-between"
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+                whileHover={{ y: -5, borderColor: 'rgba(139, 92, 246, 0.5)' }}
+                transition={{ duration: 0.2 }}
+                className="p-6 rounded-2xl bg-[#09090e] border border-white/[0.08] flex flex-col justify-between"
               >
                 <div>
                   <div
@@ -92,10 +115,10 @@ export const TechnologyStack: React.FC = () => {
                     ))}
                   </ul>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
       </div>
     </section>

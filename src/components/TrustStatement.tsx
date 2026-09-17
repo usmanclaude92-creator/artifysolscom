@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { XCircle, CheckCircle2, ShieldAlert, Sparkles, Sliders } from 'lucide-react';
 
 export const TrustStatement: React.FC = () => {
@@ -26,8 +27,27 @@ export const TrustStatement: React.FC = () => {
           </p>
 
           {/* Contrast Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left">
-            <div className="p-5 rounded-2xl bg-[#0d0d12] border border-red-500/20 hover:border-red-500/40 transition-colors">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-3 gap-5 text-left"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.12 },
+              },
+            }}
+          >
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+              }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="p-5 rounded-2xl bg-[#0d0d12] border border-red-500/20 hover:border-red-500/40 transition-colors"
+            >
               <div className="flex items-center gap-2.5 text-red-400 text-sm font-bold mb-2">
                 <XCircle className="w-4 h-4 shrink-0" />
                 <span>No Rigid Templates</span>
@@ -35,9 +55,16 @@ export const TrustStatement: React.FC = () => {
               <p className="text-xs text-zinc-400 leading-relaxed">
                 We never force your operational workflows into off-the-shelf software constraints or generic cookie-cutter apps.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="p-5 rounded-2xl bg-[#0d0d12] border border-amber-500/20 hover:border-amber-500/40 transition-colors">
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+              }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="p-5 rounded-2xl bg-[#0d0d12] border border-amber-500/20 hover:border-amber-500/40 transition-colors"
+            >
               <div className="flex items-center gap-2.5 text-amber-400 text-sm font-bold mb-2">
                 <ShieldAlert className="w-4 h-4 shrink-0" />
                 <span>No Unnecessary Bloat</span>
@@ -45,9 +72,16 @@ export const TrustStatement: React.FC = () => {
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Zero legacy baggage, convoluted multi-level menus, or feature creep. Every line of code serves your strategic bottom line.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="p-5 rounded-2xl bg-[#0d0d12] border border-emerald-500/20 hover:border-emerald-500/40 transition-colors">
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+              }}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="p-5 rounded-2xl bg-[#0d0d12] border border-emerald-500/20 hover:border-emerald-500/40 transition-colors"
+            >
               <div className="flex items-center gap-2.5 text-emerald-400 text-sm font-bold mb-2">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
                 <span>100% Bespoke Architecture</span>
@@ -55,8 +89,8 @@ export const TrustStatement: React.FC = () => {
               <p className="text-xs text-zinc-400 leading-relaxed">
                 Engineered specifically for your proprietary taxonomy, internal security rules, and data structures from day one.
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
         </div>
       </div>

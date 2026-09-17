@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Bot,
@@ -143,7 +144,12 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
           {/* Left Column: Brand Message & Hero Copy */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
+          <motion.div
+            className="lg:col-span-7 flex flex-col items-start text-left"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
             {/* Eyebrow */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-950/50 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mt-[10px] mb-6 shadow-inner">
               <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
@@ -214,10 +220,15 @@ export const Hero: React.FC<HeroProps> = ({
                 <div className="text-xs text-zinc-400 font-medium">Zero-Lockin Architecture</div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Right Column: Interactive Neural Ecosystem Visual */}
-          <div className="lg:col-span-5 flex flex-col items-center justify-center relative">
+          <motion.div
+            className="lg:col-span-5 flex flex-col items-center justify-center relative"
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="relative w-full max-w-[506px] aspect-square flex items-center justify-center">
               
               {/* Concentric subtle rings */}
@@ -353,7 +364,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
             </div>
 
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

@@ -29,6 +29,13 @@ import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
 import { ConsultantMessage, AiProductItem, AppRoute } from './types';
 import { AI_PRODUCTS, getAiProductBySlug } from './data/aiProductsData';
 import { updatePageSeo } from './utils/seo';
+import {
+  AnimatedSection,
+  StaggerContainer,
+  StaggerItem,
+  ScrollProgressBar,
+} from './components/AnimatedSection';
+import { motion } from 'framer-motion';
 
 // Code-splitting: the home route is the only one eagerly bundled. Every other
 // route, the client portal (which pulls in the chart library) and the modal
@@ -281,6 +288,9 @@ function MainAppContent() {
           : 'theme-dark bg-[#050505] text-[#F5F5F5]'
       } selection:bg-violet-600 selection:text-white relative transition-colors duration-300`}
     >
+      {/* Viewport Scroll Progress Bar powered by Framer Motion */}
+      <ScrollProgressBar />
+
       {/* Global Sticky Navigation with Mega-Menu */}
       <Navbar
         onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
@@ -383,151 +393,196 @@ function MainAppContent() {
         {activeRoute === 'home' && (
           <>
             {/* 1. Hero Section */}
-            <Hero
-              onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-              onOpenConsultant={() => setIsConsultantOpen(true)}
-              onNavigateToCapabilities={handleNavigateToCapabilities}
-              onNavigateToContact={handleNavigateToContact}
-            />
+            <AnimatedSection variant="fade" duration={0.8}>
+              <Hero
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                onOpenConsultant={() => setIsConsultantOpen(true)}
+                onNavigateToCapabilities={handleNavigateToCapabilities}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
 
             {/* 2. Featured AI Products Showcase Ribbon on Homepage */}
-            <section className="py-20 border-b border-white/[0.06] bg-black/40">
-              <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                  <div>
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-3">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Enterprise Product Suite</span>
+            <AnimatedSection variant="fade-up">
+              <section className="py-20 border-b border-white/[0.06] bg-black/40">
+                <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto">
+                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Enterprise Product Suite</span>
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
+                        Featured AI Solutions
+                      </h2>
+                      <p className="text-sm sm:text-base text-zinc-400 mt-2 max-w-xl">
+                        Explore our top enterprise-ready autonomous AI products engineered for mission-critical operations.
+                      </p>
                     </div>
-                    <h2 className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
-                      Featured AI Solutions
-                    </h2>
-                    <p className="text-sm sm:text-base text-zinc-400 mt-2 max-w-xl">
-                      Explore our top enterprise-ready autonomous AI products engineered for mission-critical operations.
-                    </p>
+
+                    <button
+                      onClick={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+                      className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start md:self-auto transition-all"
+                    >
+                      <span>View All 8 AI Products</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
 
-                  <button
-                    onClick={() => navigateToRoute('ai-solutions', '/ai-solutions')}
-                    className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start md:self-auto transition-all"
-                  >
-                    <span>View All 8 AI Products</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
+                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {AI_PRODUCTS.slice(0, 4).map((product) => (
+                      <StaggerItem key={product.id}>
+                        <motion.div
+                          onClick={() => handleSelectProduct(product)}
+                          whileHover={{ y: -6, borderColor: 'rgba(139, 92, 246, 0.6)' }}
+                          transition={{ duration: 0.2 }}
+                          className="h-full p-6 rounded-2xl bg-[#0c0c14] border border-white/[0.08] cursor-pointer flex flex-col justify-between group shadow-lg"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-4">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400 font-mono-code">
+                                {product.categoryLabel}
+                              </span>
+                              <span className="text-[10px] font-bold text-emerald-400 font-mono-code">
+                                {product.uptime}
+                              </span>
+                            </div>
+                            <h3 className="text-xl font-bold text-white font-display group-hover:text-violet-300 transition-colors">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-violet-400/90 font-mono-code mt-1">
+                              {product.tagline}
+                            </p>
+                            <p className="text-xs text-zinc-400 mt-3 line-clamp-3 leading-relaxed">
+                              {product.shortDescription}
+                            </p>
+                          </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                  {AI_PRODUCTS.slice(0, 4).map((product) => (
-                    <div
-                      key={product.id}
-                      onClick={() => handleSelectProduct(product)}
-                      className="p-6 rounded-2xl bg-[#0c0c14] border border-white/[0.08] hover:border-violet-500/50 cursor-pointer transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between group"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400 font-mono-code">
-                            {product.categoryLabel}
-                          </span>
-                          <span className="text-[10px] font-bold text-emerald-400 font-mono-code">
-                            {product.uptime}
-                          </span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white font-display group-hover:text-violet-300 transition-colors">
-                          {product.name}
-                        </h3>
-                        <p className="text-xs text-violet-400/90 font-mono-code mt-1">
-                          {product.tagline}
-                        </p>
-                        <p className="text-xs text-zinc-400 mt-3 line-clamp-3 leading-relaxed">
-                          {product.shortDescription}
-                        </p>
-                      </div>
-
-                      <div className="mt-6 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                        <span className="font-bold text-zinc-300 font-mono-code">
-                          {product.metrics[0]?.value}
-                        </span>
-                        <span className="text-violet-400 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                          <span>Explore</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                          <div className="mt-6 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                            <span className="font-bold text-zinc-300 font-mono-code">
+                              {product.metrics[0]?.value}
+                            </span>
+                            <span className="text-violet-400 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                              <span>Explore</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          </div>
+                        </motion.div>
+                      </StaggerItem>
+                    ))}
+                  </StaggerContainer>
                 </div>
-              </div>
-            </section>
+              </section>
+            </AnimatedSection>
 
             {/* 3. Trust Statement */}
-            <TrustStatement />
+            <AnimatedSection variant="fade-up">
+              <TrustStatement />
+            </AnimatedSection>
 
             {/* 4. What We Build */}
-            <WhatWeBuild
-              onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-              onNavigateToContact={handleNavigateToContact}
-            />
+            <AnimatedSection variant="fade-up">
+              <WhatWeBuild
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
 
             {/* 5. AI Agents */}
-            <AiAgentsSection />
+            <AnimatedSection variant="blur-up">
+              <AiAgentsSection />
+            </AnimatedSection>
 
             {/* 6. AI Orchestration */}
-            <AiOrchestration />
+            <AnimatedSection variant="fade-up">
+              <AiOrchestration />
+            </AnimatedSection>
 
             {/* 7. Industries Matrix */}
-            <IndustryExplorer
-              onOpenSolutionBuilder={(id) => handleOpenSolutionBuilder(id)}
-              onNavigateToContact={handleNavigateToContact}
-            />
+            <AnimatedSection variant="fade-up">
+              <IndustryExplorer
+                onOpenSolutionBuilder={(id) => handleOpenSolutionBuilder(id)}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
 
             {/* 8. Solutions by Business Function */}
-            <SolutionsByFunction
-              onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-              onNavigateToContact={handleNavigateToContact}
-            />
+            <AnimatedSection variant="fade-up">
+              <SolutionsByFunction
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
 
             {/* 9. The Artify Difference */}
-            <ArtifyDifference />
+            <AnimatedSection variant="fade-up">
+              <ArtifyDifference />
+            </AnimatedSection>
 
             {/* 10. Development Methodology */}
-            <DevelopmentMethodology onNavigateToContact={handleNavigateToContact} />
+            <AnimatedSection variant="fade-up">
+              <DevelopmentMethodology onNavigateToContact={handleNavigateToContact} />
+            </AnimatedSection>
 
             {/* 11. Before / After Comparison */}
-            <BeforeAfterSlider />
+            <AnimatedSection variant="scale-up">
+              <BeforeAfterSlider />
+            </AnimatedSection>
 
             {/* 12. AI Command Center */}
-            <AiCommandCenter />
+            <AnimatedSection variant="blur-up">
+              <AiCommandCenter />
+            </AnimatedSection>
 
             {/* 13. Integrations Ecosystem */}
-            <IntegrationsEcosystem />
+            <AnimatedSection variant="fade-up">
+              <IntegrationsEcosystem />
+            </AnimatedSection>
 
             {/* 14. Security & Governance */}
-            <SecurityAndGovernance />
+            <AnimatedSection variant="fade-up">
+              <SecurityAndGovernance />
+            </AnimatedSection>
 
             {/* 15. Human + AI Collaboration */}
-            <HumanPlusAi />
+            <AnimatedSection variant="fade-up">
+              <HumanPlusAi />
+            </AnimatedSection>
 
             {/* 16. Customization Showcase */}
-            <CustomizationShowcase />
+            <AnimatedSection variant="fade-up">
+              <CustomizationShowcase />
+            </AnimatedSection>
 
             {/* 17. Case Studies */}
-            <CaseStudiesSection
-              onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-              onNavigateToContact={handleNavigateToContact}
-            />
+            <AnimatedSection variant="fade-up">
+              <CaseStudiesSection
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
 
             {/* 18. Technology Stack */}
-            <TechnologyStack />
+            <AnimatedSection variant="fade-up">
+              <TechnologyStack />
+            </AnimatedSection>
 
             {/* 19. Blog Preview */}
-            <BlogPreviewSection
-              onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
-            />
+            <AnimatedSection variant="fade-up">
+              <BlogPreviewSection
+                onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
+              />
+            </AnimatedSection>
 
             {/* 20. About & Vision */}
-            <AboutAndVision onNavigateToContact={handleNavigateToContact} />
+            <AnimatedSection variant="fade-up">
+              <AboutAndVision onNavigateToContact={handleNavigateToContact} />
+            </AnimatedSection>
 
             {/* 21. Contact & Brief */}
-            <ContactAndBrief prefilledBrief={prefilledBrief} />
+            <AnimatedSection variant="fade-up">
+              <ContactAndBrief prefilledBrief={prefilledBrief} />
+            </AnimatedSection>
           </>
         )}
         </Suspense>
