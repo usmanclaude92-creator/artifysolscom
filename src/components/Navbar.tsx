@@ -14,6 +14,7 @@ import {
   Moon,
   LayoutDashboard,
   LogIn,
+  LogOut,
   FileText,
   ChevronRight,
   ChevronDown,
@@ -122,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   theme,
   onToggleTheme,
 }) => {
-  const { user, openPortal, openAuthModal } = useAuth();
+  const { user, openPortal, openAuthModal, logout } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false);
@@ -278,7 +279,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </picture>
         </a>
 
-        {/* Desktop Primary Navigation (Platform | Our Solutions | Intelligence | Industries | Ecosystem | Insights | Company) */}
+        {/* Desktop Primary Navigation (Our Solutions | Industries | Ecosystem | Insights | About Artify) */}
         <nav
           aria-label="Main Navigation"
           className={`hidden md:flex items-center gap-1 lg:gap-1.5 xl:gap-2 border rounded-full px-2.5 sm:px-3 lg:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
@@ -287,23 +288,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               : 'bg-[#0d0d14]/80 border-white/[0.08] text-zinc-300'
           }`}
         >
-          {/* 1. Platform Link */}
-          <a
-            href="#platform"
-            onClick={(e) => handleSectionClick(e, 'platform', onNavigateToServices)}
-            id="nav-link-platform"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'services'
-                ? 'bg-violet-600 text-white shadow-sm'
-                : isLight
-                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
-            }`}
-          >
-            Platform
-          </a>
-
-          {/* 2. OUR SOLUTIONS Mega-Menu Dropdown */}
+          {/* 1. OUR SOLUTIONS Mega-Menu Dropdown */}
           <div
             className="static"
             ref={dropdownRef}
@@ -531,21 +516,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* 3. Intelligence Link */}
-          <a
-            href="#intelligence"
-            onClick={(e) => handleSectionClick(e, 'intelligence', onOpenConsultant)}
-            id="nav-link-intelligence"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              isLight
-                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
-            }`}
-          >
-            Intelligence
-          </a>
-
-          {/* 4. Industries Link */}
+          {/* 2. Industries Link */}
           <a
             href="/industries"
             onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
@@ -561,7 +532,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             Industries
           </a>
 
-          {/* 5. Ecosystem Link */}
+          {/* 3. Ecosystem Link */}
           <a
             href="#ecosystem"
             onClick={(e) => handleSectionClick(e, 'ecosystem')}
@@ -575,7 +546,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             Ecosystem
           </a>
 
-          {/* 6. Insights Link (Blog & Whitepapers) */}
+          {/* 4. Insights Link (Blog & Whitepapers) */}
           <a
             href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
@@ -592,11 +563,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
           </a>
 
-          {/* 7. Company Link */}
+          {/* 5. About Artify Link */}
           <a
             href="/about"
             onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
-            id="nav-link-company"
+            id="nav-link-about-artify"
             className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'about'
                 ? 'bg-violet-600 text-white shadow-sm'
@@ -605,7 +576,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Company
+            About Artify
           </a>
         </nav>
 
@@ -661,35 +632,51 @@ export const Navbar: React.FC<NavbarProps> = ({
             <ArrowRight className="w-3.5 h-3.5 text-violet-400 group-hover:translate-x-0.5 transition-transform" />
           </a>
 
-          {/* Client Portal / Login Button */}
+          {/* Client Portal & Sign-out Controls (Sign-out restricted strictly to authorized sessions) */}
           {user ? (
-            <button
-              onClick={() => openPortal('overview')}
-              id="nav-client-portal-btn"
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-xs font-semibold shadow-md transition-all group ${
-                isLight
-                  ? 'bg-violet-50 hover:bg-violet-100 border-violet-300 text-slate-900 shadow-violet-200'
-                  : 'bg-[#151522] hover:bg-violet-950/70 border-violet-500/40 text-white shadow-violet-950/30 hover:border-violet-400/60'
-              }`}
-              title="Open Client Portal & Dashboard"
-            >
-              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0 shadow-inner">
-                {user.name.slice(0, 1)}
-              </div>
-              <div className="flex flex-col text-left">
-                <span
-                  className={`text-[11px] font-bold truncate max-w-[90px] ${
-                    isLight ? 'text-slate-800' : 'text-zinc-100 group-hover:text-violet-200'
-                  }`}
-                >
-                  {user.name.split(' ')[0]}
-                </span>
-                <span className="text-[9px] text-violet-500 dark:text-violet-400 font-mono-code leading-none">
-                  Portal
-                </span>
-              </div>
-              <LayoutDashboard className="w-3.5 h-3.5 text-violet-500 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            <div className="flex items-center gap-1.5" id="nav-authorized-session-controls">
+              <button
+                onClick={() => openPortal('overview')}
+                id="nav-client-portal-btn"
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold shadow-sm transition-all group ${
+                  isLight
+                    ? 'bg-violet-50 hover:bg-violet-100 border-violet-200 text-slate-900 shadow-violet-100'
+                    : 'bg-[#151522] hover:bg-violet-950/70 border-violet-500/30 text-white shadow-violet-950/20 hover:border-violet-400/50'
+                }`}
+                title="Open Client Portal & Dashboard"
+              >
+                <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white shrink-0 shadow-inner">
+                  {user.name.slice(0, 1).toUpperCase()}
+                </div>
+                <div className="flex flex-col text-left">
+                  <span
+                    className={`text-[11px] font-bold truncate max-w-[85px] ${
+                      isLight ? 'text-slate-800' : 'text-zinc-100 group-hover:text-violet-200'
+                    }`}
+                  >
+                    {user.name.split(' ')[0]}
+                  </span>
+                  <span className="text-[9px] text-violet-500 dark:text-violet-400 font-mono-code leading-none">
+                    Portal
+                  </span>
+                </div>
+                <LayoutDashboard className="w-3.5 h-3.5 text-violet-500 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+
+              <button
+                onClick={logout}
+                id="nav-client-logout-btn"
+                className={`p-2 rounded-lg border transition-all shadow-sm active:scale-95 ${
+                  isLight
+                    ? 'bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border-slate-200 hover:border-rose-200'
+                    : 'bg-[#131318] hover:bg-rose-950/40 text-zinc-400 hover:text-rose-300 border-white/[0.08] hover:border-rose-500/30'
+                }`}
+                title="Sign Out of Authorized Session"
+                aria-label="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
           ) : (
             <button
               onClick={() => openAuthModal('login')}
@@ -706,18 +693,35 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Mobile Header Controls (< 768px) */}
         <div className="md:hidden flex items-center gap-2">
           {user ? (
-            <button
-              onClick={() => openPortal('overview')}
-              id="mobile-nav-quick-portal"
-              className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border shadow-sm ${
-                isLight
-                  ? 'bg-violet-50 border-violet-200 text-violet-800'
-                  : 'bg-violet-950/70 border-violet-500/40 text-white'
-              }`}
-            >
-              <LayoutDashboard className="w-3.5 h-3.5 text-violet-400" />
-              <span className="text-[11px]">Portal</span>
-            </button>
+            <div className="flex items-center gap-1.5" id="mobile-authorized-session-controls">
+              <button
+                onClick={() => openPortal('overview')}
+                id="mobile-nav-quick-portal"
+                className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg border shadow-sm ${
+                  isLight
+                    ? 'bg-violet-50 border-violet-200 text-violet-800'
+                    : 'bg-violet-950/70 border-violet-500/40 text-white'
+                }`}
+                title="Open Client Portal"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-violet-400" />
+                <span className="text-[11px]">Portal</span>
+              </button>
+
+              <button
+                onClick={logout}
+                id="mobile-nav-quick-logout"
+                className={`p-1.5 rounded-lg border shadow-sm ${
+                  isLight
+                    ? 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-rose-50 hover:text-rose-600'
+                    : 'bg-[#151522] text-zinc-400 border-white/[0.08] hover:text-rose-300'
+                }`}
+                title="Sign Out"
+                aria-label="Sign Out"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
           ) : (
             <button
               onClick={() => openAuthModal('login')}
@@ -800,24 +804,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Drawer Scrollable Content */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin">
-              {/* Navigation Items in New Order: Platform | Our Solutions | Intelligence | Industries | Ecosystem | Insights | Company */}
+              {/* Navigation Items: Our Solutions | Industries | Ecosystem | Insights | About Artify */}
               <div className="space-y-1">
-                {/* 1. Platform */}
-                <a
-                  href="#platform"
-                  onClick={(e) => handleSectionClick(e, 'platform', onNavigateToServices)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
-                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Layers className="w-4 h-4 text-violet-400" />
-                    <span>Platform & Architecture</span>
-                  </div>
-                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
-                </a>
-
-                {/* 2. OUR SOLUTIONS Accordion */}
+                {/* 1. OUR SOLUTIONS Accordion */}
                 <div className={`rounded-xl border overflow-hidden ${
                   isLight ? 'border-slate-200 bg-slate-50/60' : 'border-white/[0.08] bg-white/[0.02]'
                 }`}>
@@ -941,22 +930,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   )}
                 </div>
 
-                {/* 3. Intelligence */}
-                <a
-                  href="#intelligence"
-                  onClick={(e) => handleSectionClick(e, 'intelligence', onOpenConsultant)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
-                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Cpu className="w-4 h-4 text-violet-400" />
-                    <span>Intelligence Layer</span>
-                  </div>
-                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
-                </a>
-
-                {/* 4. Industries */}
+                {/* 2. Industries */}
                 <a
                   href="/industries"
                   onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
@@ -971,7 +945,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
-                {/* 5. Ecosystem */}
+                {/* 3. Ecosystem */}
                 <a
                   href="#ecosystem"
                   onClick={(e) => handleSectionClick(e, 'ecosystem')}
@@ -986,7 +960,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
-                {/* 6. Insights */}
+                {/* 4. Insights */}
                 <a
                   href="/blog"
                   onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
@@ -1001,17 +975,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </span>
                 </a>
 
-                {/* 7. Company */}
+                {/* 5. About Artify */}
                 <a
                   href="/about"
                   onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
+                  id="mobile-nav-link-about-artify"
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
                     isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Info className="w-4 h-4 text-violet-400" />
-                    <span>Company & Security</span>
+                    <span>About Artify</span>
                   </div>
                   <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
@@ -1030,6 +1005,72 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                   <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
+              </div>
+
+              {/* Account / Authentication State in Drawer */}
+              <div className="pt-2">
+                {user ? (
+                  <div className={`p-3 rounded-xl border flex items-center justify-between gap-2.5 ${
+                    isLight ? 'bg-violet-50/80 border-violet-200' : 'bg-violet-950/30 border-violet-500/20'
+                  }`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className={`text-xs font-bold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                          {user.name}
+                        </p>
+                        <p className="text-[10px] text-violet-500 dark:text-violet-400 font-mono-code truncate">
+                          {user.company || 'Enterprise Account'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => {
+                          setSideMenuOpen(false);
+                          openPortal('overview');
+                        }}
+                        className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-violet-600 text-white hover:bg-violet-500"
+                      >
+                        Portal
+                      </button>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setSideMenuOpen(false);
+                        }}
+                        className={`text-[11px] font-semibold px-2 py-1 rounded-lg border ${
+                          isLight
+                            ? 'border-slate-300 hover:bg-slate-200 text-slate-700'
+                            : 'border-white/[0.1] hover:bg-white/[0.08] text-zinc-300'
+                        }`}
+                        title="Sign Out"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setSideMenuOpen(false);
+                      openAuthModal('login');
+                    }}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors ${
+                      isLight
+                        ? 'border-violet-200 bg-violet-50 text-violet-900 hover:bg-violet-100'
+                        : 'border-violet-500/30 bg-violet-950/40 text-violet-200 hover:bg-violet-900/50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <LogIn className="w-4 h-4 text-violet-400" />
+                      <span>Sign In to Account</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-violet-400" />
+                  </button>
+                )}
               </div>
 
               {/* Theme Toggle */}

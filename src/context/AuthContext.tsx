@@ -47,10 +47,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_USER_KEY = 'artify_auth_user_session';
 const STORAGE_PORTAL_OPEN_KEY = 'artify_portal_view_state';
+const STORAGE_INTENTIONAL_LOGIN_KEY = 'artify_auth_user_intentionally_logged_in';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
+      // By default keep user signed out until intentionally logged into account
+      const isIntentional = safeGetLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY);
+      if (!isIntentional || isIntentional !== 'true') {
+        // Purge any stale legacy auto-saved demo session
+        safeRemoveLocalStorage(STORAGE_USER_KEY);
+        return null;
+      }
       const saved = safeGetLocalStorage(STORAGE_USER_KEY);
       if (saved) {
         return JSON.parse(saved);
@@ -58,8 +66,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (err) {
       console.error('Failed to parse saved user from localStorage', err);
     }
-    // Default to Enterprise Demo user so visitors immediately experience the full client portal richness
-    return DEMO_USERS.enterprise;
+    return null;
   });
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -70,9 +77,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Sync to localStorage
   useEffect(() => {
     if (user) {
+      safeSetLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY, 'true');
       safeSetLocalStorage(STORAGE_USER_KEY, JSON.stringify(user));
     } else {
       safeRemoveLocalStorage(STORAGE_USER_KEY);
+      safeRemoveLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY);
     }
   }, [user]);
 
@@ -455,6 +464,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
+    safeRemoveLocalStorage(STORAGE_USER_KEY);
+    safeRemoveLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY);
     setUser(null);
     setIsPortalOpen(false);
   };

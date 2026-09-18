@@ -193,7 +193,7 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors"
                 >
-                  About & Security
+                  About Artify
                 </a>
               </li>
               <li>
