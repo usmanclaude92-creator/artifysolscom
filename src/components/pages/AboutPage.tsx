@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ArrowRight, ShieldCheck, Cpu, Globe, Users, Lock, Award, Zap, Key, Server } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Cpu, Globe, Users, Lock, Award, Zap, Key, Server } from 'lucide-react';
 import { AboutAndVision } from '../AboutAndVision';
 import { TechnologyStack } from '../TechnologyStack';
 import { AboutPartnerAccessSection } from '../AboutPartnerAccessSection';
@@ -49,22 +49,11 @@ Estimated Agent Operations: 500,000+ monthly autonomous tasks`,
     <div
       className={`min-h-screen ${
         isLight ? 'bg-[#F8FAFC] text-slate-900' : 'bg-[#050505] text-[#F5F5F5]'
-      } transition-colors duration-300 pt-28 sm:pt-36 pb-24`}
+      } transition-colors duration-300 pt-20 sm:pt-28 pb-24`}
     >
-      <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto mb-12 text-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-4">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Our Mission & Architectural Philosophy</span>
-        </div>
-        <h1 className="text-4xl sm:text-6xl font-bold font-display tracking-tight text-white">
-          We Believe Software Should Think.
-        </h1>
-        <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-3xl mx-auto">
-          Artify Solutions was founded on a simple conviction: enterprise software shouldn't just store records—it should actively reason, coordinate, and execute alongside human operators.
-        </p>
-      </div>
-
-      <AboutAndVision />
+      <AboutAndVision
+        onNavigateToContact={handleRequestPartnerAccess}
+      />
 
       {/* Enterprise Partner & Backend Access Policy Section */}
       <AboutPartnerAccessSection

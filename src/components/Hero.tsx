@@ -134,13 +134,13 @@ export const Hero: React.FC<HeroProps> = ({
   return (
     <section
       id="hero"
-      className="relative min-h-[90vh] sm:min-h-[92vh] pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 flex items-center justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
+      className="relative min-h-[90vh] sm:min-h-[92vh] pt-20 sm:pt-28 lg:pt-32 pb-8 sm:pb-16 lg:pb-20 flex items-center justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
     >
       {/* Glow aura */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-violet-700/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-sky-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full px-4 sm:px-6 lg:px-[10%] relative z-10">
+      <div className="w-full px-3.5 sm:px-6 lg:px-[10%] relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center">
           
           {/* Left Column: Brand Message & Hero Copy */}
@@ -151,26 +151,28 @@ export const Hero: React.FC<HeroProps> = ({
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs sm:text-sm md:text-base font-semibold tracking-wide mb-3 sm:mb-5 shadow-inner">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1 sm:py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] sm:text-sm md:text-base font-semibold tracking-wide mb-3 sm:mb-5 shadow-inner max-w-full">
               <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-primary animate-pulse shrink-0" />
               <span className="truncate">We Design Solutions, not just Software...</span>
             </div>
 
             {/* Main Headline - beautifully scaled for mobile to prevent line-wrapping clutter */}
-            <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.18] sm:leading-[1.1] md:leading-[1.08] mb-3.5 sm:mb-5 font-display">
-              Your Business is Unique.{' '}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500 pb-1 sm:pb-[6px]">
+            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.1] md:leading-[1.08] mb-3 sm:mb-5 font-display">
+              <span className="block sm:inline whitespace-nowrap sm:whitespace-normal">
+                Your Business is Unique.
+              </span>{' '}
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500 pb-1 sm:pb-[6px] whitespace-nowrap sm:whitespace-normal">
                 Your Software Should Be Too.
               </span>
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl mb-4 sm:mb-6">
+            <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl mb-3.5 sm:mb-6">
               Fully Customized and Adaptive Eco-System designed around your Business enhanced by Next-generation AI, Intelligent Automation and connected Technology.
             </p>
 
             {/* Core Capability Callout */}
-            <div className="relative w-full max-w-2xl p-3.5 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-6 sm:mb-8 backdrop-blur-sm">
+            <div className="relative w-full max-w-2xl p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
               <div className="flex items-start sm:items-center gap-3">
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />

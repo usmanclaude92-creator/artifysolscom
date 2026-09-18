@@ -57,7 +57,7 @@ Estimated Agent Operations: 500,000+ monthly autonomous tasks`,
   };
 
   return (
-    <section id="about" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section id="about" className="pt-6 sm:pt-10 pb-20 sm:pb-28 bg-background relative overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/3 w-[550px] h-[550px] bg-primary/10 rounded-full blur-[160px] pointer-events-none" />
 
