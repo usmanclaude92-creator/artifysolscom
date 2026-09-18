@@ -19,6 +19,7 @@ import { AiProductItem } from '../types';
 
 interface FooterProps {
   onNavigateToBlog?: () => void;
+  onNavigateToSolutionsCatalog?: () => void;
   onNavigateToAiSolutions?: () => void;
   onNavigateToServices?: () => void;
   onNavigateToIndustries?: () => void;
@@ -32,6 +33,7 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({
   onNavigateToBlog,
+  onNavigateToSolutionsCatalog,
   onNavigateToAiSolutions,
   onNavigateToServices,
   onNavigateToIndustries,
@@ -49,20 +51,20 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer className="bg-[#030305] border-t border-white/[0.08] pt-20 pb-12 text-zinc-400 text-xs">
+    <footer className="bg-background border-t border-border pt-20 pb-12 text-subtle-text text-xs transition-colors duration-200">
       <div className="w-full px-[5%] max-w-7xl mx-auto">
         {/* Main 5-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-16 border-b border-white/[0.08]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-16 border-b border-border">
           {/* Brand Col */}
           <div className="lg:col-span-4 space-y-4">
             <div className="flex items-center gap-3">
               <div className="relative w-8 h-8 rounded-xl bg-gradient-to-br from-violet-600 via-indigo-600 to-sky-500 p-[1px]">
-                <div className="w-full h-full bg-[#09090c] rounded-[11px] flex items-center justify-center">
+                <div className="w-full h-full bg-background rounded-[11px] flex items-center justify-center">
                   <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
                 </div>
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-bold text-white font-display">
+                <span className="text-base font-bold text-foreground font-display">
                   ARTIFY
                 </span>
                 <span className="text-base font-bold bg-gradient-to-r from-[#7822ff] via-[#6432f8] to-[#4f46e5] bg-clip-text text-transparent font-display">
@@ -71,19 +73,19 @@ export const Footer: React.FC<FooterProps> = ({
               </div>
             </div>
 
-            <p className="text-sm font-semibold text-zinc-200">
+            <p className="text-sm font-semibold text-foreground">
               Adaptive Software. Intelligent Ecosystems. Built Around Your Business.
             </p>
 
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-subtle-text leading-relaxed">
               Artify Solutions engineers fully customized, adaptive enterprise software ecosystems enhanced by foundational intelligence, event-driven pipelines, and sovereign data architecture.
             </p>
 
             <div className="pt-2 flex flex-col gap-2 text-xs">
-              <span className="flex items-center gap-1.5 text-zinc-300 font-mono-code">
+              <span className="flex items-center gap-1.5 text-foreground font-mono-code">
                 <Globe className="w-3.5 h-3.5 text-violet-400" /> artifysols.com
               </span>
-              <span className="flex items-center gap-1.5 text-zinc-300 font-mono-code">
+              <span className="flex items-center gap-1.5 text-foreground font-mono-code">
                 <Mail className="w-3.5 h-3.5 text-violet-400" /> contact@artifysols.com
               </span>
             </div>
@@ -92,7 +94,7 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Solutions Column */}
           <div className="lg:col-span-2 space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-bold text-white uppercase font-mono-code tracking-wider">
+              <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
                 Our Solutions
               </h4>
             </div>
@@ -107,7 +109,7 @@ export const Footer: React.FC<FooterProps> = ({
                         onSelectProduct(p);
                       }
                     }}
-                    className="text-left text-zinc-400 hover:text-white transition-colors flex items-center justify-between w-full"
+                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center justify-between w-full"
                   >
                     <span>{p.name}</span>
                   </a>
@@ -115,16 +117,17 @@ export const Footer: React.FC<FooterProps> = ({
               ))}
               <li className="pt-1">
                 <a
-                  href="/ai-solutions"
+                  href="/solutions"
                   onClick={(e) => {
-                    if (onNavigateToAiSolutions) {
+                    const nav = onNavigateToSolutionsCatalog || onNavigateToAiSolutions;
+                    if (nav) {
                       e.preventDefault();
-                      onNavigateToAiSolutions();
+                      nav();
                     }
                   }}
-                  className="text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1"
+                  className="text-violet-500 hover:text-violet-400 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center gap-1"
                 >
-                  <span>Explore Solutions</span>
+                  <span>Solutions Catalog (24 Systems)</span>
                   <ArrowRight className="w-3 h-3" />
                 </a>
               </li>
@@ -133,7 +136,7 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Services & Verticals */}
           <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase font-mono-code tracking-wider">
+            <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               Navigation
             </h4>
             <ul className="space-y-2 text-xs">
@@ -146,7 +149,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToServices();
                     }
                   }}
-                  className="text-left hover:text-white transition-colors"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors"
                 >
                   Enterprise Services
                 </a>
@@ -160,7 +163,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToIndustries();
                     }
                   }}
-                  className="text-left hover:text-white transition-colors"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors"
                 >
                   Industries Matrix
                 </a>
@@ -174,7 +177,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToCaseStudies();
                     }
                   }}
-                  className="text-left hover:text-white transition-colors"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors"
                 >
                   Case Studies & Blueprints
                 </a>
@@ -188,7 +191,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToAbout();
                     }
                   }}
-                  className="text-left hover:text-white transition-colors"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors"
                 >
                   About & Security
                 </a>
@@ -202,10 +205,10 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToBlog();
                     }
                   }}
-                  className="text-left text-violet-400 hover:text-violet-300 font-semibold transition-colors flex items-center gap-1"
+                  className="text-left text-violet-500 hover:text-violet-400 dark:text-violet-400 dark:hover:text-violet-300 font-semibold transition-colors flex items-center gap-1"
                 >
                   <span>Blog & Research</span>
-                  <span className="text-[9px] bg-violet-500/20 text-violet-300 px-1 rounded font-mono-code">New</span>
+                  <span className="text-[9px] bg-violet-500/20 text-violet-400 dark:text-violet-300 px-1 rounded font-mono-code">New</span>
                 </a>
               </li>
               <li>
@@ -217,7 +220,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToContact();
                     }
                   }}
-                  className="text-left hover:text-white transition-colors"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors"
                 >
                   Talk to Artify Solutions
                 </a>
@@ -227,7 +230,7 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Client Portal Col */}
           <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase font-mono-code tracking-wider">
+            <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               Client Portal
             </h4>
             <ul className="space-y-2 text-xs">
@@ -236,7 +239,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={() => openPortal('overview')}
-                      className="text-left text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1.5 transition-colors"
+                      className="text-left text-violet-500 hover:text-violet-400 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center gap-1.5 transition-colors"
                     >
                       <LayoutDashboard className="w-3 h-3" />
                       <span>Portal Dashboard</span>
@@ -245,7 +248,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={() => openPortal('subscriptions')}
-                      className="text-left hover:text-white transition-colors"
+                      className="text-left text-subtle-text hover:text-foreground transition-colors"
                     >
                       Subscriptions
                     </button>
@@ -253,7 +256,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={() => openPortal('products')}
-                      className="text-left hover:text-white transition-colors"
+                      className="text-left text-subtle-text hover:text-foreground transition-colors"
                     >
                       Deployed Products
                     </button>
@@ -261,7 +264,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={() => openPortal('invoices')}
-                      className="text-left hover:text-white transition-colors"
+                      className="text-left text-subtle-text hover:text-foreground transition-colors"
                     >
                       Billing & Invoices
                     </button>
@@ -272,7 +275,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={() => openAuthModal('login')}
-                      className="text-left text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1.5 transition-colors"
+                      className="text-left text-violet-500 hover:text-violet-400 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center gap-1.5 transition-colors"
                     >
                       <Lock className="w-3 h-3" />
                       <span>Client Login</span>
@@ -281,7 +284,7 @@ export const Footer: React.FC<FooterProps> = ({
                   <li>
                     <button
                       onClick={() => openAuthModal('signup')}
-                      className="text-left hover:text-white transition-colors"
+                      className="text-left text-subtle-text hover:text-foreground transition-colors"
                     >
                       Register Organization
                     </button>
@@ -295,7 +298,7 @@ export const Footer: React.FC<FooterProps> = ({
                           if (el) el.scrollIntoView({ behavior: 'smooth' });
                         }, 100);
                       }}
-                      className="text-left hover:text-white transition-colors flex items-center gap-1.5"
+                      className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
                     >
                       <ShieldCheck className="w-3 h-3 text-emerald-400" />
                       <span>Partner Access Policy</span>
@@ -308,26 +311,26 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Architecture & Telemetry */}
           <div className="lg:col-span-2 space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase font-mono-code tracking-wider">
+            <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               System Telemetry
             </h4>
-            <div className="p-3 rounded-xl bg-[#0a0a0f] border border-white/[0.06] space-y-2 text-[11px] font-mono-code">
+            <div className="p-3 rounded-xl surface-card-subtle border border-border space-y-2 text-[11px] font-mono-code">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-zinc-300">Nodes: <strong>Active</strong></span>
+                <span className="text-foreground">Nodes: <strong>Active</strong></span>
               </div>
-              <div className="text-zinc-400">
-                SLA: <span className="text-emerald-400 font-bold">99.99%</span>
+              <div className="text-subtle-text">
+                SLA: <span className="text-emerald-500 dark:text-emerald-400 font-bold">99.99%</span>
               </div>
-              <div className="text-zinc-400">
-                Isolation: <span className="text-violet-400 font-bold">SOC2 VPC</span>
+              <div className="text-subtle-text">
+                Isolation: <span className="text-violet-500 dark:text-violet-400 font-bold">SOC2 VPC</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar with Legal Links */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-400">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-subtle-text">
           <div className="flex items-center gap-3 flex-wrap">
             <span>© {new Date().getFullYear()} Artify Solutions. All rights reserved.</span>
             <span>•</span>
@@ -339,7 +342,7 @@ export const Footer: React.FC<FooterProps> = ({
                   onNavigateToLegal('privacy');
                 }
               }}
-              className="hover:text-white transition-colors underline-offset-2 hover:underline"
+              className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
             >
               Privacy Policy
             </a>
@@ -352,7 +355,7 @@ export const Footer: React.FC<FooterProps> = ({
                   onNavigateToLegal('terms');
                 }
               }}
-              className="hover:text-white transition-colors underline-offset-2 hover:underline"
+              className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
             >
               Terms of Service
             </a>
@@ -369,7 +372,7 @@ export const Footer: React.FC<FooterProps> = ({
           <button
             onClick={scrollToTop}
             id="footer-scroll-top-btn"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#111118] border border-white/[0.08] hover:text-white hover:border-white/[0.2] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg surface-card border border-border text-foreground hover:bg-surface transition-colors"
           >
             <span>Back to Top</span>
             <ArrowUp className="w-3.5 h-3.5" />

@@ -218,6 +218,108 @@ interface AdaptiveEcosystemProps {
   onNavigateToContact?: () => void;
 }
 
+export const CATEGORY_THEME_MAP: Record<
+  EcosystemModule['category'],
+  {
+    label: string;
+    iconStroke: string;
+    textColor: string;
+    bgSubtle: string;
+    borderSubtle: string;
+    activeGradient: string;
+    activeText: string;
+    tagClass: string;
+  }
+> = {
+  core: {
+    label: 'Core Backbone',
+    iconStroke: 'var(--eco-icon-core)',
+    textColor: 'text-emerald-600 dark:text-emerald-400',
+    bgSubtle: 'bg-emerald-500/10 dark:bg-emerald-500/15',
+    borderSubtle: 'border-emerald-500/25 dark:border-emerald-500/30',
+    activeGradient: 'from-emerald-600 to-teal-600 text-white',
+    activeText: 'text-white',
+    tagClass: 'text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 border-emerald-500/25',
+  },
+  operations: {
+    label: 'Operations & Supply',
+    iconStroke: 'var(--eco-icon-ops)',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
+    bgSubtle: 'bg-indigo-500/10 dark:bg-indigo-500/15',
+    borderSubtle: 'border-indigo-500/25 dark:border-indigo-500/30',
+    activeGradient: 'from-indigo-600 to-blue-600 text-white',
+    activeText: 'text-white',
+    tagClass: 'text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 border-indigo-500/25',
+  },
+  intelligence: {
+    label: 'AI & Intelligence',
+    iconStroke: 'var(--eco-icon-intel)',
+    textColor: 'text-violet-600 dark:text-violet-400',
+    bgSubtle: 'bg-violet-500/10 dark:bg-violet-500/15',
+    borderSubtle: 'border-violet-500/25 dark:border-violet-500/30',
+    activeGradient: 'from-violet-600 to-purple-600 text-white',
+    activeText: 'text-white',
+    tagClass: 'text-violet-700 dark:text-violet-300 bg-violet-500/10 border-violet-500/25',
+  },
+  experience: {
+    label: 'Digital Experience',
+    iconStroke: 'var(--eco-icon-exp)',
+    textColor: 'text-cyan-600 dark:text-cyan-400',
+    bgSubtle: 'bg-cyan-500/10 dark:bg-cyan-500/15',
+    borderSubtle: 'border-cyan-500/25 dark:border-cyan-500/30',
+    activeGradient: 'from-cyan-600 to-sky-600 text-white',
+    activeText: 'text-white',
+    tagClass: 'text-cyan-700 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/25',
+  },
+};
+
+/**
+ * ThemeAwareEcosystemIcon
+ * Renders Lucide SVG icons with dynamic SVG stroke and fill styling that smoothly adjusts
+ * between Light mode (high-contrast WCAG AAA compliant tone) and Dark mode (luminous glowing tone).
+ */
+export const ThemeAwareEcosystemIcon: React.FC<{
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  category: EcosystemModule['category'];
+  isSelected?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}> = ({ icon: Icon, category, isSelected = false, size = 'sm', className = '' }) => {
+  const theme = CATEGORY_THEME_MAP[category] || CATEGORY_THEME_MAP.core;
+
+  const sizeClasses = {
+    sm: 'w-7 h-7 rounded-lg',
+    md: 'w-9 h-9 rounded-xl',
+    lg: 'w-12 h-12 rounded-2xl',
+  };
+
+  const iconSizes = {
+    sm: 'w-3.5 h-3.5',
+    md: 'w-4 h-4',
+    lg: 'w-6 h-6',
+  };
+
+  return (
+    <div
+      className={`relative flex items-center justify-center shrink-0 transition-all duration-300 ${sizeClasses[size]} ${
+        isSelected
+          ? `bg-gradient-to-br ${theme.activeGradient} shadow-md shadow-violet-500/25`
+          : `${theme.bgSubtle} border ${theme.borderSubtle} ${theme.textColor} group-hover:scale-105`
+      } ${className}`}
+    >
+      <Icon
+        className={`${iconSizes[size]} eco-svg-icon transition-transform duration-300 ${
+          isSelected ? 'text-white scale-110' : 'group-hover:scale-110'
+        }`}
+        style={{
+          stroke: isSelected ? '#FFFFFF' : theme.iconStroke,
+          filter: isSelected ? 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))' : undefined,
+        }}
+      />
+    </div>
+  );
+};
+
 export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
   onOpenSolutionBuilder,
   onNavigateToContact,
@@ -226,6 +328,7 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
   const [activeFilter, setActiveFilter] = useState<'all' | 'core' | 'operations' | 'intelligence' | 'experience'>('all');
 
   const activeModule = ECOSYSTEM_MODULES.find((m) => m.id === activeModuleId) || ECOSYSTEM_MODULES[0];
+  const activeCategoryTheme = CATEGORY_THEME_MAP[activeModule.category] || CATEGORY_THEME_MAP.core;
 
   const filteredModules = ECOSYSTEM_MODULES.filter((m) => {
     if (activeFilter === 'all') return true;
@@ -233,40 +336,51 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
   });
 
   return (
-    <section id="ecosystem" className="py-28 bg-[#040407] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="ecosystem" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-violet-600/5 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
+
+      {/* Embedded SVG Defs for Theme-Aware SVG Filter Gradients */}
+      <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+        <defs>
+          <linearGradient id="ecoMeshGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--eco-icon-intel)" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="var(--eco-icon-ops)" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--eco-icon-exp)" stopOpacity="0.4" />
+          </linearGradient>
+        </defs>
+      </svg>
 
       <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-950/40 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-4">
-              <Network className="w-3.5 h-3.5 text-violet-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+              <Network className="w-3.5 h-3.5 text-primary eco-svg-icon" style={{ stroke: 'var(--color-primary)' }} />
               <span>THE ADAPTIVE ENTERPRISE ECOSYSTEM</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight font-display mb-4">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-4">
               Not Isolated Software.{' '}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-indigo-200 to-sky-400">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500">
                 An Interconnected Living Ecosystem.
               </span>
             </h2>
-            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
+            <p className="text-base sm:text-lg text-foreground-muted leading-relaxed font-normal">
               Every business area operates as a specialized node in a unified intelligence mesh. Modules function independently while sharing live data, context, and autonomous coordination without integration friction.
             </p>
           </div>
 
-          {/* Category Filter Tabs */}
-          <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-xl bg-white/[0.03] border border-white/[0.08] self-start md:self-end">
+          {/* Category Filter Tabs with theme-aware active highlights */}
+          <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-xl surface-card-subtle border border-border self-start md:self-end">
             {(['all', 'core', 'operations', 'intelligence', 'experience'] as const).map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveFilter(cat)}
                 className={`text-xs font-semibold capitalize px-3 py-1.5 rounded-lg transition-all ${
                   activeFilter === cat
-                    ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
-                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'btn-theme-primary shadow-md shadow-primary/25'
+                    : 'text-foreground-muted hover:text-foreground hover:bg-secondary'
                 }`}
               >
                 {cat === 'all' ? 'All 16 Nodes' : cat}
@@ -281,7 +395,6 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
           {/* Left Column: 16 Module Nodes Bento Selector */}
           <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filteredModules.map((mod) => {
-              const Icon = mod.icon;
               const isSelected = mod.id === activeModule.id;
 
               return (
@@ -291,30 +404,28 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
                   id={`eco-node-${mod.id}`}
                   className={`text-left p-4 rounded-xl border transition-all duration-200 flex flex-col justify-between min-h-[110px] group ${
                     isSelected
-                      ? 'bg-gradient-to-br from-violet-950/60 to-[#0e0e18] border-violet-500/70 shadow-lg shadow-violet-950/50 scale-[1.02]'
-                      : 'bg-[#09090f]/80 border-white/[0.07] hover:border-violet-500/30 hover:bg-[#11111a]'
+                      ? 'surface-card border-2 border-primary shadow-lg scale-[1.02]'
+                      : 'surface-card-subtle border-card-border hover:border-primary/40'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full mb-2">
-                    <div
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-                        isSelected
-                          ? 'bg-violet-600 text-white'
-                          : 'bg-white/[0.05] text-zinc-400 group-hover:text-violet-300 group-hover:bg-violet-950/30'
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </div>
-                    <span className="text-[10px] font-mono-code font-semibold px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-400">
+                    {/* Theme-Aware SVG Ecosystem Icon */}
+                    <ThemeAwareEcosystemIcon
+                      icon={mod.icon}
+                      category={mod.category}
+                      isSelected={isSelected}
+                      size="sm"
+                    />
+                    <span className="text-[10px] font-mono-code font-semibold px-1.5 py-0.5 rounded surface-card border border-border text-foreground-muted">
                       {mod.status}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xs font-bold text-white group-hover:text-violet-200 line-clamp-1 leading-snug">
+                    <h3 className="text-xs font-bold text-foreground group-hover:text-primary line-clamp-1 leading-snug">
                       {mod.name}
                     </h3>
-                    <p className="text-[11px] text-zinc-400 font-mono-code capitalize mt-0.5">
+                    <p className="text-[11px] text-foreground-muted font-mono-code capitalize mt-0.5">
                       {mod.category}
                     </p>
                   </div>
@@ -324,42 +435,50 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
           </div>
 
           {/* Right Column: Deep-Dive Active Node Telemetry Card */}
-          <div className="lg:col-span-5 sticky top-28 p-7 rounded-2xl bg-gradient-to-b from-[#0d0d16] to-[#08080d] border border-violet-500/30 shadow-2xl relative overflow-hidden">
-            {/* Ambient accent top bar */}
+          <div className="lg:col-span-5 sticky top-28 p-7 rounded-2xl surface-card border border-card-border shadow-2xl relative overflow-hidden">
+            {/* Ambient accent top bar with theme-aware gradient */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-indigo-400 to-sky-400" />
 
-            <div className="flex items-center justify-between pb-5 mb-5 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between pb-5 mb-5 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/40 text-violet-300 flex items-center justify-center">
-                  <activeModule.icon className="w-5 h-5" />
-                </div>
+                {/* Large Theme-Aware SVG Icon */}
+                <ThemeAwareEcosystemIcon
+                  icon={activeModule.icon}
+                  category={activeModule.category}
+                  isSelected={false}
+                  size="lg"
+                  className="shadow-sm"
+                />
                 <div>
-                  <span className="text-[10px] uppercase font-mono-code font-bold tracking-wider text-violet-400">
+                  <span className="text-[10px] uppercase font-mono-code font-bold tracking-wider text-primary">
                     ECOSYSTEM NODE
                   </span>
-                  <h3 className="text-xl font-bold text-white font-display">
+                  <h3 className="text-xl font-bold text-foreground font-display">
                     {activeModule.name}
                   </h3>
                 </div>
               </div>
-              <span className="text-xs font-mono-code px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+              <span className="text-xs font-mono-code px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
                 ● {activeModule.status}
               </span>
             </div>
 
-            <p className="text-sm text-zinc-300 leading-relaxed mb-6 font-normal">
+            <p className="text-sm text-foreground-secondary leading-relaxed mb-6 font-normal">
               {activeModule.summary}
             </p>
 
             {/* Core Capabilities */}
             <div className="mb-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono-code block mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-foreground-muted font-mono-code block mb-3">
                 Core Capabilities & Architecture:
               </span>
               <div className="space-y-2">
                 {activeModule.capabilities.map((cap, i) => (
-                  <div key={i} className="flex items-start gap-2.5 text-xs text-zinc-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-violet-400 shrink-0 mt-0.5" />
+                  <div key={i} className="flex items-start gap-2.5 text-xs text-foreground-secondary">
+                    <CheckCircle2
+                      className="w-3.5 h-3.5 shrink-0 mt-0.5 eco-svg-icon"
+                      style={{ stroke: activeCategoryTheme.iconStroke }}
+                    />
                     <span>{cap}</span>
                   </div>
                 ))}
@@ -367,26 +486,26 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
             </div>
 
             {/* Autonomous Action */}
-            <div className="p-3.5 rounded-xl bg-violet-950/30 border border-violet-700/30 mb-6">
-              <div className="flex items-center gap-1.5 text-violet-300 text-xs font-bold mb-1 font-mono-code uppercase">
-                <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+            <div className="p-3.5 rounded-xl surface-container-accent border border-primary/25 mb-6">
+              <div className="flex items-center gap-1.5 text-primary text-xs font-bold mb-1 font-mono-code uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-primary eco-svg-icon" style={{ stroke: 'var(--color-primary)' }} />
                 <span>Autonomous Layer Action:</span>
               </div>
-              <p className="text-xs text-zinc-300 leading-relaxed font-medium">
+              <p className="text-xs text-foreground-secondary leading-relaxed font-medium">
                 {activeModule.autonomousActions}
               </p>
             </div>
 
             {/* Mesh Interconnects */}
-            <div className="mb-6 pb-6 border-b border-white/[0.08]">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono-code block mb-2">
+            <div className="mb-6 pb-6 border-b border-border">
+              <span className="text-xs font-bold uppercase tracking-wider text-foreground-muted font-mono-code block mb-2">
                 Real-Time Data Interconnects:
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {activeModule.integratesWith.map((item, idx) => (
                   <span
                     key={idx}
-                    className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.08] text-zinc-300 font-medium"
+                    className="text-[11px] px-2.5 py-1 rounded-lg surface-card-subtle border border-border text-foreground-secondary font-medium"
                   >
                     ↔ {item}
                   </span>
@@ -400,7 +519,7 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
                 <button
                   onClick={onOpenSolutionBuilder}
                   id="eco-configure-btn"
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-violet-600/30"
+                  className="flex-1 py-2.5 px-4 rounded-xl btn-theme-primary text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/25"
                 >
                   <span>Configure In Wizard</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -410,7 +529,7 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
                 <button
                   onClick={onNavigateToContact}
                   id="eco-consult-btn"
-                  className="py-2.5 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-zinc-200 text-xs font-semibold border border-white/[0.1] transition-colors"
+                  className="py-2.5 px-4 rounded-xl btn-theme-secondary text-xs font-semibold transition-colors"
                 >
                   Consult Engineers
                 </button>

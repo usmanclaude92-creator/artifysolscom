@@ -13,6 +13,9 @@
   --color-secondary-subtle: var(--color-secondary-subtle);
 
   --color-background: var(--color-background);
+  --color-background-subtle: var(--color-background-subtle);
+  --color-background-deep: var(--color-background-deep);
+
   --color-surface: var(--color-surface);
   --color-surface-elevated: var(--color-surface-elevated);
   --color-surface-subtle: var(--color-surface-subtle);
@@ -30,18 +33,46 @@
 
   --color-card: var(--color-card);
   --color-card-hover: var(--color-card-hover);
+  --color-card-active: var(--color-card-active);
+  --color-card-subtle: var(--color-card-subtle);
+  --color-card-elevated: var(--color-card-elevated);
   --color-card-border: var(--color-card-border);
+  --color-card-border-subtle: var(--color-card-border-subtle);
+  --color-card-border-hover: var(--color-card-border-hover);
+
+  --color-container-sunken: var(--color-container-sunken);
+  --color-container-sunken-border: var(--color-container-sunken-border);
+  --color-container-interactive: var(--color-container-interactive);
+  --color-container-interactive-hover: var(--color-container-interactive-hover);
+  --color-container-accent: var(--color-container-accent);
+  --color-container-accent-border: var(--color-container-accent-border);
 
   --color-input: var(--color-input);
   --color-input-border: var(--color-input-border);
   --color-input-focus: var(--color-input-focus);
   --color-input-text: var(--color-input-text);
   --color-input-placeholder: var(--color-input-placeholder);
+
+  --color-eco-core: var(--eco-icon-core);
+  --color-eco-core-bg: var(--eco-icon-core-bg);
+  --color-eco-core-border: var(--eco-icon-core-border);
+  --color-eco-ops: var(--eco-icon-ops);
+  --color-eco-ops-bg: var(--eco-icon-ops-bg);
+  --color-eco-ops-border: var(--eco-icon-ops-border);
+  --color-eco-intel: var(--eco-icon-intel);
+  --color-eco-intel-bg: var(--eco-icon-intel-bg);
+  --color-eco-intel-border: var(--eco-icon-intel-border);
+  --color-eco-exp: var(--eco-icon-exp);
+  --color-eco-exp-bg: var(--eco-icon-exp-bg);
+  --color-eco-exp-border: var(--eco-icon-exp-border);
 }
 
 :root {
   /* Default: Light Theme - WCAG AAA & AA Compliant Palette */
   --color-background: #F8FAFC;
+  --color-background-subtle: #F1F5F9;
+  --color-background-deep: #E2E8F0;
+
   --color-surface: #FFFFFF;
   --color-surface-elevated: #FFFFFF;
   --color-surface-subtle: #F1F5F9;
@@ -69,9 +100,22 @@
   --color-border-subtle: #E2E8F0;
   --color-border-strong: #94A3B8;
 
+  /* Card & Container Unified Theme Map - Light */
   --color-card: #FFFFFF;
   --color-card-hover: #F8FAFC;
+  --color-card-active: #F1F5F9;
+  --color-card-subtle: #F8FAFC;
+  --color-card-elevated: #FFFFFF;
   --color-card-border: #E2E8F0;
+  --color-card-border-subtle: #F1F5F9;
+  --color-card-border-hover: #CBD5E1;
+
+  --color-container-sunken: #F1F5F9;
+  --color-container-sunken-border: #E2E8F0;
+  --color-container-interactive: #FFFFFF;
+  --color-container-interactive-hover: #F8FAFC;
+  --color-container-accent: rgba(124, 58, 237, 0.05);
+  --color-container-accent-border: rgba(124, 58, 237, 0.18);
 
   --color-input: #FFFFFF;
   --color-input-border: #CBD5E1;
@@ -82,12 +126,31 @@
   --color-modal-bg: #FFFFFF;
   --color-modal-border: #E2E8F0;
   --color-overlay: rgba(15, 23, 42, 0.45);
+
+  /* Theme-Aware Ecosystem SVG Coloring - Light Mode */
+  --eco-icon-core: #059669;
+  --eco-icon-core-bg: #ECFDF5;
+  --eco-icon-core-border: #A7F3D0;
+  --eco-icon-ops: #4F46E5;
+  --eco-icon-ops-bg: #EEF2FF;
+  --eco-icon-ops-border: #C7D2FE;
+  --eco-icon-intel: #7C3AED;
+  --eco-icon-intel-bg: #F5F3FF;
+  --eco-icon-intel-border: #DDD6FE;
+  --eco-icon-exp: #0891B2;
+  --eco-icon-exp-bg: #ECFEFF;
+  --eco-icon-exp-border: #A5F3FC;
+  --eco-mesh-line: rgba(124, 58, 237, 0.22);
+  --eco-mesh-glow: rgba(124, 58, 237, 0.12);
 }
 
 .theme-light,
 html.theme-light,
 body.theme-light {
   --color-background: #F8FAFC;
+  --color-background-subtle: #F1F5F9;
+  --color-background-deep: #E2E8F0;
+
   --color-surface: #FFFFFF;
   --color-surface-elevated: #FFFFFF;
   --color-surface-subtle: #F1F5F9;
@@ -115,9 +178,22 @@ body.theme-light {
   --color-border-subtle: #E2E8F0;
   --color-border-strong: #94A3B8;
 
+  /* Card & Container Unified Theme Map - Light */
   --color-card: #FFFFFF;
   --color-card-hover: #F8FAFC;
+  --color-card-active: #F1F5F9;
+  --color-card-subtle: #F8FAFC;
+  --color-card-elevated: #FFFFFF;
   --color-card-border: #E2E8F0;
+  --color-card-border-subtle: #F1F5F9;
+  --color-card-border-hover: #CBD5E1;
+
+  --color-container-sunken: #F1F5F9;
+  --color-container-sunken-border: #E2E8F0;
+  --color-container-interactive: #FFFFFF;
+  --color-container-interactive-hover: #F8FAFC;
+  --color-container-accent: rgba(124, 58, 237, 0.05);
+  --color-container-accent-border: rgba(124, 58, 237, 0.18);
 
   --color-input: #FFFFFF;
   --color-input-border: #CBD5E1;
@@ -128,6 +204,21 @@ body.theme-light {
   --color-modal-bg: #FFFFFF;
   --color-modal-border: #E2E8F0;
   --color-overlay: rgba(15, 23, 42, 0.45);
+
+  --eco-icon-core: #059669;
+  --eco-icon-core-bg: #ECFDF5;
+  --eco-icon-core-border: #A7F3D0;
+  --eco-icon-ops: #4F46E5;
+  --eco-icon-ops-bg: #EEF2FF;
+  --eco-icon-ops-border: #C7D2FE;
+  --eco-icon-intel: #7C3AED;
+  --eco-icon-intel-bg: #F5F3FF;
+  --eco-icon-intel-border: #DDD6FE;
+  --eco-icon-exp: #0891B2;
+  --eco-icon-exp-bg: #ECFEFF;
+  --eco-icon-exp-border: #A5F3FC;
+  --eco-mesh-line: rgba(124, 58, 237, 0.22);
+  --eco-mesh-glow: rgba(124, 58, 237, 0.12);
 }
 
 .theme-dark,
@@ -135,11 +226,14 @@ html.theme-dark,
 body.theme-dark {
   /* Dark Theme - High-Contrast WCAG AAA & AA Compliant Palette */
   --color-background: #07070b;
+  --color-background-subtle: #0a0a10;
+  --color-background-deep: #040407;
+
   --color-surface: #0e0e16;
   --color-surface-elevated: #13131e;
   --color-surface-subtle: rgba(255, 255, 255, 0.04);
   --color-surface-hover: rgba(255, 255, 255, 0.08);
-  --color-surface-muted: rgba(255, 255, 255, 0.06);
+  --color-surface-muted: rgba(255, 255, 255, 0.03);
 
   --color-foreground: #FFFFFF; /* 20.2:1 contrast on #07070b */
   --color-foreground-secondary: #F1F5F9; /* 17.8:1 contrast */
@@ -162,9 +256,22 @@ body.theme-dark {
   --color-border-subtle: rgba(255, 255, 255, 0.1);
   --color-border-strong: rgba(255, 255, 255, 0.22);
 
+  /* Card & Container Unified Theme Map - Dark */
   --color-card: #0d0d16;
-  --color-card-hover: #131320;
+  --color-card-hover: #141422;
+  --color-card-active: #18182a;
+  --color-card-subtle: #090910;
+  --color-card-elevated: #12121c;
   --color-card-border: rgba(255, 255, 255, 0.12);
+  --color-card-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-card-border-hover: rgba(255, 255, 255, 0.22);
+
+  --color-container-sunken: #06060a;
+  --color-container-sunken-border: rgba(255, 255, 255, 0.08);
+  --color-container-interactive: #0d0d16;
+  --color-container-interactive-hover: #161624;
+  --color-container-accent: rgba(139, 92, 246, 0.12);
+  --color-container-accent-border: rgba(139, 92, 246, 0.32);
 
   --color-input: #0e0e16;
   --color-input-border: rgba(255, 255, 255, 0.18);
@@ -175,6 +282,22 @@ body.theme-dark {
   --color-modal-bg: #0d0d16;
   --color-modal-border: rgba(255, 255, 255, 0.16);
   --color-overlay: rgba(0, 0, 0, 0.8);
+
+  /* Theme-Aware Ecosystem SVG Coloring - Dark Mode */
+  --eco-icon-core: #34D399;
+  --eco-icon-core-bg: rgba(16, 185, 129, 0.14);
+  --eco-icon-core-border: rgba(52, 211, 153, 0.3);
+  --eco-icon-ops: #818CF8;
+  --eco-icon-ops-bg: rgba(99, 102, 241, 0.14);
+  --eco-icon-ops-border: rgba(129, 140, 248, 0.3);
+  --eco-icon-intel: #C084FC;
+  --eco-icon-intel-bg: rgba(168, 85, 247, 0.15);
+  --eco-icon-intel-border: rgba(192, 132, 252, 0.35);
+  --eco-icon-exp: #38BDF8;
+  --eco-icon-exp-bg: rgba(14, 165, 233, 0.14);
+  --eco-icon-exp-border: rgba(56, 189, 248, 0.3);
+  --eco-mesh-line: rgba(139, 92, 246, 0.35);
+  --eco-mesh-glow: rgba(139, 92, 246, 0.25);
 }
 
 /* ==========================================================================
@@ -209,16 +332,34 @@ body.theme-dark {
   transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
+.surface-card-hover {
+  background-color: var(--color-card-hover) !important;
+}
+
 .surface-card-subtle,
 .card-theme-subtle {
-  background-color: var(--color-surface-subtle) !important;
-  border-color: var(--color-border-subtle) !important;
+  background-color: var(--color-card-subtle) !important;
+  border-color: var(--color-card-border-subtle) !important;
   color: var(--color-foreground-secondary) !important;
+}
+
+.surface-card-elevated,
+.card-theme-elevated {
+  background-color: var(--color-card-elevated) !important;
+  border-color: var(--color-card-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.surface-card-active,
+.card-theme-active {
+  background-color: var(--color-card-active) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-foreground) !important;
 }
 
 .surface-card-interactive,
 .card-theme-interactive {
-  background-color: var(--color-card) !important;
+  background-color: var(--color-container-interactive) !important;
   border-color: var(--color-card-border) !important;
   color: var(--color-foreground) !important;
   cursor: pointer;
@@ -227,9 +368,34 @@ body.theme-dark {
 
 .surface-card-interactive:hover,
 .card-theme-interactive:hover {
-  background-color: var(--color-card-hover) !important;
-  border-color: var(--color-border-strong) !important;
+  background-color: var(--color-container-interactive-hover) !important;
+  border-color: var(--color-card-border-hover) !important;
   transform: translateY(-2px);
+}
+
+.surface-container-sunken,
+.card-theme-sunken {
+  background-color: var(--color-container-sunken) !important;
+  border-color: var(--color-container-sunken-border) !important;
+  color: var(--color-foreground-secondary) !important;
+}
+
+.surface-container-accent {
+  background-color: var(--color-container-accent) !important;
+  border-color: var(--color-container-accent-border) !important;
+}
+
+.surface-section-alt {
+  background-color: var(--color-background-subtle) !important;
+}
+
+.surface-section-deep {
+  background-color: var(--color-background-deep) !important;
+}
+
+/* Theme-Aware Ecosystem SVG Helpers */
+.eco-svg-icon {
+  transition: stroke 0.25s ease, fill 0.25s ease, filter 0.25s ease;
 }
 
 .surface-modal,

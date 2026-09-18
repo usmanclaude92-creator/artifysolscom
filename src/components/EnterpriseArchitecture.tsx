@@ -73,25 +73,25 @@ export const EnterpriseArchitecture: React.FC<{ onNavigateToContact?: () => void
   const CurrentIcon = current.icon;
 
   return (
-    <section id="platform" data-section="architecture" className="py-28 bg-[#040407] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="platform" data-section="architecture" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
-      <div className="absolute top-1/2 left-1/3 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/3 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
         <div className="max-w-4xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-950/40 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Server className="w-3.5 h-3.5 text-violet-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+            <Server className="w-3.5 h-3.5 text-primary" />
             <span>ENTERPRISE ARCHITECTURE BLUEPRINT</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight font-display mb-4">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-4">
             Engineered for Scale, Security & Resilience.{' '}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-sky-300 to-indigo-300">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500">
               A 5-Layer Production-Grade Foundation.
             </span>
           </h2>
-          <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-foreground-muted leading-relaxed font-normal">
             Every Artify deployment is structured across five decoupled, fault-tolerant architectural layers. This guarantees sub-second response times, complete data sovereignty, and limitless operational scalability.
           </p>
         </div>
@@ -110,67 +110,67 @@ export const EnterpriseArchitecture: React.FC<{ onNavigateToContact?: () => void
                   onClick={() => setActiveLayer(idx)}
                   className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between group ${
                     isSelected
-                      ? 'bg-gradient-to-r from-violet-950/70 to-[#0e0e18] border-violet-500/70 shadow-lg shadow-violet-950/40 scale-[1.02]'
-                      : 'bg-[#09090f] border-white/[0.08] hover:border-violet-500/30'
+                      ? 'surface-card border-2 border-primary shadow-lg shadow-primary/20 scale-[1.02]'
+                      : 'surface-card-subtle border-card-border hover:border-primary/30'
                   }`}
                 >
                   <div className="flex items-center gap-3.5">
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                         isSelected
-                          ? 'bg-violet-600 text-white'
-                          : 'bg-white/[0.05] text-zinc-400 group-hover:text-violet-300'
+                          ? 'bg-primary text-white'
+                          : 'surface-card text-foreground-muted group-hover:text-primary'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-mono-code font-bold uppercase text-violet-400 block">
+                      <span className="text-[10px] font-mono-code font-bold uppercase text-primary block">
                         {layer.level}
                       </span>
-                      <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-violet-200 leading-tight">
+                      <h3 className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary leading-tight">
                         {layer.name}
                       </h3>
                     </div>
                   </div>
 
-                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-violet-400 animate-pulse' : 'bg-transparent'}`} />
+                  <span className={`w-2 h-2 rounded-full ${isSelected ? 'bg-primary animate-pulse' : 'bg-transparent'}`} />
                 </button>
               );
             })}
           </div>
 
           {/* Right Column: Layer Deep-Dive Blueprint Card */}
-          <div className="lg:col-span-7 p-8 rounded-3xl bg-gradient-to-b from-[#0d0d16] to-[#07070b] border border-violet-500/30 shadow-2xl relative overflow-hidden">
-            <div className="flex items-center justify-between pb-5 mb-5 border-b border-white/[0.08]">
+          <div className="lg:col-span-7 p-8 rounded-3xl surface-card border border-primary/30 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center justify-between pb-5 mb-5 border-b border-border">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-violet-600/20 text-violet-300 flex items-center justify-center border border-violet-500/30">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/25">
                   <CurrentIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-mono-code font-bold uppercase tracking-wider text-violet-400">
+                  <span className="text-[10px] font-mono-code font-bold uppercase tracking-wider text-primary">
                     {current.level} DEEP-DIVE
                   </span>
-                  <h3 className="text-xl font-bold text-white font-display">
+                  <h3 className="text-xl font-bold text-foreground font-display">
                     {current.name}
                   </h3>
                 </div>
               </div>
             </div>
 
-            <p className="text-sm text-zinc-300 leading-relaxed mb-6">
+            <p className="text-sm text-foreground-secondary leading-relaxed mb-6">
               {current.description}
             </p>
 
             {/* Architecture Components */}
             <div className="mb-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono-code block mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-foreground-muted font-mono-code block mb-3">
                 Architectural Components:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {current.components.map((comp, i) => (
-                  <div key={i} className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2 text-xs text-zinc-200">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                  <div key={i} className="p-2.5 rounded-xl surface-container-sunken border border-container-sunken-border flex items-center gap-2 text-xs text-foreground-secondary">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
                     <span>{comp}</span>
                   </div>
                 ))}
@@ -178,13 +178,13 @@ export const EnterpriseArchitecture: React.FC<{ onNavigateToContact?: () => void
             </div>
 
             {/* Security Guardrail */}
-            <div className="p-4 rounded-xl bg-violet-950/30 border border-violet-700/30 flex items-start gap-3">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl surface-container-accent border border-primary/25 flex items-start gap-3">
+              <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <span className="text-[11px] uppercase font-mono-code text-emerald-400 font-bold block mb-0.5">
+                <span className="text-[11px] uppercase font-mono-code text-emerald-600 dark:text-emerald-400 font-bold block mb-0.5">
                   Security & Isolation Standard:
                 </span>
-                <p className="text-xs text-zinc-300 leading-relaxed font-normal">
+                <p className="text-xs text-foreground-secondary leading-relaxed font-normal">
                   {current.security}
                 </p>
               </div>

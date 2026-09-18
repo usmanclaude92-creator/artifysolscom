@@ -83,6 +83,14 @@ export function getSitemapUrlList(
       },
     },
     {
+      loc: `${baseUrl}/solutions`,
+      lastmod: currentDate,
+      changefreq: 'daily',
+      priority: 0.98,
+      type: 'core',
+      title: 'Enterprise Solutions Catalog | 24 Modular Systems & Architectures',
+    },
+    {
       loc: `${baseUrl}/ai-solutions`,
       lastmod: currentDate,
       changefreq: 'daily',

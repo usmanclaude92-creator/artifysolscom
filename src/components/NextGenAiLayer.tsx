@@ -166,7 +166,7 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
   const activeCap = capabilities[activeCapabilityIndex];
 
   return (
-    <section id="intelligence" data-section="ai-layer" className="py-28 bg-[#060609] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="intelligence" data-section="ai-layer" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-sky-600/5 rounded-full blur-[160px] pointer-events-none" />
 
@@ -174,17 +174,17 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
         
         {/* Header */}
         <div className="max-w-4xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-950/40 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Cpu className="w-3.5 h-3.5 text-violet-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+            <Cpu className="w-3.5 h-3.5 text-primary" />
             <span>ENTERPRISE INTELLIGENCE LAYER</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight font-display mb-4">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-4">
             AI is Not a Chatbot.{' '}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-sky-200 to-indigo-300">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-sky-400 to-indigo-500">
               It is an Autonomous Intelligence Fabric.
             </span>
           </h2>
-          <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-foreground-muted leading-relaxed font-normal">
             We don’t bolt gimmicky widgets onto old software. Artify AI operates as an intelligent nervous system woven across your entire organization—understanding data, detecting risks, automating execution, and elevating human decisions.
           </p>
         </div>
@@ -192,11 +192,11 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
         {/* 6-Stage Core Architecture Loop */}
         <div className="mb-20">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-xs font-bold uppercase tracking-wider text-violet-400 font-mono-code flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+            <span className="text-xs font-bold uppercase tracking-wider text-primary font-mono-code flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               THE ADAPTIVE DECISION & EXECUTION LIFECYCLE
             </span>
-            <span className="text-xs text-zinc-400 font-mono-code hidden sm:inline-block">
+            <span className="text-xs text-foreground-muted font-mono-code hidden sm:inline-block">
               Human-Governed • Deterministic Action
             </span>
           </div>
@@ -209,35 +209,35 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
                   key={i}
                   className={`p-5 rounded-2xl border transition-all relative flex flex-col justify-between ${
                     st.isHumanGate
-                      ? 'bg-gradient-to-b from-emerald-950/40 to-[#09110d] border-emerald-500/50 shadow-lg shadow-emerald-950/30'
-                      : 'bg-[#0a0a10] border-white/[0.08] hover:border-violet-500/30'
+                      ? 'bg-emerald-950/20 border-emerald-500/50 shadow-lg'
+                      : 'surface-card border-card-border hover:border-primary/30'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <span className={`text-[10px] font-mono-code font-bold px-2 py-0.5 rounded ${
-                        st.isHumanGate ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/[0.05] text-zinc-400'
+                        st.isHumanGate ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300' : 'surface-card-subtle text-foreground-muted'
                       }`}>
                         STEP {st.stage}
                       </span>
-                      <Icon className={`w-4 h-4 ${st.isHumanGate ? 'text-emerald-400' : 'text-violet-400'}`} />
+                      <Icon className={`w-4 h-4 ${st.isHumanGate ? 'text-emerald-500 dark:text-emerald-400' : 'text-primary'}`} />
                     </div>
-                    <h3 className="text-sm font-bold text-white font-display mb-1">
+                    <h3 className="text-sm font-bold text-foreground font-display mb-1">
                       {st.label}
                     </h3>
                     <span className={`text-[10px] font-mono-code block mb-2 ${
-                      st.isHumanGate ? 'text-emerald-300 font-semibold' : 'text-violet-400/90'
+                      st.isHumanGate ? 'text-emerald-600 dark:text-emerald-300 font-semibold' : 'text-primary/90'
                     }`}>
                       {st.role}
                     </span>
-                    <p className="text-xs text-zinc-400 leading-relaxed">
+                    <p className="text-xs text-foreground-muted leading-relaxed">
                       {st.description}
                     </p>
                   </div>
 
                   {st.isHumanGate && (
-                    <div className="mt-4 pt-3 border-t border-emerald-500/20 flex items-center gap-1.5 text-[11px] text-emerald-300 font-semibold">
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="mt-4 pt-3 border-t border-emerald-500/20 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-300 font-semibold">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                       <span>Executive Gate</span>
                     </div>
                   )}
@@ -248,12 +248,12 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
         </div>
 
         {/* Deep Dive Capabilities Showcase */}
-        <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#0e0e18] to-[#07070b] border border-white/[0.1] shadow-2xl">
+        <div className="p-8 sm:p-10 rounded-3xl surface-card border border-card-border shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Left Column: Capability List */}
             <div className="lg:col-span-6 space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono-code block mb-4">
+              <span className="text-xs font-bold uppercase tracking-wider text-foreground-muted font-mono-code block mb-4">
                 Core Cognitive Operations:
               </span>
               {capabilities.map((cap, idx) => {
@@ -265,20 +265,20 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
                     onClick={() => setActiveCapabilityIndex(idx)}
                     className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center gap-3.5 group ${
                       isSelected
-                        ? 'bg-violet-950/60 border-violet-500/60 shadow-md text-white'
-                        : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05] text-zinc-300'
+                        ? 'surface-card-subtle border-2 border-primary shadow-md text-foreground'
+                        : 'surface-card border-card-border hover:border-primary/30 text-foreground-secondary'
                     }`}
                   >
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                      isSelected ? 'bg-violet-600 text-white' : 'bg-white/[0.05] text-zinc-400 group-hover:text-violet-300'
+                      isSelected ? 'bg-primary text-primary-foreground' : 'surface-card text-foreground-muted group-hover:text-primary'
                     }`}>
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs sm:text-sm font-semibold truncate group-hover:text-violet-200">
+                      <div className="text-xs sm:text-sm font-semibold truncate group-hover:text-primary">
                         {cap.title}
                       </div>
-                      <span className="text-[10px] font-mono-code text-zinc-400">
+                      <span className="text-[10px] font-mono-code text-foreground-muted">
                         {cap.badge}
                       </span>
                     </div>
@@ -288,39 +288,39 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
             </div>
 
             {/* Right Column: Interactive Deep-Dive Preview */}
-            <div className="lg:col-span-6 p-7 rounded-2xl bg-[#09090f] border border-violet-500/30 shadow-xl relative overflow-hidden">
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.08]">
+            <div className="lg:col-span-6 p-7 rounded-2xl surface-card-subtle border border-primary/30 shadow-xl relative overflow-hidden">
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-border">
                 <div className="flex items-center gap-2.5">
-                  <activeCap.icon className="w-5 h-5 text-violet-400" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-white font-mono-code">
+                  <activeCap.icon className="w-5 h-5 text-primary" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-foreground font-mono-code">
                     {activeCap.badge}
                   </span>
                 </div>
-                <span className="text-xs font-mono-code text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 font-semibold">
+                <span className="text-xs font-mono-code text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 font-semibold">
                   {activeCap.speed}
                 </span>
               </div>
 
-              <h3 className="text-xl font-bold text-white font-display mb-3">
+              <h3 className="text-xl font-bold text-foreground font-display mb-3">
                 {activeCap.title}
               </h3>
 
-              <p className="text-sm text-zinc-300 leading-relaxed mb-6">
+              <p className="text-sm text-foreground-secondary leading-relaxed mb-6">
                 {activeCap.description}
               </p>
 
-              <div className="p-4 rounded-xl bg-violet-950/30 border border-violet-700/30 mb-6">
-                <span className="text-[11px] font-bold text-violet-300 uppercase font-mono-code block mb-1">
+              <div className="p-4 rounded-xl bg-primary/10 border border-primary/25 mb-6">
+                <span className="text-[11px] font-bold text-primary uppercase font-mono-code block mb-1">
                   Live Enterprise Scenario:
                 </span>
-                <p className="text-xs text-zinc-200 leading-relaxed font-normal">
+                <p className="text-xs text-foreground-secondary leading-relaxed font-normal">
                   "{activeCap.example}"
                 </p>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-white/[0.06] text-xs">
-                <span className="text-zinc-400 font-mono-code">Verified Accuracy:</span>
-                <span className="font-bold text-emerald-400 font-mono-code">
+              <div className="flex items-center justify-between pt-4 border-t border-border text-xs">
+                <span className="text-foreground-muted font-mono-code">Verified Accuracy:</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono-code">
                   {activeCap.accuracy}
                 </span>
               </div>
@@ -328,7 +328,7 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
               {onOpenConsultant && (
                 <button
                   onClick={onOpenConsultant}
-                  className="w-full mt-6 py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all flex items-center justify-center gap-2"
+                  className="w-full mt-6 py-2.5 px-4 rounded-xl btn-theme-primary text-xs font-bold transition-all flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Test In Interactive AI Advisor</span>

@@ -119,25 +119,25 @@ export const LiveScenarios: React.FC<LiveScenariosProps> = ({
   const Icon = activeScenario.icon;
 
   return (
-    <section id="scenarios" className="py-28 bg-[#050508] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="scenarios" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
-      <div className="absolute top-1/3 right-1/4 w-[650px] h-[650px] bg-violet-600/5 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-[650px] h-[650px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
         <div className="max-w-4xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-950/40 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Workflow className="w-3.5 h-3.5 text-violet-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+            <Workflow className="w-3.5 h-3.5 text-primary" />
             <span>REAL-WORLD ENTERPRISE SCENARIOS</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight font-display mb-4">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-4">
             See How the Ecosystem Works in Real Life.{' '}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-sky-300 to-indigo-300">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500">
               Autonomous, Fast, and Completely Governed.
             </span>
           </h2>
-          <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-foreground-muted leading-relaxed font-normal">
             Select a common enterprise scenario below to watch how Artify's multi-agent intelligence mesh coordinates documents, compliance, ledger entries, and human approvals end-to-end.
           </p>
         </div>
@@ -153,23 +153,23 @@ export const LiveScenarios: React.FC<LiveScenariosProps> = ({
                 onClick={() => setSelectedScenarioIndex(idx)}
                 className={`p-4 rounded-2xl text-left border transition-all duration-200 flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-gradient-to-br from-violet-950/60 to-[#0e0e18] border-violet-500/70 shadow-lg shadow-violet-950/50 scale-[1.02]'
-                    : 'bg-[#09090f] border-white/[0.08] hover:border-violet-500/30'
+                    ? 'surface-card border-2 border-primary shadow-lg shadow-primary/20 scale-[1.02]'
+                    : 'surface-card-subtle border-card-border hover:border-primary/30'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] uppercase font-mono-code font-bold px-2 py-0.5 rounded bg-white/[0.05] text-violet-300">
+                    <span className="text-[10px] uppercase font-mono-code font-bold px-2 py-0.5 rounded surface-card border border-border text-primary">
                       {sc.category}
                     </span>
-                    <ScIcon className="w-4 h-4 text-violet-400" />
+                    <ScIcon className="w-4 h-4 text-primary" />
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2 mb-2">
+                  <h3 className="text-xs sm:text-sm font-bold text-foreground leading-snug line-clamp-2 mb-2">
                     {sc.title}
                   </h3>
                 </div>
 
-                <div className="text-[11px] font-mono-code text-emerald-400">
+                <div className="text-[11px] font-mono-code text-emerald-600 dark:text-emerald-400 font-semibold">
                   ⚡ {sc.totalTime}
                 </div>
               </button>
@@ -178,24 +178,24 @@ export const LiveScenarios: React.FC<LiveScenariosProps> = ({
         </div>
 
         {/* Active Scenario Execution Walkthrough */}
-        <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#0c0c14] to-[#07070b] border border-violet-500/30 shadow-2xl">
+        <div className="p-8 sm:p-10 rounded-3xl surface-card border border-primary/30 shadow-2xl">
           
           {/* Scenario Overview Banner */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-6 mb-8 border-b border-white/[0.08] gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between pb-6 mb-8 border-b border-border gap-4">
             <div>
-              <div className="flex items-center gap-2 text-violet-400 text-xs font-mono-code font-bold uppercase mb-1">
+              <div className="flex items-center gap-2 text-primary text-xs font-mono-code font-bold uppercase mb-1">
                 <Icon className="w-4 h-4" />
                 <span>Trigger Event: {activeScenario.triggerEvent}</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white font-display">
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground font-display">
                 {activeScenario.title}
               </h3>
             </div>
 
             <div className="flex items-center gap-3">
               <div className="text-right">
-                <span className="text-[10px] uppercase font-mono-code text-zinc-400 block">Total Runtime</span>
-                <span className="text-xs sm:text-sm font-bold text-emerald-400 font-mono-code">
+                <span className="text-[10px] uppercase font-mono-code text-foreground-muted block">Total Runtime</span>
+                <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono-code">
                   {activeScenario.totalTime}
                 </span>
               </div>
@@ -203,59 +203,59 @@ export const LiveScenarios: React.FC<LiveScenariosProps> = ({
           </div>
 
           {/* Prompt / Context */}
-          <div className="p-4 rounded-xl bg-violet-950/30 border border-violet-700/30 mb-8 flex items-start gap-3">
-            <Sparkles className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
-            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed font-normal">
-              <strong className="text-white">Commercial Context: </strong>
+          <div className="p-4 rounded-xl surface-container-accent border border-primary/25 mb-8 flex items-start gap-3">
+            <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-sm text-foreground-secondary leading-relaxed font-normal">
+              <strong className="text-foreground">Commercial Context: </strong>
               {activeScenario.prompt}
             </p>
           </div>
 
           {/* Stepped Choreography Grid */}
           <div className="space-y-3 mb-8">
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono-code block mb-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-foreground-muted font-mono-code block mb-3">
               Autonomous Stepped Orchestration:
             </span>
             {activeScenario.executionSteps.map((st, i) => (
               <div
                 key={i}
-                className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/[0.04] transition-colors"
+                className="p-4 rounded-xl surface-container-sunken border border-container-sunken-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-primary/30 transition-colors"
               >
                 <div className="flex items-start sm:items-center gap-3">
-                  <span className="text-xs font-mono-code font-bold w-6 h-6 rounded-full bg-violet-600/30 border border-violet-500/40 text-violet-300 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-mono-code font-bold w-6 h-6 rounded-full bg-primary/15 border border-primary/30 text-primary flex items-center justify-center shrink-0">
                     {i + 1}
                   </span>
                   <div>
-                    <h4 className="text-xs sm:text-sm font-bold text-white">
+                    <h4 className="text-xs sm:text-sm font-bold text-foreground">
                       {st.step}
                     </h4>
-                    <p className="text-xs text-zinc-400 mt-0.5">
+                    <p className="text-xs text-foreground-muted mt-0.5">
                       {st.outcome}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-                  <span className="text-[11px] font-mono-code text-zinc-400 bg-white/[0.05] px-2 py-0.5 rounded">
+                  <span className="text-[11px] font-mono-code text-foreground-muted surface-card border border-border px-2 py-0.5 rounded">
                     {st.duration}
                   </span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                 </div>
               </div>
             ))}
           </div>
 
           {/* Bottom Business Impact & Action */}
-          <div className="p-5 rounded-2xl bg-[#09090f] border border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-2xl surface-card-subtle border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[10px] font-mono-code uppercase text-zinc-400 font-bold block">
+                <span className="text-[10px] font-mono-code uppercase text-foreground-muted font-bold block">
                   Commercial Business Outcome
                 </span>
-                <span className="text-xs sm:text-sm font-semibold text-white">
+                <span className="text-xs sm:text-sm font-semibold text-foreground">
                   {activeScenario.businessImpact}
                 </span>
               </div>
@@ -265,7 +265,7 @@ export const LiveScenarios: React.FC<LiveScenariosProps> = ({
               {onOpenSolutionBuilder && (
                 <button
                   onClick={onOpenSolutionBuilder}
-                  className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow-md shadow-violet-600/30"
+                  className="px-4 py-2.5 rounded-xl btn-theme-primary text-xs font-bold transition-all shadow-md shadow-primary/25"
                 >
                   Configure In Wizard
                 </button>

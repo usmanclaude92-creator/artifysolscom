@@ -59,6 +59,7 @@ interface NavbarProps {
   onNavigateToContact: () => void;
   onNavigateToHome?: () => void;
   onNavigateToBlog?: () => void;
+  onNavigateToSolutionsCatalog?: () => void;
   onNavigateToAiSolutions?: () => void;
   onNavigateToServices?: () => void;
   onNavigateToIndustries?: () => void;
@@ -107,6 +108,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateToContact,
   onNavigateToHome,
   onNavigateToBlog,
+  onNavigateToSolutionsCatalog,
   onNavigateToAiSolutions,
   onNavigateToServices,
   onNavigateToIndustries,
@@ -124,10 +126,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false);
-  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
   const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
   const [mobileActiveCategory, setMobileActiveCategory] = useState<string | null>(null);
-  const [selectedEcosystemPillar, setSelectedEcosystemPillar] = useState<string>('intelligence');
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isLight = theme === 'light';
@@ -304,32 +304,61 @@ export const Navbar: React.FC<NavbarProps> = ({
           </a>
 
           {/* 2. OUR SOLUTIONS Mega-Menu Dropdown */}
-          <div className="static" ref={dropdownRef}>
-            <button
-              onClick={() => setSolutionsDropdownOpen(!solutionsDropdownOpen)}
-              onMouseEnter={() => setSolutionsDropdownOpen(true)}
-              id="nav-our-solutions-dropdown-btn"
-              aria-expanded={solutionsDropdownOpen}
-              aria-haspopup="true"
-              className={`text-xs lg:text-[13px] font-semibold px-3 lg:px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap ${
-                activeRoute === 'ai-solutions' || activeRoute === 'product-detail'
-                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
-                  : solutionsDropdownOpen
-                  ? isLight
-                    ? 'bg-slate-200 text-slate-950'
-                    : 'bg-white/[0.12] text-white'
-                  : isLight
-                  ? 'text-slate-800 hover:text-slate-950 hover:bg-slate-200/70'
-                  : 'text-zinc-200 hover:text-white hover:bg-white/[0.08]'
-              }`}
-            >
-              <span>Our Solutions</span>
-              <ChevronDown
-                className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  solutionsDropdownOpen ? 'rotate-180 text-violet-400' : 'text-zinc-400'
+          <div
+            className="static"
+            ref={dropdownRef}
+            onMouseLeave={() => setSolutionsDropdownOpen(false)}
+          >
+            <div className="flex items-center">
+              <a
+                href="/solutions"
+                onClick={(e) => {
+                  setSolutionsDropdownOpen(false);
+                  handleRouteClick(e, onNavigateToSolutionsCatalog || onNavigateToAiSolutions);
+                }}
+                onMouseEnter={() => setSolutionsDropdownOpen(true)}
+                id="nav-our-solutions-dropdown-btn"
+                aria-expanded={solutionsDropdownOpen}
+                aria-haspopup="true"
+                className={`text-xs lg:text-[13px] font-semibold px-3 lg:px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${
+                  activeRoute === 'solutions-catalog' || activeRoute === 'ai-solutions' || activeRoute === 'product-detail'
+                    ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
+                    : solutionsDropdownOpen
+                    ? isLight
+                      ? 'bg-slate-200 text-slate-950'
+                      : 'bg-white/[0.12] text-white'
+                    : isLight
+                    ? 'text-slate-800 hover:text-slate-950 hover:bg-slate-200/70'
+                    : 'text-zinc-200 hover:text-white hover:bg-white/[0.08]'
                 }`}
-              />
-            </button>
+              >
+                <span>Our Solutions</span>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setSolutionsDropdownOpen(!solutionsDropdownOpen);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setSolutionsDropdownOpen(!solutionsDropdownOpen);
+                    }
+                  }}
+                  className="p-0.5 hover:text-violet-400 transition-colors cursor-pointer"
+                  aria-label="Toggle solutions mega menu"
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      solutionsDropdownOpen ? 'rotate-180 text-violet-400' : 'text-zinc-400'
+                    }`}
+                  />
+                </span>
+              </a>
+            </div>
 
             {/* OUR SOLUTIONS Mega-Menu Container */}
             {solutionsDropdownOpen && (
@@ -344,13 +373,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 {/* Mega Menu Top Header Bar */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-white/[0.08] gap-3">
+                <div className={`flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b gap-3 ${
+                  isLight ? 'border-slate-200' : 'border-white/[0.08]'
+                }`}>
                   <div className="flex items-center gap-3 flex-wrap">
                     <div className="flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[11px] font-semibold font-mono-code uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
                       <span>Adaptive Enterprise Ecosystem</span>
                     </div>
-                    <span className="hidden lg:inline text-xs text-zinc-400">
+                    <span className={`hidden lg:inline text-xs ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
                       Software engineered around how your business actually operates — connected, adaptive, and intelligent.
                     </span>
                   </div>
@@ -359,7 +390,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <a
                       href="/ai-solutions"
                       onClick={(e) => handleRouteClick(e, onNavigateToAiSolutions)}
-                      className="font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1.5 transition-colors"
+                      className="font-bold text-violet-500 hover:text-violet-400 dark:text-violet-400 dark:hover:text-violet-300 flex items-center gap-1.5 transition-colors"
                     >
                       <span>Explore Solutions Catalog</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -367,62 +398,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 </div>
 
-                {/* Category Filter Pills (Instant Focus) */}
-                <div className="flex items-center gap-1.5 pb-4 mb-5 border-b border-white/[0.06] overflow-x-auto no-scrollbar">
-                  <button
-                    onClick={() => setActiveCategoryFilter('all')}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
-                      activeCategoryFilter === 'all'
-                        ? 'bg-violet-600 text-white shadow-sm'
-                        : isLight
-                        ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
-                    }`}
-                  >
-                    All Solution Families
-                  </button>
-                  {SOLUTIONS_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveCategoryFilter(cat.id)}
-                      className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
-                        activeCategoryFilter === cat.id
-                          ? 'bg-violet-600 text-white shadow-sm'
-                          : isLight
-                          ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
-                      }`}
-                    >
-                      {cat.title}
-                    </button>
-                  ))}
-                  <button
-                    onClick={() => setActiveCategoryFilter('intelligence')}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                      activeCategoryFilter === 'intelligence'
-                        ? 'bg-violet-600 text-white shadow-sm'
-                        : isLight
-                        ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
-                    }`}
-                  >
-                    <Sparkles className="w-3 h-3 text-violet-400" />
-                    <span>Artify Intelligence</span>
-                  </button>
-                </div>
-
-                {/* Main Grid: Left Solutions Columns (70%) + Right Intelligence & Ecosystem Showcase (30%) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
-                  {/* Left Column: Solution Families */}
-                  <div
-                    className={`${
-                      activeCategoryFilter === 'intelligence' ? 'hidden' : 'lg:col-span-8'
-                    } space-y-6`}
-                  >
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                      {SOLUTIONS_CATEGORIES.filter(
-                        (cat) => activeCategoryFilter === 'all' || activeCategoryFilter === cat.id
-                      ).map((category) => (
+                {/* Main Grid: Solutions Families Directory (Full Width, 3 Balanced Columns) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+                      {SOLUTIONS_CATEGORIES.map((category) => (
                         <div
                           key={category.id}
                           className={`p-3.5 rounded-xl border flex flex-col justify-between ${
@@ -433,11 +411,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                         >
                           <div>
                             {/* Category Header */}
-                            <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06]">
-                              <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400 font-mono-code">
+                            <div className={`flex items-center justify-between pb-2 mb-2 border-b ${
+                              isLight ? 'border-slate-200' : 'border-white/[0.06]'
+                            }`}>
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-violet-500 dark:text-violet-400 font-mono-code">
                                 {category.title}
                               </span>
-                              <span className="text-[10px] text-zinc-400">
+                              <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>
                                 {category.items.length} Solutions
                               </span>
                             </div>
@@ -452,7 +432,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                                     onClick={(e) => handleMenuItemClick(item, e)}
                                     className={`w-full text-left p-2 rounded-lg transition-all flex items-start gap-2.5 group ${
                                       isLight
-                                        ? 'hover:bg-white hover:shadow-sm'
+                                        ? 'hover:bg-white hover:shadow-xs'
                                         : 'hover:bg-white/[0.06]'
                                     }`}
                                   >
@@ -461,7 +441,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-1.5 flex-wrap">
-                                        <span className="text-xs font-semibold text-zinc-200 group-hover:text-violet-300 transition-colors">
+                                        <span className={`text-xs font-semibold transition-colors ${
+                                          isLight ? 'text-slate-800 group-hover:text-violet-600' : 'text-zinc-200 group-hover:text-violet-300'
+                                        }`}>
                                           {item.name}
                                         </span>
                                         {item.badge && (
@@ -470,7 +452,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                                           </span>
                                         )}
                                       </div>
-                                      <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed mt-0.5">
+                                      <p className={`text-[11px] line-clamp-2 leading-relaxed mt-0.5 ${
+                                        isLight ? 'text-slate-600' : 'text-zinc-400'
+                                      }`}>
                                         {item.tagline}
                                       </p>
                                     </div>
@@ -481,255 +465,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                           </div>
                         </div>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* Right Column: Featured "Artify Intelligence" & "The Artify Ecosystem" Panel */}
-                  <div
-                    className={`${
-                      activeCategoryFilter === 'intelligence'
-                        ? 'lg:col-span-12'
-                        : 'lg:col-span-4'
-                    } space-y-4`}
-                  >
-                    {/* Featured Panel 1: THE ARTIFY ECOSYSTEM (Section 5) */}
-                    {(() => {
-                      const activeNodeData =
-                        ECOSYSTEM_NODES.find((n) => n.id === selectedEcosystemPillar) ||
-                        ECOSYSTEM_NODES[6];
-                      const NodeIcon = ICON_MAP[activeNodeData.icon] || Sparkles;
-
-                      return (
-                        <div
-                          className={`p-4 sm:p-5 rounded-2xl border relative overflow-hidden transition-all duration-300 ${
-                            isLight
-                              ? 'bg-gradient-to-br from-violet-50 via-white to-indigo-50/60 border-violet-200/90 shadow-md shadow-violet-100/50'
-                              : 'bg-gradient-to-br from-violet-950/40 via-[#10101b] to-[#0c0c16] border-violet-500/30 shadow-xl shadow-black/50'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2.5">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400 font-mono-code flex items-center gap-1.5">
-                              <Network className="w-3.5 h-3.5 text-violet-400" />
-                              <span>The Artify Ecosystem</span>
-                            </span>
-                            <span className={`text-[10px] font-mono-code px-2 py-0.5 rounded-full ${
-                              isLight ? 'bg-violet-100 text-violet-800 font-semibold' : 'bg-violet-950/80 text-violet-300 border border-violet-700/40'
-                            }`}>
-                              7 Interconnected Pillars
-                            </span>
-                          </div>
-
-                          <h4 className={`text-xs font-bold mb-1 leading-snug ${isLight ? 'text-slate-900' : 'text-zinc-100'}`}>
-                            One Connected Platform. Seven Interlocking Capabilities.
-                          </h4>
-
-                          <p className={`text-[11px] leading-relaxed mb-3.5 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
-                            Click or hover any pillar to inspect how it communicates across your business in real time:
-                          </p>
-
-                          {/* 7 Pillars Interactive Selector */}
-                          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-3.5">
-                            {ECOSYSTEM_NODES.map((node) => {
-                              const PIcon = ICON_MAP[node.icon] || Sparkles;
-                              const isSelected = selectedEcosystemPillar === node.id;
-                              return (
-                                <button
-                                  key={node.id}
-                                  type="button"
-                                  onClick={() => setSelectedEcosystemPillar(node.id)}
-                                  onMouseEnter={() => setSelectedEcosystemPillar(node.id)}
-                                  className={`p-1.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
-                                    isSelected
-                                      ? isLight
-                                        ? 'bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-500/30 scale-105'
-                                        : 'bg-violet-600 text-white border-violet-400 shadow-md shadow-violet-600/40 scale-105'
-                                      : node.isHighlight
-                                      ? isLight
-                                        ? 'bg-violet-100 text-violet-800 border-violet-300 hover:bg-violet-200'
-                                        : 'bg-violet-950/40 text-violet-300 border-violet-700/40 hover:bg-violet-900/50'
-                                      : isLight
-                                      ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-sm'
-                                      : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/[0.08]'
-                                  }`}
-                                  title={`${node.label} (${node.tagline})`}
-                                >
-                                  <PIcon className={`w-3.5 h-3.5 mb-1 ${isSelected ? 'text-white' : ''}`} />
-                                  <span className="text-[10px] font-semibold leading-tight line-clamp-1">
-                                    {node.label}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          {/* Selected Pillar Relationship Deep Dive Card */}
-                          <div
-                            className={`p-3 rounded-xl border mb-3.5 transition-all duration-200 ${
-                              isLight
-                                ? 'bg-white border-violet-200/80 shadow-sm'
-                                : 'bg-[#0d0d16] border-white/[0.08]'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-white/[0.06]">
-                              <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
-                                  <NodeIcon className="w-3.5 h-3.5" />
-                                </div>
-                                <div>
-                                  <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                                    {activeNodeData.label}
-                                  </div>
-                                  <div className="text-[10px] text-violet-400 font-mono-code">
-                                    {activeNodeData.tagline}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Connections Badges */}
-                              <div className="flex items-center gap-1 flex-wrap justify-end">
-                                <span className={`text-[9px] font-mono-code uppercase ${isLight ? 'text-slate-500' : 'text-zinc-500'}`}>
-                                  Syncs with:
-                                </span>
-                                {activeNodeData.connections.slice(0, 3).map((conn) => (
-                                  <span
-                                    key={conn}
-                                    className={`text-[9px] font-mono-code px-1.5 py-0.5 rounded border ${
-                                      isLight
-                                        ? 'bg-slate-100 text-slate-700 border-slate-200 font-medium'
-                                        : 'bg-white/[0.06] text-zinc-300 border-white/10'
-                                    }`}
-                                  >
-                                    {conn}
-                                  </span>
-                                ))}
-                                {activeNodeData.connections.length > 3 && (
-                                  <span className={`text-[9px] font-mono-code ${isLight ? 'text-slate-500' : 'text-zinc-500'}`}>
-                                    +{activeNodeData.connections.length - 3}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-
-                            <p className={`text-[11px] leading-relaxed mb-2 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
-                              <strong className={isLight ? 'text-slate-900' : 'text-zinc-100'}>Relationship: </strong>
-                              {activeNodeData.relationship}
-                            </p>
-
-                            <div className={`text-[10px] font-mono-code pt-1.5 border-t flex items-center justify-between gap-2 ${
-                              isLight ? 'border-slate-100 text-slate-600' : 'border-white/[0.04] text-zinc-400'
-                            }`}>
-                              <span className="truncate">
-                                <strong className="text-violet-500">Capability: </strong>
-                                {activeNodeData.capability}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* CTAs */}
-                          <div className="flex flex-col sm:flex-row gap-2">
-                            <button
-                              onClick={() => {
-                                setSolutionsDropdownOpen(false);
-                                onOpenSolutionBuilder();
-                              }}
-                              className="flex-1 py-2 px-3 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-violet-600/30 transition-all active:scale-[0.98]"
-                            >
-                              <Sparkles className="w-3.5 h-3.5 text-white" />
-                              <span className="text-white">Build Adaptive Solution</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-white" />
-                            </button>
-
-                            <button
-                              onClick={(e) => {
-                                setSolutionsDropdownOpen(false);
-                                handleSectionClick(e, 'ecosystem', onNavigateToEcosystem);
-                              }}
-                              className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
-                                isLight
-                                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
-                                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/10'
-                              }`}
-                            >
-                              Full Architecture
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    {/* Featured Panel 2: ARTIFY INTELLIGENCE (Cross-Ecosystem Capability) */}
-                    <div
-                      className={`p-4 rounded-2xl border ${
-                        isLight
-                          ? 'bg-slate-50/90 border-slate-200'
-                          : 'bg-[#101018]/80 border-white/[0.08]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <Cpu className="w-3.5 h-3.5 text-violet-400" />
-                          <h4 className="text-xs font-bold text-zinc-100 font-display">
-                            Artify Intelligence
-                          </h4>
-                        </div>
-                        <span className="text-[10px] text-violet-400 font-mono-code font-bold">
-                          Cross-Platform Fabric
-                        </span>
-                      </div>
-
-                      <p className="text-[11px] text-zinc-400 leading-relaxed mb-3">
-                        Intelligence works across the entire Artify ecosystem rather than as a standalone chatbot. It continuously reasons over operational records to power:
-                      </p>
-
-                      {/* 10 Intelligence Capabilities List */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-                        {ARTIFY_INTELLIGENCE_CAPABILITIES.slice(
-                          0,
-                          activeCategoryFilter === 'intelligence' ? 10 : 6
-                        ).map((cap) => {
-                          const CapIcon = ICON_MAP[cap.iconName] || Sparkles;
-                          return (
-                            <div
-                              key={cap.title}
-                              className="p-1.5 rounded-lg bg-white/[0.03] border border-white/[0.04] flex items-start gap-2"
-                            >
-                              <CapIcon className="w-3 h-3 text-violet-400 shrink-0 mt-0.5" />
-                              <div>
-                                <span className="font-semibold text-zinc-200 block text-[10.5px]">
-                                  {cap.title}
-                                </span>
-                                <span className="text-[10px] text-zinc-400 line-clamp-1">
-                                  {cap.description}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                        <button
-                          onClick={() => {
-                            setSolutionsDropdownOpen(false);
-                            onOpenConsultant();
-                          }}
-                          className="text-[11px] font-semibold text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
-                        >
-                          <Bot className="w-3.5 h-3.5" />
-                          <span>Launch Intelligence Advisor</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </button>
-                        <span className="text-[10px] text-zinc-400 font-mono-code">
-                          Zero Third-Party Model Training
-                        </span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Dropdown Bottom Bar */}
-                <div className="mt-5 pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-3 text-zinc-400 text-[11px] font-mono-code flex-wrap">
+                <div className={`mt-5 pt-4 border-t flex flex-col sm:flex-row items-center justify-between gap-3 text-xs ${
+                  isLight ? 'border-slate-200' : 'border-white/[0.08]'
+                }`}>
+                  <div className={`flex items-center gap-3 text-[11px] font-mono-code flex-wrap ${
+                    isLight ? 'text-slate-600' : 'text-zinc-400'
+                  }`}>
                     <span className="flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                       SOC2 Type II Aligned
@@ -740,13 +484,44 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>Continuous Workflow Adaptability</span>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <a
+                      href="/solutions"
+                      onClick={(e) => {
+                        handleRouteClick(e, onNavigateToSolutionsCatalog || onNavigateToAiSolutions);
+                        setSolutionsDropdownOpen(false);
+                      }}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white transition-all flex items-center gap-1.5 shadow-sm"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Full Solutions Catalog (24 Systems) &rarr;</span>
+                    </a>
+
+                    <a
+                      href="/ai-solutions#ecosystem-architecture"
+                      onClick={(e) => {
+                        handleRouteClick(e, onNavigateToAiSolutions);
+                        setSolutionsDropdownOpen(false);
+                      }}
+                      className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 ${
+                        isLight
+                          ? 'text-violet-700 bg-violet-50/80 border-violet-200 hover:bg-violet-100'
+                          : 'text-violet-300 bg-violet-950/40 border-violet-500/30 hover:bg-violet-900/40'
+                      }`}
+                    >
+                      <span>7 Ecosystem Pillars</span>
+                    </a>
+
                     <button
                       onClick={() => {
                         setSolutionsDropdownOpen(false);
                         onNavigateToContact();
                       }}
-                      className="text-xs font-semibold text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] transition-all"
+                      className={`text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${
+                        isLight
+                          ? 'text-slate-700 hover:text-slate-900 border-slate-300 hover:bg-slate-100'
+                          : 'text-zinc-300 hover:text-white border-white/[0.1] hover:bg-white/[0.04]'
+                      }`}
                     >
                       Request Architecture Assessment
                     </button>
@@ -1031,40 +806,65 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <a
                   href="#platform"
                   onClick={(e) => handleSectionClick(e, 'platform', onNavigateToServices)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Layers className="w-4 h-4 text-violet-400" />
                     <span>Platform & Architecture</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
                 {/* 2. OUR SOLUTIONS Accordion */}
-                <div className="rounded-xl border border-white/[0.08] overflow-hidden bg-white/[0.02]">
-                  <button
-                    onClick={() => setMobileSolutionsOpen(!mobileSolutionsOpen)}
-                    className="w-full flex items-center justify-between p-3 text-left font-semibold text-xs text-white"
-                  >
-                    <div className="flex items-center gap-2.5">
+                <div className={`rounded-xl border overflow-hidden ${
+                  isLight ? 'border-slate-200 bg-slate-50/60' : 'border-white/[0.08] bg-white/[0.02]'
+                }`}>
+                  <div className="flex items-center justify-between p-2.5">
+                    <a
+                      href="/solutions"
+                      onClick={(e) => {
+                        setSideMenuOpen(false);
+                        handleRouteClick(e, onNavigateToSolutionsCatalog || onNavigateToAiSolutions);
+                      }}
+                      className={`flex-1 flex items-center gap-2.5 text-left font-semibold text-xs cursor-pointer ${
+                        isLight ? 'text-slate-900' : 'text-white'
+                      }`}
+                    >
                       <Sparkles className="w-4 h-4 text-violet-400" />
                       <span>Our Solutions</span>
-                    </div>
-                    <ChevronDown
-                      className={`w-4 h-4 text-zinc-400 transition-transform ${
-                        mobileSolutionsOpen ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
+                      <span className="text-[10px] font-mono-code px-1.5 py-0.2 rounded bg-violet-500/20 text-violet-400">
+                        Full Catalog
+                      </span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setMobileSolutionsOpen(!mobileSolutionsOpen)}
+                      className="p-1 text-zinc-400 hover:text-white"
+                      aria-label="Toggle solutions categories"
+                    >
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${
+                          isLight ? 'text-slate-500' : 'text-zinc-400'
+                        } ${mobileSolutionsOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                  </div>
 
                   {mobileSolutionsOpen && (
-                    <div className="p-2 pt-0 space-y-2 border-t border-white/[0.06] bg-black/40">
+                    <div className={`p-2 pt-0 space-y-2 border-t ${
+                      isLight ? 'border-slate-200 bg-white/90' : 'border-white/[0.06] bg-black/40'
+                    }`}>
                       <a
-                        href="/ai-solutions"
-                        onClick={(e) => handleRouteClick(e, onNavigateToAiSolutions)}
-                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-violet-400 hover:bg-violet-600/20 block"
+                        href="/solutions"
+                        onClick={(e) => {
+                          setSideMenuOpen(false);
+                          handleRouteClick(e, onNavigateToSolutionsCatalog || onNavigateToAiSolutions);
+                        }}
+                        className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-violet-500 hover:bg-violet-500/10 dark:text-violet-400 dark:hover:bg-violet-600/20 block"
                       >
-                        → Solutions Catalog & Blueprint
+                        → Solutions Catalog (24 Systems)
                       </a>
 
                       {/* Solution Families in Mobile Drawer */}
@@ -1076,7 +876,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                                 mobileActiveCategory === cat.id ? null : cat.id
                               )
                             }
-                            className="w-full flex items-center justify-between px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-400/90 font-mono-code"
+                            className="w-full flex items-center justify-between px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-500 dark:text-violet-400/90 font-mono-code"
                           >
                             <span>{cat.title}</span>
                             <ChevronDown
@@ -1094,14 +894,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                                   <button
                                     key={item.id}
                                     onClick={(e) => handleMenuItemClick(item, e)}
-                                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-zinc-300 hover:bg-white/[0.06] flex items-center justify-between"
+                                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                                      isLight ? 'text-slate-700 hover:bg-slate-100' : 'text-zinc-300 hover:bg-white/[0.06]'
+                                    }`}
                                   >
                                     <div className="flex items-center gap-2">
                                       <ItemIcon className="w-3 h-3 text-violet-400 shrink-0" />
                                       <span className="truncate">{item.name}</span>
                                     </div>
                                     {item.badge && (
-                                      <span className="text-[9px] font-mono-code px-1 py-0.2 rounded bg-violet-500/20 text-violet-300 shrink-0">
+                                      <span className="text-[9px] font-mono-code px-1 py-0.2 rounded bg-violet-500/20 text-violet-400 dark:text-violet-300 shrink-0">
                                         {item.badge}
                                       </span>
                                     )}
@@ -1114,12 +916,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                       ))}
 
                       {/* Artify Intelligence Mobile Section */}
-                      <div className="pt-2 border-t border-white/[0.06]">
-                        <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-400 font-mono-code flex items-center gap-1.5">
+                      <div className={`pt-2 border-t ${isLight ? 'border-slate-200' : 'border-white/[0.06]'}`}>
+                        <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-500 dark:text-violet-400 font-mono-code flex items-center gap-1.5">
                           <Cpu className="w-3 h-3" />
                           <span>Artify Intelligence Fabric</span>
                         </div>
-                        <p className="px-2.5 text-[10.5px] text-zinc-400 leading-relaxed mb-1.5">
+                        <p className={`px-2.5 text-[10.5px] leading-relaxed mb-1.5 ${
+                          isLight ? 'text-slate-600' : 'text-zinc-400'
+                        }`}>
                           Cross-platform autonomous intelligence layer powering workflows, document parsing, and real-time insights.
                         </p>
                         <button
@@ -1127,7 +931,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                             setSideMenuOpen(false);
                             onOpenConsultant();
                           }}
-                          className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-violet-300 hover:bg-violet-600/20 flex items-center gap-1.5 font-semibold"
+                          className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-violet-500 hover:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-600/20 flex items-center gap-1.5 font-semibold"
                         >
                           <Bot className="w-3.5 h-3.5" />
                           <span>Open AI Architecture Advisor</span>
@@ -1141,39 +945,45 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <a
                   href="#intelligence"
                   onClick={(e) => handleSectionClick(e, 'intelligence', onOpenConsultant)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Cpu className="w-4 h-4 text-violet-400" />
                     <span>Intelligence Layer</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
                 {/* 4. Industries */}
                 <a
                   href="/industries"
                   onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Building2 className="w-4 h-4 text-violet-400" />
                     <span>Industry Solutions (14 Sectors)</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
                 {/* 5. Ecosystem */}
                 <a
                   href="#ecosystem"
                   onClick={(e) => handleSectionClick(e, 'ecosystem')}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Network className="w-4 h-4 text-violet-400" />
                     <span>Adaptive Ecosystem</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
                 {/* 6. Insights */}
@@ -1195,26 +1005,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <a
                   href="/about"
                   onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Info className="w-4 h-4 text-violet-400" />
                     <span>Company & Security</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
 
                 {/* Case Studies */}
                 <a
                   href="/case-studies"
                   onClick={(e) => handleRouteClick(e, onNavigateToCaseStudies)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                    isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <BookOpen className="w-4 h-4 text-violet-400" />
                     <span>Case Studies & Architectures</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                  <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
               </div>
 
@@ -1223,7 +1037,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   onClick={onToggleTheme}
                   id="drawer-theme-toggle-btn"
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-white/[0.08] bg-[#12121a] text-zinc-200 text-xs font-semibold"
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors ${
+                    isLight
+                      ? 'border-slate-200 bg-slate-100 text-slate-800'
+                      : 'border-white/[0.08] bg-[#12121a] text-zinc-200'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     {theme === 'dark' ? (
@@ -1238,13 +1056,19 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Drawer Footer Actions */}
-            <div className="p-4 border-t border-white/[0.08] space-y-2.5 bg-[#0d0d16]/70">
+            <div className={`p-4 border-t space-y-2.5 ${
+              isLight ? 'border-slate-200 bg-slate-50' : 'border-white/[0.08] bg-[#0d0d16]/70'
+            }`}>
               <button
                 onClick={() => {
                   setSideMenuOpen(false);
                   onOpenSolutionBuilder();
                 }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-white/[0.1] bg-[#151520] text-zinc-200 text-xs font-semibold"
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-xs font-semibold transition-colors ${
+                  isLight
+                    ? 'border-slate-300 bg-white hover:bg-slate-100 text-slate-800 shadow-xs'
+                    : 'border-white/[0.1] bg-[#151520] text-zinc-200'
+                }`}
               >
                 <Sparkles className="w-4 h-4 text-violet-400" />
                 <span>Build Your Adaptive Solution</span>

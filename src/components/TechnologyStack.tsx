@@ -40,22 +40,22 @@ export const TechnologyStack: React.FC = () => {
   ];
 
   return (
-    <section className="py-28 bg-[#050505] border-t border-white/[0.06] relative overflow-hidden">
+    <section className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Glow */}
-      <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="w-full px-[5%] relative z-10">
         
         {/* Header */}
         <div className="w-full max-w-4xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-950/40 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Terminal className="w-3.5 h-3.5 text-violet-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+            <Terminal className="w-3.5 h-3.5 text-primary" />
             <span>TECHNOLOGY ARCHITECTURE</span>
           </div>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight font-display mb-4">
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-4">
             Built on Modern Intelligence.
           </h2>
-          <p className="text-lg text-zinc-300 leading-relaxed font-normal">
+          <p className="text-lg text-foreground-muted leading-relaxed font-normal">
             We leverage production-hardened models, high-performance distributed databases, and modern cloud infrastructure designed for sub-second latency and zero data leaks.
           </p>
         </div>
@@ -87,9 +87,9 @@ export const TechnologyStack: React.FC = () => {
                     transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
                   },
                 }}
-                whileHover={{ y: -5, borderColor: 'rgba(139, 92, 246, 0.5)' }}
+                whileHover={{ y: -5 }}
                 transition={{ duration: 0.2 }}
-                className="p-6 rounded-2xl bg-[#09090e] border border-white/[0.08] flex flex-col justify-between"
+                className="p-6 rounded-2xl surface-card border border-card-border hover:border-primary/40 flex flex-col justify-between"
               >
                 <div>
                   <div
@@ -102,14 +102,14 @@ export const TechnologyStack: React.FC = () => {
                   >
                     <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-bold text-white mb-4 font-display">
+                  <h3 className="text-base font-bold text-foreground mb-4 font-display">
                     {cat.title}
                   </h3>
 
                   <ul className="space-y-2.5">
                     {cat.items.map((item, i) => (
-                      <li key={i} className="flex items-center gap-2 text-xs text-zinc-300 font-mono-code">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                      <li key={i} className="flex items-center gap-2 text-xs text-foreground-secondary font-mono-code">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
                         <span>{item}</span>
                       </li>
                     ))}

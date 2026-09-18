@@ -51,6 +51,9 @@ import { motion } from 'framer-motion';
 const AiSolutionsPage = lazy(() =>
   import('./components/solutions/AiSolutionsPage').then((m) => ({ default: m.AiSolutionsPage }))
 );
+const SolutionsCatalogPage = lazy(() =>
+  import('./components/solutions/SolutionsCatalogPage').then((m) => ({ default: m.SolutionsCatalogPage }))
+);
 const AiProductDetailPage = lazy(() =>
   import('./components/solutions/AiProductDetailPage').then((m) => ({ default: m.AiProductDetailPage }))
 );
@@ -100,6 +103,7 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
   if (path.startsWith('/ai-solutions/')) {
     return { route: 'product-detail', slug: decodeURIComponent(path.replace('/ai-solutions/', '')) };
   }
+  if (path === '/solutions' || path === '/solutions-catalog') return { route: 'solutions-catalog' };
   if (path === '/ai-solutions') return { route: 'ai-solutions' };
   if (path === '/services') return { route: 'services' };
   if (path === '/industries') return { route: 'industries' };
@@ -149,6 +153,13 @@ function MainAppContent() {
       if (route === 'product-detail' && slug) {
         setActiveProductSlug(slug);
         setActiveRoute('product-detail');
+      } else if (route === 'solutions-catalog') {
+        setActiveRoute('solutions-catalog');
+        updatePageSeo({
+          title: 'Enterprise Solutions Catalog | Artify Solutions',
+          description: 'Explore the full catalog of 24 modular enterprise software solutions, autonomous AI agent swarms, and sovereign private cloud architectures.',
+          canonicalUrl: 'https://artifysols.com/solutions',
+        });
       } else if (route === 'ai-solutions') {
         setActiveRoute('ai-solutions');
         updatePageSeo({
@@ -341,6 +352,7 @@ function MainAppContent() {
         onOpenConsultant={() => setIsConsultantOpen(true)}
         onNavigateToContact={handleNavigateToContact}
         onNavigateToHome={() => navigateToRoute('home', '/')}
+        onNavigateToSolutionsCatalog={() => navigateToRoute('solutions-catalog', '/solutions')}
         onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
         onNavigateToServices={() => navigateToRoute('services', '/services')}
         onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}
@@ -356,6 +368,18 @@ function MainAppContent() {
       {/* Main Multi-Page Dynamic Switch */}
       <main>
         <Suspense fallback={<RouteFallback />}>
+        {activeRoute === 'solutions-catalog' && (
+          <SolutionsCatalogPage
+            onSelectProduct={handleSelectProduct}
+            onOpenConsultant={() => setIsConsultantOpen(true)}
+            onOpenSolutionBuilder={(id) => handleOpenSolutionBuilder(id)}
+            onNavigateToContact={handleNavigateToContact}
+            onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}
+            onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+            theme={theme}
+          />
+        )}
+
         {activeRoute === 'ai-solutions' && (
           <AiSolutionsPage
             onSelectProduct={handleSelectProduct}
@@ -552,6 +576,7 @@ function MainAppContent() {
       {/* Global Footer */}
       <Footer
         onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
+        onNavigateToSolutionsCatalog={() => navigateToRoute('solutions-catalog', '/solutions')}
         onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
         onNavigateToServices={() => navigateToRoute('services', '/services')}
         onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}

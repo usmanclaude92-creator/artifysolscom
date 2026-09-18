@@ -21,6 +21,7 @@ import {
 import { AiProductItem, AiProductCategoryType } from '../../types';
 import { AI_PRODUCTS, AI_PRODUCT_CATEGORIES } from '../../data/aiProductsData';
 import { ProductCard } from './ProductCard';
+import { EcosystemArchitectureExplorer } from './EcosystemArchitectureExplorer';
 import { updatePageSeo, generateCategoryKeywords, generateDynamicKeywords } from '../../utils/seo';
 
 interface AiSolutionsPageProps {
@@ -239,6 +240,14 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
           </div>
         </div>
       </section>
+
+      {/* The Artify Ecosystem 7 Interconnected Pillars & Cross-Platform Fabric */}
+      <EcosystemArchitectureExplorer
+        onOpenSolutionBuilder={onOpenSolutionBuilder}
+        onNavigateToContact={onNavigateToContact}
+        onOpenConsultant={onOpenConsultant}
+        theme={theme}
+      />
 
       {/* 2. AI Product Ecosystem Section */}
       <section id="our-ai-products" className="py-24 relative">

@@ -173,14 +173,14 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopyXml}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-zinc-200 text-xs font-mono-code transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg btn-theme-secondary text-xs font-mono-code transition-colors"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied XML!' : 'Copy XML'}</span>
             </button>
             <button
               onClick={handleDownloadXml}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 text-violet-200 text-xs font-mono-code transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/20 hover:bg-primary/30 border border-primary/40 text-primary text-xs font-mono-code transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download .xml</span>
@@ -189,9 +189,9 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
               href="/sitemap.xml"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-zinc-200 text-xs font-mono-code transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg btn-theme-secondary text-xs font-mono-code transition-colors"
             >
-              <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-foreground-muted" />
               <span>/sitemap.xml</span>
             </a>
           </div>
@@ -201,7 +201,7 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
         <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[60vh]">
           {viewRawXml ? (
             <div className="relative">
-              <pre className="p-4 rounded-xl bg-[#050508] border border-white/[0.08] text-emerald-400 font-mono-code text-[11px] leading-relaxed overflow-x-auto selection:bg-emerald-950 selection:text-emerald-200">
+              <pre className="p-4 rounded-xl surface-container-sunken border border-border text-emerald-500 font-mono-code text-[11px] leading-relaxed overflow-x-auto selection:bg-emerald-950 selection:text-emerald-200">
                 {rawXml}
               </pre>
             </div>
@@ -258,31 +258,31 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
                         <td className="py-2.5 px-4 font-sans">
                           <div className="flex flex-col">
                             {entry.title && (
-                              <span className="text-white font-medium text-xs truncate max-w-md">
+                              <span className="text-foreground font-medium text-xs truncate max-w-md">
                                 {entry.title}
                               </span>
                             )}
-                            <span className="text-violet-400 font-mono-code text-[11px] truncate max-w-md">
+                            <span className="text-primary font-mono-code text-[11px] truncate max-w-md">
                               {entry.loc}
                             </span>
                           </div>
                         </td>
-                        <td className="py-2.5 px-4 text-zinc-300 hidden md:table-cell">
-                          <span className="px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-300 font-bold">
+                        <td className="py-2.5 px-4 text-foreground-secondary hidden md:table-cell">
+                          <span className="px-1.5 py-0.5 rounded surface-card-subtle text-foreground-muted font-bold">
                             {entry.priority?.toFixed(2) || '0.50'}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4 text-zinc-400 hidden sm:table-cell">
+                        <td className="py-2.5 px-4 text-foreground-muted hidden sm:table-cell">
                           {entry.changefreq || 'weekly'}
                         </td>
-                        <td className="py-2.5 px-4 text-zinc-400 text-right whitespace-nowrap">
+                        <td className="py-2.5 px-4 text-foreground-muted text-right whitespace-nowrap">
                           {entry.lastmod || 'Today'}
                         </td>
                       </tr>
                     ))}
                     {filteredEntries.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="py-8 text-center text-zinc-500 font-sans">
+                        <td colSpan={5} className="py-8 text-center text-foreground-muted font-sans">
                           No matching sitemap URLs found for "{searchQuery}"
                         </td>
                       </tr>
@@ -295,14 +295,14 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
         </div>
 
         {/* Footer Info */}
-        <div className="px-6 py-3 border-t border-white/[0.08] bg-[#0d0d14] flex items-center justify-between text-[11px] text-zinc-400">
+        <div className="px-6 py-3 border-t border-border surface-card-subtle flex items-center justify-between text-[11px] text-foreground-muted">
           <span className="flex items-center gap-1.5 font-mono-code">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Search Engine Standards: Sitemaps XML 0.9 & Google Image Indexing 1.1</span>
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 font-mono-code transition-colors"
+            className="px-4 py-1.5 rounded-lg btn-theme-secondary font-mono-code transition-colors"
           >
             Close
           </button>

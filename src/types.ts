@@ -94,6 +94,7 @@ export interface AiProductItem {
 export type AppRoute =
   | 'home'
   | 'ai-solutions'
+  | 'solutions-catalog'
   | 'ai-product-detail'
   | 'product-detail'
   | 'services'

@@ -443,7 +443,7 @@ export const BUSINESS_FUNCTIONS: BusinessFunction[] = [
     icon: 'DollarSign',
     tagline: 'Autonomous ledgers, touchless reconciliation, and real-time cash analytics',
     capabilities: [
-      { title: 'AI Accounting & Bookkeeping', description: 'Autonomous transaction categorization, multi-currency ledger management, and split-line entry allocation.', tag: 'Core AI' },
+      { title: 'Adaptive Accounting & Bookkeeping', description: 'Autonomous transaction categorization, multi-currency ledger management, and split-line entry allocation.', tag: 'Core AI' },
       { title: 'Continuous Reconciliation', description: 'Real-time multi-account matching against bank feeds, merchant processors, and internal receipts.', tag: 'Automation' },
       { title: 'Cash Flow & Runway Modeling', description: 'Predictive liquidity simulations combining historical receivables, seasonality, and vendor payables.', tag: 'Intelligence' },
       { title: 'Touchless Invoice Processing', description: 'Vision-based extraction of multi-page invoices with PO matching, line-item verification, and approval routing.', tag: 'Vision AI' },
@@ -696,7 +696,7 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'executive-dashboard',
-    title: 'AI Executive Decision Command Center',
+    title: 'Executive Decision Command Center',
     category: 'Business Intelligence',
     industry: 'Executive Intelligence',
     clientType: 'Private Equity-Backed Growth Enterprise',
@@ -723,7 +723,7 @@ export const CASE_STUDIES: CaseStudy[] = [
   },
   {
     id: 'recruitment-platform',
-    title: 'AI Talent Intelligence & Candidate Sourcing System',
+    title: 'Talent Intelligence & Candidate Sourcing System',
     category: 'HR & Talent',
     industry: 'Technology & Staffing',
     clientType: 'High-Growth Tech Enterprise with 400+ Annual Hires',
