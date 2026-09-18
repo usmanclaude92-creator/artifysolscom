@@ -575,6 +575,8 @@ function MainAppContent() {
 
       {/* Global Footer */}
       <Footer
+        theme={theme}
+        onNavigateToHome={() => navigateToRoute('home', '/')}
         onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
         onNavigateToSolutionsCatalog={() => navigateToRoute('solutions-catalog', '/solutions')}
         onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
@@ -586,6 +588,8 @@ function MainAppContent() {
         onNavigateToLegal={(type) => navigateToRoute(type, `/${type === 'privacy' ? 'privacy' : 'terms'}`)}
         onSelectProduct={handleSelectProduct}
         onOpenSitemap={() => setIsSitemapOpen(true)}
+        onOpenConsultant={() => setIsConsultantOpen(true)}
+        onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
       />
 
       {/* Overlay modals. Each is mounted only while open so its chunk is
