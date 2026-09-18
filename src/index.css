@@ -502,9 +502,31 @@ body.theme-light *::-webkit-scrollbar-thumb:active {
   border-color: #DDD6FE !important;
 }
 
-/* 8. High-Contrast Typography */
+/* 8. High-Contrast Typography in Light Mode */
 .theme-light .text-white {
   color: #020617 !important;
+}
+
+/* Primary CTAs, gradient badges, and accent buttons MUST preserve crisp white text */
+.theme-light .bg-violet-600,
+.theme-light .bg-violet-600 *,
+.theme-light .hover\:bg-violet-500:hover,
+.theme-light .hover\:bg-violet-500:hover *,
+.theme-light .bg-violet-700,
+.theme-light .bg-violet-700 *,
+.theme-light .bg-indigo-600,
+.theme-light .bg-indigo-600 *,
+.theme-light .bg-emerald-600,
+.theme-light .bg-emerald-600 *,
+.theme-light [class*="from-violet-600"],
+.theme-light [class*="from-violet-600"] *,
+.theme-light [class*="to-indigo-600"],
+.theme-light [class*="to-indigo-600"] *,
+.theme-light button.bg-violet-600,
+.theme-light button.bg-violet-600 span,
+.theme-light a.bg-violet-600,
+.theme-light a.bg-violet-600 span {
+  color: #FFFFFF !important;
 }
 
 .theme-light .text-zinc-100 {
@@ -524,11 +546,11 @@ body.theme-light *::-webkit-scrollbar-thumb:active {
 }
 
 .theme-light .text-zinc-500 {
-  color: #64748B !important;
+  color: #475569 !important;
 }
 
 .theme-light .text-zinc-600 {
-  color: #94A3B8 !important;
+  color: #64748B !important;
 }
 
 /* 9. Text Gradients & Vibrant Badges */
@@ -793,6 +815,93 @@ body.theme-light *::-webkit-scrollbar-thumb:active {
 
 .theme-light .shadow-xl {
   box-shadow: 0 12px 25px -5px rgba(15, 23, 42, 0.06), 0 4px 6px -2px rgba(15, 23, 42, 0.02) !important;
+}
+
+/* ==========================================================================
+   DARK THEME HIGH-CONTRAST & SURFACE DISTINCTION SYSTEM
+   ========================================================================== */
+.theme-dark {
+  background-color: #07070b !important;
+  color: #F8FAFC !important;
+}
+
+.theme-dark body {
+  background-color: #07070b !important;
+  color: #F8FAFC !important;
+}
+
+/* Ensure secondary and muted text has crisp contrast in Dark Mode */
+.theme-dark .text-zinc-500 {
+  color: #94A3B8 !important; /* slate-400: crisp 6.8:1 contrast on dark canvas */
+}
+
+.theme-dark .text-zinc-400 {
+  color: #CBD5E1 !important; /* slate-300: highly legible secondary text */
+}
+
+.theme-dark .text-zinc-300 {
+  color: #E2E8F0 !important; /* slate-200: vibrant, comfortable body copy */
+}
+
+.theme-dark .text-zinc-200 {
+  color: #F1F5F9 !important;
+}
+
+.theme-dark .text-zinc-100,
+.theme-dark .text-white {
+  color: #FFFFFF !important;
+}
+
+/* Dark Mode Card Borders: Make cards and panels distinct without washed-out haze */
+.theme-dark .border-white\/\[0\.04\],
+.theme-dark .border-white\/\[0\.06\],
+.theme-dark .border-white\/\[0\.08\] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.theme-dark .border-white\/\[0\.1\] {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Dark Mode Inputs & Form Controls: Deep, crisp, clear borders and bright placeholder */
+.theme-dark input,
+.theme-dark select,
+.theme-dark textarea {
+  background-color: #0e0e16 !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.theme-dark input:focus,
+.theme-dark select:focus,
+.theme-dark textarea:focus {
+  border-color: #8B5CF6 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
+}
+
+.theme-dark input::placeholder,
+.theme-dark textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+/* Dark Mode Cards: subtle border lift and deep contrast */
+.theme-dark .rounded-2xl.border,
+.theme-dark .rounded-3xl.border,
+.theme-dark .rounded-xl.border {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark Mode Secondary Action Buttons */
+.theme-dark button.bg-white\/\[0\.04\],
+.theme-dark button.bg-white\/\[0\.06\] {
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  color: #E2E8F0 !important;
+}
+
+.theme-dark button.bg-white\/\[0\.04\]:hover,
+.theme-dark button.bg-white\/\[0\.06\]:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
 }
 
 

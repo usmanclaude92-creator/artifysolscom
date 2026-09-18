@@ -293,7 +293,7 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
       },
       {
         id: 'kw-8',
-        keyword: 'real-time AI ERP connector Kafka SAP Salesforce',
+        keyword: 'real-time Adaptive ERP connector Kafka SAP Salesforce',
         intent: 'Transactional',
         volume: 2700,
         kd: 46,

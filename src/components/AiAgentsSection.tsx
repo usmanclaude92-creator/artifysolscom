@@ -61,12 +61,12 @@ export const AiAgentsSection: React.FC = () => {
             Imagine having a team that works 24/7 across every operational pillar—independently intelligent, rigorously controlled, and seamlessly orchestrated.
           </p>
           <div className="flex flex-wrap gap-2 text-xs font-medium text-zinc-400">
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-violet-300">An AI Finance Analyst</span>
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-sky-300">An AI HR Assistant</span>
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-emerald-300">An AI Sales Researcher</span>
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-amber-300">An AI Customer Support Agent</span>
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-pink-300">An AI Operations Coordinator</span>
-            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-indigo-300">An AI Reporting Analyst</span>
+            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-violet-300">Financial Intelligence Analyst</span>
+            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-sky-300">Workforce Operations Specialist</span>
+            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-emerald-300">Commercial Pipeline Researcher</span>
+            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-amber-300">Omnichannel Customer Agent</span>
+            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-pink-300">Autonomous Operations Coordinator</span>
+            <span className="px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.06] text-indigo-300">Continuous Reporting Sentinel</span>
           </div>
         </div>
 

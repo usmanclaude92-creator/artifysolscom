@@ -140,7 +140,7 @@ const CATEGORY_SEARCH_INTENT_MAP: Record<string, string[]> = {
     'vertical industry AI software',
     'bespoke enterprise AI models',
     'domain-specific autonomous agents',
-    'custom AI ERP integrations',
+    'custom Adaptive ERP integrations',
     'high-compliance industry AI',
   ],
   'Conversational Intelligence': [

@@ -72,11 +72,11 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
 
             <p className="text-sm font-semibold text-zinc-200">
-              Your Business. Reimagined by AI.
+              Adaptive Software. Intelligent Ecosystems. Built Around Your Business.
             </p>
 
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Artify Solutions is an enterprise AI product and solutions house engineering autonomous agent swarms, hybrid neural RAG engines, sub-10ms event integration meshes, and domain intelligence.
+              Artify Solutions engineers fully customized, adaptive enterprise software ecosystems enhanced by foundational intelligence, event-driven pipelines, and sovereign data architecture.
             </p>
 
             <div className="pt-2 flex flex-col gap-2 text-xs">
@@ -89,11 +89,11 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-          {/* AI Products Col */}
+          {/* Solutions Column */}
           <div className="lg:col-span-2 space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-white uppercase font-mono-code tracking-wider">
-                AI Products
+                Our Solutions
               </h4>
             </div>
             <ul className="space-y-2 text-xs">
@@ -124,7 +124,7 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1"
                 >
-                  <span>All 8 Products</span>
+                  <span>Explore Solutions</span>
                   <ArrowRight className="w-3 h-3" />
                 </a>
               </li>

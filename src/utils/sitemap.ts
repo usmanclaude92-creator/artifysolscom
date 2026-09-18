@@ -128,7 +128,7 @@ export function getSitemapUrlList(
       changefreq: 'monthly',
       priority: 0.8,
       type: 'core',
-      title: 'Request AI Project Brief & Architect Consultation',
+      title: 'Request Enterprise Project Brief & Architect Consultation',
     }
   );
 

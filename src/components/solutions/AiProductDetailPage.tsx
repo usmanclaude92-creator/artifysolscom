@@ -116,21 +116,23 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
             <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
             <button
               onClick={onBackToSolutions}
-              className="hover:text-white transition-colors"
+              className={`hover:text-violet-400 transition-colors ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}
             >
-              AI Solutions
+              Our Solutions
             </button>
-            <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
+            <ChevronRight className="w-3.5 h-3.5 text-zinc-500" />
             <span className="text-violet-400 font-bold">{product.name}</span>
           </div>
 
           <button
             onClick={onBackToSolutions}
             id="back-to-all-products-btn"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+            className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors ${
+              isLight ? 'text-slate-600 hover:text-slate-900' : 'text-zinc-400 hover:text-white'
+            }`}
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>All AI Products</span>
+            <span>All Solutions</span>
           </button>
         </div>
       </div>
@@ -163,7 +165,9 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
 
               {/* Title & Tagline */}
               <div>
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight text-white leading-tight">
+                <h1 className={`text-3xl sm:text-5xl lg:text-6xl font-bold font-display tracking-tight leading-tight ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
                   {product.name}
                 </h1>
                 <p className="text-lg sm:text-2xl font-semibold text-violet-400 mt-2 font-mono-code">
@@ -172,7 +176,9 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
               </div>
 
               {/* Long Description */}
-              <p className="text-base sm:text-lg text-zinc-300 leading-relaxed max-w-2xl">
+              <p className={`text-base sm:text-lg leading-relaxed max-w-2xl ${
+                isLight ? 'text-slate-700' : 'text-zinc-300'
+              }`}>
                 {product.longDescription}
               </p>
 
@@ -183,14 +189,18 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
                   id="product-hero-deploy-btn"
                   className="px-7 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm sm:text-base shadow-xl shadow-violet-600/30 transition-all duration-200 active:scale-95 flex items-center gap-2.5 group"
                 >
-                  <span>{product.cta.primary}</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span className="text-white">{product.cta.primary}</span>
+                  <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <button
                   onClick={onOpenConsultant}
                   id="product-hero-consultant-btn"
-                  className="px-7 py-3.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-white font-bold text-sm sm:text-base border border-white/10 transition-all duration-200 active:scale-95 flex items-center gap-2"
+                  className={`px-7 py-3.5 rounded-xl font-bold text-sm sm:text-base border transition-all duration-200 active:scale-95 flex items-center gap-2 ${
+                    isLight
+                      ? 'bg-white hover:bg-slate-100 text-slate-800 border-slate-300 shadow-sm'
+                      : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border-white/10'
+                  }`}
                 >
                   <Bot className="w-4 h-4 text-violet-400" />
                   <span>{product.cta.secondary}</span>
@@ -198,10 +208,21 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
               </div>
 
               {/* Metrics Ribbon */}
-              <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 border-t border-white/[0.08]">
+              <div className={`pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 border-t ${
+                isLight ? 'border-slate-200' : 'border-white/[0.08]'
+              }`}>
                 {product.metrics.map((m, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-[#0e0e16] border border-white/[0.06]">
-                    <div className="text-xl sm:text-2xl font-bold text-white font-display">
+                  <div
+                    key={idx}
+                    className={`p-3 rounded-xl border ${
+                      isLight
+                        ? 'bg-white border-slate-200 shadow-sm'
+                        : 'bg-[#0e0e16] border-white/[0.06]'
+                    }`}
+                  >
+                    <div className={`text-xl sm:text-2xl font-bold font-display ${
+                      isLight ? 'text-slate-900' : 'text-white'
+                    }`}>
                       {m.value}
                     </div>
                     <div className="text-[11px] text-zinc-400 font-mono-code truncate mt-0.5">
@@ -292,20 +313,30 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
         <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
             {/* The Problem Card */}
-            <div className="p-8 sm:p-10 rounded-2xl bg-[#0e0910] border border-red-500/30 relative">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-wider mb-4">
+            <div className={`p-8 sm:p-10 rounded-2xl relative border ${
+              isLight
+                ? 'bg-red-50/60 border-red-200 text-slate-900 shadow-sm'
+                : 'bg-[#0e0910] border-red-500/30'
+            }`}>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-wider mb-4">
                 <span>The Challenge</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold font-display text-white mb-3">
+              <h3 className={`text-2xl sm:text-3xl font-bold font-display mb-3 ${
+                isLight ? 'text-slate-900' : 'text-white'
+              }`}>
                 {product.problem.title}
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed mb-6">
+              <p className={`text-sm leading-relaxed mb-6 ${
+                isLight ? 'text-slate-700' : 'text-zinc-400'
+              }`}>
                 {product.problem.summary}
               </p>
-              <ul className="space-y-3 text-sm text-zinc-300">
+              <ul className={`space-y-3 text-sm ${
+                isLight ? 'text-slate-800' : 'text-zinc-300'
+              }`}>
                 {product.problem.points.map((pt, idx) => (
                   <li key={idx} className="flex items-start gap-2.5">
-                    <span className="text-red-400 font-bold shrink-0 mt-0.5">✕</span>
+                    <span className="text-red-500 font-bold shrink-0 mt-0.5">✕</span>
                     <span>{pt}</span>
                   </li>
                 ))}
@@ -313,20 +344,30 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
             </div>
 
             {/* The Solution Card */}
-            <div className="p-8 sm:p-10 rounded-2xl bg-[#090e12] border border-emerald-500/30 relative shadow-xl shadow-emerald-950/10">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-4">
+            <div className={`p-8 sm:p-10 rounded-2xl relative border ${
+              isLight
+                ? 'bg-emerald-50/60 border-emerald-200 text-slate-900 shadow-sm'
+                : 'bg-[#090e12] border-emerald-500/30 shadow-xl shadow-emerald-950/10'
+            }`}>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-xs font-bold uppercase tracking-wider mb-4">
                 <span>The Artify Solution</span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold font-display text-white mb-3">
+              <h3 className={`text-2xl sm:text-3xl font-bold font-display mb-3 ${
+                isLight ? 'text-slate-900' : 'text-white'
+              }`}>
                 {product.solution.title}
               </h3>
-              <p className="text-sm text-zinc-300 leading-relaxed mb-6">
+              <p className={`text-sm leading-relaxed mb-6 ${
+                isLight ? 'text-slate-700' : 'text-zinc-300'
+              }`}>
                 {product.solution.summary}
               </p>
-              <ul className="space-y-3 text-sm text-zinc-200">
+              <ul className={`space-y-3 text-sm ${
+                isLight ? 'text-slate-800' : 'text-zinc-200'
+              }`}>
                 {product.solution.points.map((pt, idx) => (
                   <li key={idx} className="flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     <span>{pt}</span>
                   </li>
                 ))}
@@ -344,7 +385,9 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
               <Zap className="w-3.5 h-3.5" />
               <span>Core Architectural Features</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
+            <h2 className={`text-3xl sm:text-4xl font-bold font-display tracking-tight ${
+              isLight ? 'text-slate-900' : 'text-white'
+            }`}>
               Engineered for Enterprise Performance
             </h2>
           </div>

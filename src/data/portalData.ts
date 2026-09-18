@@ -26,7 +26,7 @@ export interface PlanDefinition {
 export const SUBSCRIPTION_PLANS: PlanDefinition[] = [
   {
     id: 'starter',
-    name: 'AI Foundation Tier',
+    name: 'Enterprise Foundation Tier',
     tagline: 'Ideal for automating single departmental workflows or pilot deployments',
     priceMonthly: 1250,
     priceAnnual: 1000,
@@ -91,21 +91,21 @@ export const ARTIFY_PRODUCT_CATEGORIES: ArtifyProductCategory[] = [
   },
   {
     id: 'ai_software',
-    name: 'AI Software',
+    name: 'Adaptive Enterprise Software',
     slug: 'ai-software',
     icon: 'Cpu',
-    description: 'Turnkey SaaS applications engineered natively on state-of-the-art LLM architectures',
+    description: 'Turnkey enterprise applications engineered natively on state-of-the-art architectures',
   },
   {
     id: 'ai_agents',
-    name: 'AI Agents & Fleets',
+    name: 'Autonomous Agent Fleets',
     slug: 'ai-agents',
     icon: 'Bot',
     description: 'Autonomous multi-agent swarms with live tool-use and continuous execution',
   },
   {
     id: 'accounting_software',
-    name: 'Accounting & Finance AI',
+    name: 'Accounting & Financial Intelligence',
     slug: 'accounting-software',
     icon: 'Receipt',
     description: 'Continuous autonomous ledger reconciliation and zero-touch invoice matching',

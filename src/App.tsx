@@ -2,13 +2,21 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustStatement } from './components/TrustStatement';
+import { AdaptiveEcosystem } from './components/AdaptiveEcosystem';
+import { NextGenAiLayer } from './components/NextGenAiLayer';
+import { AdaptiveIntelligence } from './components/AdaptiveIntelligence';
+import { EnterpriseSolutions } from './components/EnterpriseSolutions';
+import { IndustryShowcase } from './components/IndustryShowcase';
+import { LiveScenarios } from './components/LiveScenarios';
+import { EnterpriseArchitecture } from './components/EnterpriseArchitecture';
+import { SecurityAndSovereignty } from './components/SecurityAndSovereignty';
+import { DeploymentMethodology } from './components/DeploymentMethodology';
 import { WhatWeBuild } from './components/WhatWeBuild';
 import { AiAgentsSection } from './components/AiAgentsSection';
 import { AiOrchestration } from './components/AiOrchestration';
 import { IndustryExplorer } from './components/IndustryExplorer';
 import { SolutionsByFunction } from './components/SolutionsByFunction';
 import { ArtifyDifference } from './components/ArtifyDifference';
-import { DevelopmentMethodology } from './components/DevelopmentMethodology';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import { AiCommandCenter } from './components/AiCommandCenter';
 import { IntegrationsEcosystem } from './components/IntegrationsEcosystem';
@@ -392,7 +400,7 @@ function MainAppContent() {
 
         {activeRoute === 'home' && (
           <>
-            {/* 1. Hero Section */}
+            {/* 1. Hero: Adaptive Software & Intelligent Ecosystems */}
             <AnimatedSection variant="fade" duration={0.8}>
               <Hero
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
@@ -402,184 +410,101 @@ function MainAppContent() {
               />
             </AnimatedSection>
 
-            {/* 2. Featured AI Products Showcase Ribbon on Homepage */}
-            <AnimatedSection variant="fade-up">
-              <section className="py-20 border-b border-white/[0.06] bg-black/40">
-                <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto">
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                    <div>
-                      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-3">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Enterprise Product Suite</span>
-                      </div>
-                      <h2 className="text-3xl sm:text-4xl font-bold font-display tracking-tight text-white">
-                        Featured AI Solutions
-                      </h2>
-                      <p className="text-sm sm:text-base text-zinc-400 mt-2 max-w-xl">
-                        Explore our top enterprise-ready autonomous AI products engineered for mission-critical operations.
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => navigateToRoute('ai-solutions', '/ai-solutions')}
-                      className="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 self-start md:self-auto transition-all"
-                    >
-                      <span>View All 8 AI Products</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                    {AI_PRODUCTS.slice(0, 4).map((product) => (
-                      <StaggerItem key={product.id}>
-                        <motion.div
-                          onClick={() => handleSelectProduct(product)}
-                          whileHover={{ y: -6, borderColor: 'rgba(139, 92, 246, 0.6)' }}
-                          transition={{ duration: 0.2 }}
-                          className="h-full p-6 rounded-2xl bg-[#0c0c14] border border-white/[0.08] cursor-pointer flex flex-col justify-between group shadow-lg"
-                        >
-                          <div>
-                            <div className="flex items-center justify-between mb-4">
-                              <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400 font-mono-code">
-                                {product.categoryLabel}
-                              </span>
-                              <span className="text-[10px] font-bold text-emerald-400 font-mono-code">
-                                {product.uptime}
-                              </span>
-                            </div>
-                            <h3 className="text-xl font-bold text-white font-display group-hover:text-violet-300 transition-colors">
-                              {product.name}
-                            </h3>
-                            <p className="text-xs text-violet-400/90 font-mono-code mt-1">
-                              {product.tagline}
-                            </p>
-                            <p className="text-xs text-zinc-400 mt-3 line-clamp-3 leading-relaxed">
-                              {product.shortDescription}
-                            </p>
-                          </div>
-
-                          <div className="mt-6 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
-                            <span className="font-bold text-zinc-300 font-mono-code">
-                              {product.metrics[0]?.value}
-                            </span>
-                            <span className="text-violet-400 font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                              <span>Explore</span>
-                              <ArrowRight className="w-3.5 h-3.5" />
-                            </span>
-                          </div>
-                        </motion.div>
-                      </StaggerItem>
-                    ))}
-                  </StaggerContainer>
+            {/* Subtle, professional horizontal separator between Hero and Problem Section */}
+            <div className="relative w-full max-w-7xl mx-auto px-6 py-4 overflow-hidden" aria-hidden="true">
+              <div className="relative flex items-center justify-center">
+                <div className="h-px w-full bg-gradient-to-r from-transparent via-violet-500/25 to-transparent" />
+                <div className="absolute flex items-center gap-2 px-3 py-1 rounded-full bg-[#050508] border border-white/[0.08] shadow-sm text-[10px] font-mono-code text-zinc-400 uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400/80 animate-pulse" />
+                  <span>The Paradigm Shift</span>
                 </div>
-              </section>
-            </AnimatedSection>
+              </div>
+            </div>
 
-            {/* 3. Trust Statement */}
+            {/* 2. Core Philosophy: Technology Adapts to Business */}
             <AnimatedSection variant="fade-up">
               <TrustStatement />
             </AnimatedSection>
 
-            {/* 4. What We Build */}
+            {/* 3. The Adaptive Enterprise Ecosystem (16 Integrated Nodes) */}
             <AnimatedSection variant="fade-up">
-              <WhatWeBuild
+              <AdaptiveEcosystem
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 onNavigateToContact={handleNavigateToContact}
               />
             </AnimatedSection>
 
-            {/* 5. AI Agents */}
-            <AnimatedSection variant="blur-up">
-              <AiAgentsSection />
+            {/* 4. Enterprise Intelligence Layer: Next-Gen AI Fabric */}
+            <AnimatedSection variant="fade-up">
+              <NextGenAiLayer onOpenConsultant={() => setIsConsultantOpen(true)} />
             </AnimatedSection>
 
-            {/* 6. AI Orchestration */}
+            {/* 5. Continuous Enterprise Adaptability: Software That Evolves With You */}
+            <AnimatedSection variant="fade-up">
+              <AdaptiveIntelligence onNavigateToContact={handleNavigateToContact} />
+            </AnimatedSection>
+
+            {/* 6. Specialized Enterprise Solutions: 6 Core Business Ecosystems */}
+            <AnimatedSection variant="fade-up">
+              <EnterpriseSolutions
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
+
+            {/* 7. Domain-Specific Solutions: Industry Architecture */}
+            <AnimatedSection variant="fade-up">
+              <IndustryShowcase
+                onSelectIndustry={(id) => handleOpenSolutionBuilder(id)}
+                onNavigateToContact={handleNavigateToContact}
+                onNavigateToAllIndustries={() => navigateToRoute('industries', '/industries')}
+              />
+            </AnimatedSection>
+
+            {/* 8. Live Real-World Enterprise Scenarios */}
+            <AnimatedSection variant="fade-up">
+              <LiveScenarios
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                onNavigateToContact={handleNavigateToContact}
+              />
+            </AnimatedSection>
+
+            {/* 9. Cross-Agent Orchestration Engine */}
             <AnimatedSection variant="fade-up">
               <AiOrchestration />
             </AnimatedSection>
 
-            {/* 7. Industries Matrix */}
-            <AnimatedSection variant="fade-up">
-              <IndustryExplorer
-                onOpenSolutionBuilder={(id) => handleOpenSolutionBuilder(id)}
-                onNavigateToContact={handleNavigateToContact}
-              />
-            </AnimatedSection>
-
-            {/* 8. Solutions by Business Function */}
-            <AnimatedSection variant="fade-up">
-              <SolutionsByFunction
-                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-                onNavigateToContact={handleNavigateToContact}
-              />
-            </AnimatedSection>
-
-            {/* 9. The Artify Difference */}
-            <AnimatedSection variant="fade-up">
-              <ArtifyDifference />
-            </AnimatedSection>
-
-            {/* 10. Development Methodology */}
-            <AnimatedSection variant="fade-up">
-              <DevelopmentMethodology onNavigateToContact={handleNavigateToContact} />
-            </AnimatedSection>
-
-            {/* 11. Before / After Comparison */}
+            {/* 10. Operational Transformation: Before vs. After */}
             <AnimatedSection variant="scale-up">
               <BeforeAfterSlider />
             </AnimatedSection>
 
-            {/* 12. AI Command Center */}
+            {/* 11. Conversational Business Intelligence: AI Command Center */}
             <AnimatedSection variant="blur-up">
               <AiCommandCenter />
             </AnimatedSection>
 
-            {/* 13. Integrations Ecosystem */}
+            {/* 12. Enterprise Architecture: 5-Layer Production Blueprint */}
             <AnimatedSection variant="fade-up">
-              <IntegrationsEcosystem />
+              <EnterpriseArchitecture onNavigateToContact={handleNavigateToContact} />
             </AnimatedSection>
 
-            {/* 14. Security & Governance */}
+            {/* 13. Security, Compliance & Data Sovereignty */}
             <AnimatedSection variant="fade-up">
-              <SecurityAndGovernance />
+              <SecurityAndSovereignty onNavigateToContact={handleNavigateToContact} />
             </AnimatedSection>
 
-            {/* 15. Human + AI Collaboration */}
+            {/* 14. Rapid Deployment Methodology: From Audit to Production */}
+            <AnimatedSection variant="fade-up">
+              <DeploymentMethodology onNavigateToContact={handleNavigateToContact} />
+            </AnimatedSection>
+
+            {/* 15. The Human + AI Symbiotic Enterprise */}
             <AnimatedSection variant="fade-up">
               <HumanPlusAi />
             </AnimatedSection>
 
-            {/* 16. Customization Showcase */}
-            <AnimatedSection variant="fade-up">
-              <CustomizationShowcase />
-            </AnimatedSection>
-
-            {/* 17. Case Studies */}
-            <AnimatedSection variant="fade-up">
-              <CaseStudiesSection
-                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-                onNavigateToContact={handleNavigateToContact}
-              />
-            </AnimatedSection>
-
-            {/* 18. Technology Stack */}
-            <AnimatedSection variant="fade-up">
-              <TechnologyStack />
-            </AnimatedSection>
-
-            {/* 19. Blog Preview */}
-            <AnimatedSection variant="fade-up">
-              <BlogPreviewSection
-                onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
-              />
-            </AnimatedSection>
-
-            {/* 20. About & Vision */}
-            <AnimatedSection variant="fade-up">
-              <AboutAndVision onNavigateToContact={handleNavigateToContact} />
-            </AnimatedSection>
-
-            {/* 21. Contact & Brief */}
+            {/* 16. Technical Contact & Solution Brief */}
             <AnimatedSection variant="fade-up">
               <ContactAndBrief prefilledBrief={prefilledBrief} />
             </AnimatedSection>

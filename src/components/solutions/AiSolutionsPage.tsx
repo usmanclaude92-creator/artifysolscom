@@ -203,8 +203,8 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
                   : 'bg-[#0d0d14]/70 border-white/[0.06]'
               }`}
             >
-              <div className="text-2xl sm:text-3xl font-bold text-white font-display">8+</div>
-              <div className="text-xs text-zinc-400 font-mono-code mt-0.5">Enterprise AI Engines</div>
+              <div className={`text-2xl sm:text-3xl font-bold font-display ${isLight ? 'text-slate-900' : 'text-white'}`}>8+</div>
+              <div className="text-xs text-zinc-400 font-mono-code mt-0.5">Enterprise Solution Engines</div>
             </div>
             <div
               className={`p-4 rounded-xl border text-left ${
@@ -250,8 +250,10 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
                 <Cpu className="w-3.5 h-3.5" />
                 <span>Production-Ready Modular Architecture</span>
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight">
-                Our AI Products
+              <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-bold font-display tracking-tight ${
+                isLight ? 'text-slate-900' : 'text-white'
+              }`}>
+                Our Enterprise Solutions
               </h2>
               <p
                 className={`text-base sm:text-lg max-w-2xl mt-2 leading-relaxed ${

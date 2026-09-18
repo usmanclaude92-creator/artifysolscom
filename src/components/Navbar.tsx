@@ -12,7 +12,6 @@ import {
   Workflow,
   Sun,
   Moon,
-  Lock,
   LayoutDashboard,
   LogIn,
   FileText,
@@ -27,10 +26,32 @@ import {
   BookOpen,
   Mail,
   Zap,
+  Database,
+  Users,
+  CreditCard,
+  Truck,
+  Boxes,
+  Smartphone,
+  DollarSign,
+  Briefcase,
+  Code2,
+  Network,
+  RefreshCw,
+  FileSearch,
+  ShieldCheck,
+  CheckCircle2,
+  Activity,
+  ArrowUpRight,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AiProductItem } from '../types';
 import { AI_PRODUCTS } from '../data/aiProductsData';
+import {
+  SOLUTIONS_CATEGORIES,
+  ARTIFY_INTELLIGENCE_CAPABILITIES,
+  ECOSYSTEM_NODES,
+  SolutionMenuItem,
+} from '../data/solutionsMenuData';
 
 interface NavbarProps {
   onOpenSolutionBuilder: () => void;
@@ -43,21 +64,41 @@ interface NavbarProps {
   onNavigateToIndustries?: () => void;
   onNavigateToCaseStudies?: () => void;
   onNavigateToAbout?: () => void;
+  onNavigateToPlatform?: () => void;
+  onNavigateToIntelligence?: () => void;
+  onNavigateToEcosystem?: () => void;
   onSelectProduct?: (product: AiProductItem) => void;
   activeRoute?: string;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
 }
 
-const PRODUCT_ICONS: Record<string, React.ElementType> = {
-  Bot,
+const ICON_MAP: Record<string, React.ElementType> = {
   Layers,
-  Cpu,
-  TrendingUp,
+  Database,
+  BarChart3: TrendingUp, // fallback if needed or BarChart3 equivalent
+  Users,
+  Smartphone,
+  DollarSign,
+  CreditCard,
+  Truck,
+  Briefcase,
+  Boxes,
+  Workflow,
+  Building2,
+  Sliders,
+  Code2,
+  Network,
+  RefreshCw,
+  FileSearch,
+  Sparkles,
   MessageSquare,
-  Scan,
-  Shield,
-  Terminal,
+  ShieldCheck,
+  TrendingUp,
+  FileText,
+  Cpu,
+  Zap,
+  Bot,
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -71,6 +112,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateToIndustries,
   onNavigateToCaseStudies,
   onNavigateToAbout,
+  onNavigateToPlatform,
+  onNavigateToIntelligence,
+  onNavigateToEcosystem,
   onSelectProduct,
   activeRoute = 'home',
   theme,
@@ -80,7 +124,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [sideMenuOpen, setSideMenuOpen] = useState(false);
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false);
-  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
+  const [mobileActiveCategory, setMobileActiveCategory] = useState<string | null>(null);
+  const [selectedEcosystemPillar, setSelectedEcosystemPillar] = useState<string>('intelligence');
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isLight = theme === 'light';
 
@@ -129,12 +177,71 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const handleProductSelect = (product: AiProductItem, e?: React.MouseEvent) => {
-    if (onSelectProduct) {
-      if (e) e.preventDefault();
-      onSelectProduct(product);
-      setSideMenuOpen(false);
-      setSolutionsDropdownOpen(false);
+  // Section smooth-scroll or route fallback
+  const handleSectionClick = (e: React.MouseEvent, sectionId: string, fallbackRoute?: () => void) => {
+    e.preventDefault();
+    setSolutionsDropdownOpen(false);
+    setSideMenuOpen(false);
+
+    if (activeRoute !== 'home') {
+      if (fallbackRoute) {
+        fallbackRoute();
+      } else if (onNavigateToHome) {
+        onNavigateToHome();
+        setTimeout(() => {
+          const el = document.getElementById(sectionId);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+      }
+      return;
+    }
+
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (typeof window !== 'undefined' && window.location.hash !== `#${sectionId}`) {
+        window.history.pushState(null, '', `#${sectionId}`);
+      }
+    } else if (fallbackRoute) {
+      fallbackRoute();
+    }
+  };
+
+  const handleMenuItemClick = (item: SolutionMenuItem, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    setSolutionsDropdownOpen(false);
+    setSideMenuOpen(false);
+
+    if (item.targetType === 'product' && item.targetSlug) {
+      const prod = AI_PRODUCTS.find((p) => p.slug === item.targetSlug);
+      if (prod && onSelectProduct) {
+        onSelectProduct(prod);
+        return;
+      }
+      if (onNavigateToAiSolutions) {
+        onNavigateToAiSolutions();
+        return;
+      }
+    }
+
+    if (item.targetType === 'industry' && onNavigateToIndustries) {
+      onNavigateToIndustries();
+      return;
+    }
+
+    if (item.targetType === 'wizard') {
+      onOpenSolutionBuilder();
+      return;
+    }
+
+    if (item.targetType === 'contact') {
+      onNavigateToContact();
+      return;
+    }
+
+    // Default to solutions overview
+    if (onNavigateToAiSolutions) {
+      onNavigateToAiSolutions();
     }
   };
 
@@ -143,12 +250,12 @@ export const Navbar: React.FC<NavbarProps> = ({
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
           ? isLight
-            ? 'bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-lg shadow-slate-900/5 py-2.5 sm:py-3'
-            : 'bg-[#050505]/85 backdrop-blur-xl border-b border-white/[0.08] shadow-2xl shadow-black/80 py-2.5 sm:py-3'
-          : 'bg-transparent py-4 sm:py-5'
+            ? 'bg-white/95 backdrop-blur-xl border-b border-slate-200/90 shadow-lg shadow-slate-900/5 py-2 sm:py-2.5'
+            : 'bg-[#050508]/90 backdrop-blur-xl border-b border-white/[0.08] shadow-2xl shadow-black/80 py-2 sm:py-2.5'
+          : 'bg-transparent py-3.5 sm:py-4.5'
       }`}
     >
-      <div className="w-full px-4 sm:px-6 lg:px-[5%] xl:px-[7%] flex items-center justify-between gap-3 sm:gap-4">
+      <div className="w-full px-4 sm:px-6 lg:px-[4%] xl:px-[5%] flex items-center justify-between gap-3 sm:gap-4">
         {/* Brand Logo */}
         <a
           href="/"
@@ -156,8 +263,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           className="flex items-center group focus:outline-none shrink-0"
           id="brand-logo"
         >
-          {/* WebP is ~60% smaller than the PNG; the PNG stays as the
-              fallback for browsers that don't support it. */}
           <picture>
             <source
               srcSet={isLight ? '/logo-header-light.webp' : '/logo-header-dark.webp'}
@@ -165,7 +270,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             />
             <img
               src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
-              alt="Artify Sols"
+              alt="Artify Solutions"
               width={418}
               height={132}
               className="h-9 sm:h-11 w-auto object-contain"
@@ -173,161 +278,477 @@ export const Navbar: React.FC<NavbarProps> = ({
           </picture>
         </a>
 
-        {/* Desktop Navigation Links (>= 768px) with AI Solutions Mega Dropdown */}
+        {/* Desktop Primary Navigation (Platform | Our Solutions | Intelligence | Industries | Ecosystem | Insights | Company) */}
         <nav
           aria-label="Main Navigation"
-          className={`hidden md:flex items-center gap-1.5 lg:gap-2.5 xl:gap-3.5 border rounded-full px-3 sm:px-4 lg:px-5 xl:px-6 py-2 backdrop-blur-md shadow-inner transition-all duration-200 ${
+          className={`hidden md:flex items-center gap-1 lg:gap-1.5 xl:gap-2 border rounded-full px-2.5 sm:px-3 lg:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
             isLight
-              ? 'bg-slate-100/90 border-slate-200/90'
-              : 'bg-[#0d0d12]/75 border-white/[0.08]'
+              ? 'bg-slate-100/90 border-slate-200/90 text-slate-800'
+              : 'bg-[#0d0d14]/80 border-white/[0.08] text-zinc-300'
           }`}
         >
-          {/* AI Solutions Dropdown Trigger */}
+          {/* 1. Platform Link */}
+          <a
+            href="#platform"
+            onClick={(e) => handleSectionClick(e, 'platform', onNavigateToServices)}
+            id="nav-link-platform"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              activeRoute === 'services'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            Platform
+          </a>
+
+          {/* 2. OUR SOLUTIONS Mega-Menu Dropdown */}
           <div className="static" ref={dropdownRef}>
             <button
               onClick={() => setSolutionsDropdownOpen(!solutionsDropdownOpen)}
               onMouseEnter={() => setSolutionsDropdownOpen(true)}
-              id="nav-ai-solutions-dropdown-btn"
-              className={`text-xs lg:text-[13px] xl:text-[13.5px] font-semibold px-3 lg:px-4 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${
+              id="nav-our-solutions-dropdown-btn"
+              aria-expanded={solutionsDropdownOpen}
+              aria-haspopup="true"
+              className={`text-xs lg:text-[13px] font-semibold px-3 lg:px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 whitespace-nowrap ${
                 activeRoute === 'ai-solutions' || activeRoute === 'product-detail'
                   ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
                   : solutionsDropdownOpen
                   ? isLight
                     ? 'bg-slate-200 text-slate-950'
-                    : 'bg-white/[0.1] text-white'
+                    : 'bg-white/[0.12] text-white'
                   : isLight
-                  ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                  : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+                  ? 'text-slate-800 hover:text-slate-950 hover:bg-slate-200/70'
+                  : 'text-zinc-200 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-              <span>AI Solutions</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${solutionsDropdownOpen ? 'rotate-180' : ''}`} />
+              <span>Our Solutions</span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  solutionsDropdownOpen ? 'rotate-180 text-violet-400' : 'text-zinc-400'
+                }`}
+              />
             </button>
 
-            {/* AI Solutions Mega Dropdown Menu */}
+            {/* OUR SOLUTIONS Mega-Menu Container */}
             {solutionsDropdownOpen && (
               <div
-                id="nav-menu-container"
+                id="our-solutions-mega-menu"
                 onMouseEnter={() => setSolutionsDropdownOpen(true)}
                 onMouseLeave={() => setSolutionsDropdownOpen(false)}
-                className={`absolute top-full mt-2 sm:mt-2.5 left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] sm:w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] max-w-7xl max-h-[calc(100vh-5.5rem)] overflow-y-auto p-5 sm:p-7 rounded-2xl sm:rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 animate-in fade-in zoom-in-95 z-50 ${
+                className={`absolute top-full mt-2 left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] sm:w-[calc(100vw-3rem)] md:w-[calc(100vw-4rem)] max-w-7xl max-h-[calc(100vh-5.5rem)] overflow-y-auto p-5 sm:p-6 lg:p-7 rounded-2xl sm:rounded-3xl border shadow-2xl backdrop-blur-2xl transition-all duration-200 animate-in fade-in zoom-in-95 z-50 ${
                   isLight
                     ? 'bg-white/98 border-slate-200/90 shadow-slate-900/15 text-slate-900'
-                    : 'bg-[#0c0c14]/98 border-white/[0.12] shadow-[0_25px_70px_rgba(0,0,0,0.9)] text-white'
+                    : 'bg-[#090910]/98 border-white/[0.12] shadow-[0_25px_80px_rgba(0,0,0,0.95)] text-white'
                 }`}
               >
-                {/* Mega Menu Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-white/[0.08] gap-2">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-violet-400 font-mono-code">
-                      ENTERPRISE AI PRODUCT SUITE
-                    </span>
-                    <span className="hidden sm:inline-block text-[11px] px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 font-mono-code">
-                      8 Autonomous Engines
+                {/* Mega Menu Top Header Bar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-white/[0.08] gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[11px] font-semibold font-mono-code uppercase tracking-wider">
+                      <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                      <span>Adaptive Enterprise Ecosystem</span>
+                    </div>
+                    <span className="hidden lg:inline text-xs text-zinc-400">
+                      Software engineered around how your business actually operates — connected, adaptive, and intelligent.
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-xs">
+
+                  <div className="flex items-center gap-3 text-xs shrink-0">
                     <a
                       href="/ai-solutions"
                       onClick={(e) => handleRouteClick(e, onNavigateToAiSolutions)}
-                      className="font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
+                      className="font-bold text-violet-400 hover:text-violet-300 flex items-center gap-1.5 transition-colors"
                     >
-                      <span>Explore Full Solutions Catalog</span>
+                      <span>Explore Solutions Catalog</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                   </div>
                 </div>
 
-                {/* 4-Column Product Grid in Expanded Mega Dropdown */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
-                  {AI_PRODUCTS.map((prod) => {
-                    const Icon = PRODUCT_ICONS[prod.icon] || Bot;
-                    return (
-                      <a
-                        key={prod.id}
-                        href={`/ai-solutions/${prod.slug}`}
-                        onClick={(e) => handleProductSelect(prod, e)}
-                        className={`p-3.5 rounded-xl cursor-pointer transition-all duration-200 flex flex-col justify-between border ${
-                          isLight
-                            ? 'bg-slate-50/70 border-slate-200/80 hover:bg-white hover:border-violet-400 hover:shadow-md'
-                            : 'bg-[#11111a]/60 border-white/[0.05] hover:bg-[#161624] hover:border-violet-500/40 hover:shadow-[0_4px_20px_rgba(120,34,255,0.12)]'
-                        } group`}
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-violet-600/20 text-violet-300 border border-violet-500/30 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-violet-600/30 transition-all">
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <span className="text-[10px] font-bold font-mono-code text-violet-400/90 uppercase">
-                              {prod.categoryLabel}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[13px] font-bold font-display group-hover:text-violet-300 transition-colors">
-                              {prod.name}
-                            </span>
-                            {prod.badge && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-violet-500/20 text-violet-300 font-mono-code shrink-0">
-                                {prod.badge}
-                              </span>
-                            )}
-                          </div>
-
-                          <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed mt-1">
-                            {prod.tagline}
-                          </p>
-                        </div>
-
-                        <div className="mt-3 pt-2.5 border-t border-white/[0.05] flex items-center justify-between text-[10.5px]">
-                          <span className="text-zinc-400 font-mono-code">
-                            {prod.uptime || '99.99% SLA'}
-                          </span>
-                          <span className="text-violet-400 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
-                            <span>Inspect</span>
-                            <ChevronRight className="w-3 h-3" />
-                          </span>
-                        </div>
-                      </a>
-                    );
-                  })}
+                {/* Category Filter Pills (Instant Focus) */}
+                <div className="flex items-center gap-1.5 pb-4 mb-5 border-b border-white/[0.06] overflow-x-auto no-scrollbar">
+                  <button
+                    onClick={() => setActiveCategoryFilter('all')}
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                      activeCategoryFilter === 'all'
+                        ? 'bg-violet-600 text-white shadow-sm'
+                        : isLight
+                        ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    All Solution Families
+                  </button>
+                  {SOLUTIONS_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveCategoryFilter(cat.id)}
+                      className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                        activeCategoryFilter === cat.id
+                          ? 'bg-violet-600 text-white shadow-sm'
+                          : isLight
+                          ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                          : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                      }`}
+                    >
+                      {cat.title}
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => setActiveCategoryFilter('intelligence')}
+                    className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                      activeCategoryFilter === 'intelligence'
+                        ? 'bg-violet-600 text-white shadow-sm'
+                        : isLight
+                        ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    <Sparkles className="w-3 h-3 text-violet-400" />
+                    <span>Artify Intelligence</span>
+                  </button>
                 </div>
 
-                {/* Dropdown Footer with Architecture CTA */}
-                <div className="mt-4 pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                  <div className="flex items-center gap-4 text-zinc-400 text-[11px] font-mono-code flex-wrap">
-                    <span className="flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      SOC2 Type II Certified
-                    </span>
-                    <span>•</span>
-                    <span>Private VPC Isolation</span>
-                    <span>•</span>
-                    <span>Zero Data Retention</span>
+                {/* Main Grid: Left Solutions Columns (70%) + Right Intelligence & Ecosystem Showcase (30%) */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
+                  {/* Left Column: Solution Families */}
+                  <div
+                    className={`${
+                      activeCategoryFilter === 'intelligence' ? 'hidden' : 'lg:col-span-8'
+                    } space-y-6`}
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {SOLUTIONS_CATEGORIES.filter(
+                        (cat) => activeCategoryFilter === 'all' || activeCategoryFilter === cat.id
+                      ).map((category) => (
+                        <div
+                          key={category.id}
+                          className={`p-3.5 rounded-xl border flex flex-col justify-between ${
+                            isLight
+                              ? 'bg-slate-50/80 border-slate-200/80'
+                              : 'bg-[#101018]/60 border-white/[0.06]'
+                          }`}
+                        >
+                          <div>
+                            {/* Category Header */}
+                            <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/[0.06]">
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400 font-mono-code">
+                                {category.title}
+                              </span>
+                              <span className="text-[10px] text-zinc-400">
+                                {category.items.length} Solutions
+                              </span>
+                            </div>
+
+                            {/* Category Items */}
+                            <div className="space-y-2">
+                              {category.items.map((item) => {
+                                const ItemIcon = ICON_MAP[item.iconName] || Layers;
+                                return (
+                                  <button
+                                    key={item.id}
+                                    onClick={(e) => handleMenuItemClick(item, e)}
+                                    className={`w-full text-left p-2 rounded-lg transition-all flex items-start gap-2.5 group ${
+                                      isLight
+                                        ? 'hover:bg-white hover:shadow-sm'
+                                        : 'hover:bg-white/[0.06]'
+                                    }`}
+                                  >
+                                    <div className="w-6 h-6 rounded-md bg-violet-600/15 text-violet-400 border border-violet-500/20 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 group-hover:bg-violet-600/25 transition-all">
+                                      <ItemIcon className="w-3.5 h-3.5" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-1.5 flex-wrap">
+                                        <span className="text-xs font-semibold text-zinc-200 group-hover:text-violet-300 transition-colors">
+                                          {item.name}
+                                        </span>
+                                        {item.badge && (
+                                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-violet-500/20 text-violet-300 font-mono-code">
+                                            {item.badge}
+                                          </span>
+                                        )}
+                                      </div>
+                                      <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed mt-0.5">
+                                        {item.tagline}
+                                      </p>
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                  {/* Right Column: Featured "Artify Intelligence" & "The Artify Ecosystem" Panel */}
+                  <div
+                    className={`${
+                      activeCategoryFilter === 'intelligence'
+                        ? 'lg:col-span-12'
+                        : 'lg:col-span-4'
+                    } space-y-4`}
+                  >
+                    {/* Featured Panel 1: THE ARTIFY ECOSYSTEM (Section 5) */}
+                    {(() => {
+                      const activeNodeData =
+                        ECOSYSTEM_NODES.find((n) => n.id === selectedEcosystemPillar) ||
+                        ECOSYSTEM_NODES[6];
+                      const NodeIcon = ICON_MAP[activeNodeData.icon] || Sparkles;
+
+                      return (
+                        <div
+                          className={`p-4 sm:p-5 rounded-2xl border relative overflow-hidden transition-all duration-300 ${
+                            isLight
+                              ? 'bg-gradient-to-br from-violet-50 via-white to-indigo-50/60 border-violet-200/90 shadow-md shadow-violet-100/50'
+                              : 'bg-gradient-to-br from-violet-950/40 via-[#10101b] to-[#0c0c16] border-violet-500/30 shadow-xl shadow-black/50'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2.5">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-violet-400 font-mono-code flex items-center gap-1.5">
+                              <Network className="w-3.5 h-3.5 text-violet-400" />
+                              <span>The Artify Ecosystem</span>
+                            </span>
+                            <span className={`text-[10px] font-mono-code px-2 py-0.5 rounded-full ${
+                              isLight ? 'bg-violet-100 text-violet-800 font-semibold' : 'bg-violet-950/80 text-violet-300 border border-violet-700/40'
+                            }`}>
+                              7 Interconnected Pillars
+                            </span>
+                          </div>
+
+                          <h4 className={`text-xs font-bold mb-1 leading-snug ${isLight ? 'text-slate-900' : 'text-zinc-100'}`}>
+                            One Connected Platform. Seven Interlocking Capabilities.
+                          </h4>
+
+                          <p className={`text-[11px] leading-relaxed mb-3.5 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+                            Click or hover any pillar to inspect how it communicates across your business in real time:
+                          </p>
+
+                          {/* 7 Pillars Interactive Selector */}
+                          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 mb-3.5">
+                            {ECOSYSTEM_NODES.map((node) => {
+                              const PIcon = ICON_MAP[node.icon] || Sparkles;
+                              const isSelected = selectedEcosystemPillar === node.id;
+                              return (
+                                <button
+                                  key={node.id}
+                                  type="button"
+                                  onClick={() => setSelectedEcosystemPillar(node.id)}
+                                  onMouseEnter={() => setSelectedEcosystemPillar(node.id)}
+                                  className={`p-1.5 rounded-xl border flex flex-col items-center justify-center text-center transition-all ${
+                                    isSelected
+                                      ? isLight
+                                        ? 'bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-500/30 scale-105'
+                                        : 'bg-violet-600 text-white border-violet-400 shadow-md shadow-violet-600/40 scale-105'
+                                      : node.isHighlight
+                                      ? isLight
+                                        ? 'bg-violet-100 text-violet-800 border-violet-300 hover:bg-violet-200'
+                                        : 'bg-violet-950/40 text-violet-300 border-violet-700/40 hover:bg-violet-900/50'
+                                      : isLight
+                                      ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-sm'
+                                      : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/[0.08]'
+                                  }`}
+                                  title={`${node.label} (${node.tagline})`}
+                                >
+                                  <PIcon className={`w-3.5 h-3.5 mb-1 ${isSelected ? 'text-white' : ''}`} />
+                                  <span className="text-[10px] font-semibold leading-tight line-clamp-1">
+                                    {node.label}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Selected Pillar Relationship Deep Dive Card */}
+                          <div
+                            className={`p-3 rounded-xl border mb-3.5 transition-all duration-200 ${
+                              isLight
+                                ? 'bg-white border-violet-200/80 shadow-sm'
+                                : 'bg-[#0d0d16] border-white/[0.08]'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-white/[0.06]">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
+                                  <NodeIcon className="w-3.5 h-3.5" />
+                                </div>
+                                <div>
+                                  <div className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                                    {activeNodeData.label}
+                                  </div>
+                                  <div className="text-[10px] text-violet-400 font-mono-code">
+                                    {activeNodeData.tagline}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Connections Badges */}
+                              <div className="flex items-center gap-1 flex-wrap justify-end">
+                                <span className={`text-[9px] font-mono-code uppercase ${isLight ? 'text-slate-500' : 'text-zinc-500'}`}>
+                                  Syncs with:
+                                </span>
+                                {activeNodeData.connections.slice(0, 3).map((conn) => (
+                                  <span
+                                    key={conn}
+                                    className={`text-[9px] font-mono-code px-1.5 py-0.5 rounded border ${
+                                      isLight
+                                        ? 'bg-slate-100 text-slate-700 border-slate-200 font-medium'
+                                        : 'bg-white/[0.06] text-zinc-300 border-white/10'
+                                    }`}
+                                  >
+                                    {conn}
+                                  </span>
+                                ))}
+                                {activeNodeData.connections.length > 3 && (
+                                  <span className={`text-[9px] font-mono-code ${isLight ? 'text-slate-500' : 'text-zinc-500'}`}>
+                                    +{activeNodeData.connections.length - 3}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <p className={`text-[11px] leading-relaxed mb-2 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
+                              <strong className={isLight ? 'text-slate-900' : 'text-zinc-100'}>Relationship: </strong>
+                              {activeNodeData.relationship}
+                            </p>
+
+                            <div className={`text-[10px] font-mono-code pt-1.5 border-t flex items-center justify-between gap-2 ${
+                              isLight ? 'border-slate-100 text-slate-600' : 'border-white/[0.04] text-zinc-400'
+                            }`}>
+                              <span className="truncate">
+                                <strong className="text-violet-500">Capability: </strong>
+                                {activeNodeData.capability}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* CTAs */}
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <button
+                              onClick={() => {
+                                setSolutionsDropdownOpen(false);
+                                onOpenSolutionBuilder();
+                              }}
+                              className="flex-1 py-2 px-3 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-violet-600/30 transition-all active:scale-[0.98]"
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-white" />
+                              <span className="text-white">Build Adaptive Solution</span>
+                              <ArrowRight className="w-3.5 h-3.5 text-white" />
+                            </button>
+
+                            <button
+                              onClick={(e) => {
+                                setSolutionsDropdownOpen(false);
+                                handleSectionClick(e, 'ecosystem', onNavigateToEcosystem);
+                              }}
+                              className={`py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
+                                isLight
+                                  ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
+                                  : 'bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 border-white/10'
+                              }`}
+                            >
+                              Full Architecture
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Featured Panel 2: ARTIFY INTELLIGENCE (Cross-Ecosystem Capability) */}
+                    <div
+                      className={`p-4 rounded-2xl border ${
+                        isLight
+                          ? 'bg-slate-50/90 border-slate-200'
+                          : 'bg-[#101018]/80 border-white/[0.08]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <Cpu className="w-3.5 h-3.5 text-violet-400" />
+                          <h4 className="text-xs font-bold text-zinc-100 font-display">
+                            Artify Intelligence
+                          </h4>
+                        </div>
+                        <span className="text-[10px] text-violet-400 font-mono-code font-bold">
+                          Cross-Platform Fabric
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-zinc-400 leading-relaxed mb-3">
+                        Intelligence works across the entire Artify ecosystem rather than as a standalone chatbot. It continuously reasons over operational records to power:
+                      </p>
+
+                      {/* 10 Intelligence Capabilities List */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                        {ARTIFY_INTELLIGENCE_CAPABILITIES.slice(
+                          0,
+                          activeCategoryFilter === 'intelligence' ? 10 : 6
+                        ).map((cap) => {
+                          const CapIcon = ICON_MAP[cap.iconName] || Sparkles;
+                          return (
+                            <div
+                              key={cap.title}
+                              className="p-1.5 rounded-lg bg-white/[0.03] border border-white/[0.04] flex items-start gap-2"
+                            >
+                              <CapIcon className="w-3 h-3 text-violet-400 shrink-0 mt-0.5" />
+                              <div>
+                                <span className="font-semibold text-zinc-200 block text-[10.5px]">
+                                  {cap.title}
+                                </span>
+                                <span className="text-[10px] text-zinc-400 line-clamp-1">
+                                  {cap.description}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                        <button
+                          onClick={() => {
+                            setSolutionsDropdownOpen(false);
+                            onOpenConsultant();
+                          }}
+                          className="text-[11px] font-semibold text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors"
+                        >
+                          <Bot className="w-3.5 h-3.5" />
+                          <span>Launch Intelligence Advisor</span>
+                          <ChevronRight className="w-3 h-3" />
+                        </button>
+                        <span className="text-[10px] text-zinc-400 font-mono-code">
+                          Zero Third-Party Model Training
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dropdown Bottom Bar */}
+                <div className="mt-5 pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3 text-zinc-400 text-[11px] font-mono-code flex-wrap">
+                    <span className="flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      SOC2 Type II Aligned
+                    </span>
+                    <span>•</span>
+                    <span>Sovereign Private Cloud</span>
+                    <span>•</span>
+                    <span>Continuous Workflow Adaptability</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
                     <button
                       onClick={() => {
                         setSolutionsDropdownOpen(false);
-                        onOpenConsultant();
+                        onNavigateToContact();
                       }}
-                      className="px-3 py-1.5 rounded-lg border border-white/[0.1] hover:border-violet-400/50 hover:bg-white/[0.04] text-zinc-300 hover:text-white font-medium text-[11.5px] transition-all"
+                      className="text-xs font-semibold text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg border border-white/[0.1] hover:bg-white/[0.04] transition-all"
                     >
-                      AI Architecture Advisor
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSolutionsDropdownOpen(false);
-                        onOpenSolutionBuilder();
-                      }}
-                      className="px-3.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold flex items-center gap-1.5 text-[11.5px] shadow-md shadow-violet-600/30 transition-all"
-                    >
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Run Solution Blueprint Wizard</span>
-                      <ArrowRight className="w-3 h-3" />
+                      Request Architecture Assessment
                     </button>
                   </div>
                 </div>
@@ -335,28 +756,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </div>
 
-          {/* Services Link */}
+          {/* 3. Intelligence Link */}
           <a
-            href="/services"
-            onClick={(e) => handleRouteClick(e, onNavigateToServices)}
-            className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'services'
-                ? 'bg-violet-600 text-white shadow-md'
-                : isLight
+            href="#intelligence"
+            onClick={(e) => handleSectionClick(e, 'intelligence', onOpenConsultant)}
+            id="nav-link-intelligence"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              isLight
                 ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Services
+            Intelligence
           </a>
 
-          {/* Industries Link */}
+          {/* 4. Industries Link */}
           <a
             href="/industries"
             onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
-            className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
+            id="nav-link-industries"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'industries'
-                ? 'bg-violet-600 text-white shadow-md'
+                ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
                 ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
@@ -365,53 +786,51 @@ export const Navbar: React.FC<NavbarProps> = ({
             Industries
           </a>
 
-          {/* Case Studies Link */}
+          {/* 5. Ecosystem Link */}
           <a
-            href="/case-studies"
-            onClick={(e) => handleRouteClick(e, onNavigateToCaseStudies)}
-            className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'case-studies'
-                ? 'bg-violet-600 text-white shadow-md'
-                : isLight
+            href="#ecosystem"
+            onClick={(e) => handleSectionClick(e, 'ecosystem')}
+            id="nav-link-ecosystem"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              isLight
                 ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Case Studies
+            Ecosystem
           </a>
 
-          {/* About Link */}
-          <a
-            href="/about"
-            onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
-            className={`text-xs lg:text-[13px] xl:text-[13.5px] font-medium px-3 lg:px-3.5 xl:px-4 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'about'
-                ? 'bg-violet-600 text-white shadow-md'
-                : isLight
-                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
-            }`}
-          >
-            About
-          </a>
-
-          {/* Blog & News Link */}
+          {/* 6. Insights Link (Blog & Whitepapers) */}
           <a
             href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
-            className={`text-xs lg:text-[13px] xl:text-[13.5px] font-semibold px-3.5 lg:px-4 xl:px-4.5 py-1.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5 ${
+            id="nav-link-insights"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5 ${
               activeRoute === 'blog'
-                ? 'bg-violet-600 text-white shadow-md'
+                ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
-                ? 'text-violet-900 bg-violet-200/80 hover:bg-violet-300'
-                : 'text-violet-200 bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40'
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
-            </span>
-            <span>Blog & News</span>
+            <span>Insights</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
+          </a>
+
+          {/* 7. Company Link */}
+          <a
+            href="/about"
+            onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
+            id="nav-link-company"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              activeRoute === 'about'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            Company
           </a>
         </nav>
 
@@ -436,11 +855,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* AI Interactive Demo */}
+          {/* AI Interactive Advisor */}
           <button
             onClick={onOpenConsultant}
             id="nav-interactive-ai-btn"
-            className={`hidden lg:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-all shadow-sm ${
+            className={`hidden xl:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-all shadow-sm ${
               isLight
                 ? 'text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200 border-slate-200'
                 : 'text-zinc-300 hover:text-white bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08]'
@@ -450,11 +869,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>AI Advisor</span>
           </button>
 
-          {/* Contact / Build With AI Button */}
+          {/* Contact / Talk to Us Button */}
           <a
             href="/contact"
             onClick={(e) => handleRouteClick(e, onNavigateToContact)}
-            id="nav-build-with-ai-btn"
+            id="nav-talk-to-us-btn"
             className={`group relative inline-flex items-center gap-1.5 text-xs font-semibold px-3 lg:px-3.5 py-2 rounded-lg border shadow-sm transition-all active:scale-[0.98] ${
               activeRoute === 'contact'
                 ? 'bg-violet-600 text-white border-violet-500 shadow-md'
@@ -483,7 +902,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {user.name.slice(0, 1)}
               </div>
               <div className="flex flex-col text-left">
-                <span className={`text-[11px] font-bold truncate max-w-[90px] ${isLight ? 'text-slate-800' : 'text-zinc-100 group-hover:text-violet-200'}`}>
+                <span
+                  className={`text-[11px] font-bold truncate max-w-[90px] ${
+                    isLight ? 'text-slate-800' : 'text-zinc-100 group-hover:text-violet-200'
+                  }`}
+                >
                   {user.name.split(' ')[0]}
                 </span>
                 <span className="text-[9px] text-violet-500 dark:text-violet-400 font-mono-code leading-none">
@@ -558,18 +981,20 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <aside
             id="mobile-side-nav-drawer"
-            className={`fixed inset-y-0 right-0 z-50 w-[86vw] max-w-[360px] flex flex-col justify-between shadow-2xl transition-transform transform translate-x-0 border-l animate-in slide-in-from-right duration-300 ease-out ${
+            className={`fixed inset-y-0 right-0 z-50 w-[88vw] max-w-[380px] flex flex-col justify-between shadow-2xl transition-transform transform translate-x-0 border-l animate-in slide-in-from-right duration-300 ease-out ${
               isLight
                 ? 'bg-white border-slate-200 text-slate-900'
-                : 'bg-[#09090f] border-white/[0.1] text-zinc-100'
+                : 'bg-[#090910] border-white/[0.1] text-zinc-100'
             }`}
             role="dialog"
             aria-modal="true"
           >
             {/* Drawer Header */}
-            <div className={`p-4 sm:p-5 border-b flex items-center justify-between gap-3 ${
-              isLight ? 'border-slate-100 bg-slate-50/50' : 'border-white/[0.08] bg-[#0d0d16]/50'
-            }`}>
+            <div
+              className={`p-4 sm:p-5 border-b flex items-center justify-between gap-3 ${
+                isLight ? 'border-slate-100 bg-slate-50/50' : 'border-white/[0.08] bg-[#0d0d16]/50'
+              }`}
+            >
               <picture>
                 <source
                   srcSet={isLight ? '/logo-header-light.webp' : '/logo-header-dark.webp'}
@@ -577,10 +1002,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 />
                 <img
                   src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
-                  alt="Artify Sols"
+                  alt="Artify Solutions"
                   width={418}
                   height={132}
-                  className="h-8 w-auto object-contain"
+                  className="h-9 w-auto object-contain"
                 />
               </picture>
 
@@ -600,59 +1025,132 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Drawer Scrollable Content */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin">
-              {/* Navigation Items */}
+              {/* Navigation Items in New Order: Platform | Our Solutions | Intelligence | Industries | Ecosystem | Insights | Company */}
               <div className="space-y-1">
-                {/* AI Solutions Accordion */}
+                {/* 1. Platform */}
+                <a
+                  href="#platform"
+                  onClick={(e) => handleSectionClick(e, 'platform', onNavigateToServices)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Layers className="w-4 h-4 text-violet-400" />
+                    <span>Platform & Architecture</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                </a>
+
+                {/* 2. OUR SOLUTIONS Accordion */}
                 <div className="rounded-xl border border-white/[0.08] overflow-hidden bg-white/[0.02]">
                   <button
-                    onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
+                    onClick={() => setMobileSolutionsOpen(!mobileSolutionsOpen)}
                     className="w-full flex items-center justify-between p-3 text-left font-semibold text-xs text-white"
                   >
                     <div className="flex items-center gap-2.5">
                       <Sparkles className="w-4 h-4 text-violet-400" />
-                      <span>AI Solutions & Products</span>
+                      <span>Our Solutions</span>
                     </div>
-                    <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${mobileProductsOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      className={`w-4 h-4 text-zinc-400 transition-transform ${
+                        mobileSolutionsOpen ? 'rotate-180' : ''
+                      }`}
+                    />
                   </button>
 
-                  {mobileProductsOpen && (
-                    <div className="p-2 pt-0 space-y-1 border-t border-white/[0.06] bg-black/30">
+                  {mobileSolutionsOpen && (
+                    <div className="p-2 pt-0 space-y-2 border-t border-white/[0.06] bg-black/40">
                       <a
                         href="/ai-solutions"
                         onClick={(e) => handleRouteClick(e, onNavigateToAiSolutions)}
                         className="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-violet-400 hover:bg-violet-600/20 block"
                       >
-                        → All AI Solutions Overview
+                        → Solutions Catalog & Blueprint
                       </a>
-                      {AI_PRODUCTS.map((p) => (
-                        <a
-                          key={p.id}
-                          href={`/ai-solutions/${p.slug}`}
-                          onClick={(e) => handleProductSelect(p, e)}
-                          className="w-full text-left px-3 py-1.5 rounded-lg text-xs text-zinc-300 hover:bg-white/[0.06] flex items-center justify-between"
-                        >
-                          <span>{p.name}</span>
-                          <span className="text-[10px] text-zinc-500 font-mono-code">{p.categoryLabel}</span>
-                        </a>
+
+                      {/* Solution Families in Mobile Drawer */}
+                      {SOLUTIONS_CATEGORIES.map((cat) => (
+                        <div key={cat.id} className="pt-1">
+                          <button
+                            onClick={() =>
+                              setMobileActiveCategory(
+                                mobileActiveCategory === cat.id ? null : cat.id
+                              )
+                            }
+                            className="w-full flex items-center justify-between px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-400/90 font-mono-code"
+                          >
+                            <span>{cat.title}</span>
+                            <ChevronDown
+                              className={`w-3 h-3 text-zinc-500 transition-transform ${
+                                mobileActiveCategory === cat.id ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+
+                          {(mobileActiveCategory === cat.id || !mobileActiveCategory) && (
+                            <div className="pl-2 space-y-1 mt-1">
+                              {cat.items.map((item) => {
+                                const ItemIcon = ICON_MAP[item.iconName] || Layers;
+                                return (
+                                  <button
+                                    key={item.id}
+                                    onClick={(e) => handleMenuItemClick(item, e)}
+                                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-zinc-300 hover:bg-white/[0.06] flex items-center justify-between"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <ItemIcon className="w-3 h-3 text-violet-400 shrink-0" />
+                                      <span className="truncate">{item.name}</span>
+                                    </div>
+                                    {item.badge && (
+                                      <span className="text-[9px] font-mono-code px-1 py-0.2 rounded bg-violet-500/20 text-violet-300 shrink-0">
+                                        {item.badge}
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
                       ))}
+
+                      {/* Artify Intelligence Mobile Section */}
+                      <div className="pt-2 border-t border-white/[0.06]">
+                        <div className="px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-400 font-mono-code flex items-center gap-1.5">
+                          <Cpu className="w-3 h-3" />
+                          <span>Artify Intelligence Fabric</span>
+                        </div>
+                        <p className="px-2.5 text-[10.5px] text-zinc-400 leading-relaxed mb-1.5">
+                          Cross-platform autonomous intelligence layer powering workflows, document parsing, and real-time insights.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setSideMenuOpen(false);
+                            onOpenConsultant();
+                          }}
+                          className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs text-violet-300 hover:bg-violet-600/20 flex items-center gap-1.5 font-semibold"
+                        >
+                          <Bot className="w-3.5 h-3.5" />
+                          <span>Open AI Architecture Advisor</span>
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* Services */}
+                {/* 3. Intelligence */}
                 <a
-                  href="/services"
-                  onClick={(e) => handleRouteClick(e, onNavigateToServices)}
+                  href="#intelligence"
+                  onClick={(e) => handleSectionClick(e, 'intelligence', onOpenConsultant)}
                   className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Layers className="w-4 h-4 text-violet-400" />
-                    <span>Enterprise Services</span>
+                    <Cpu className="w-4 h-4 text-violet-400" />
+                    <span>Intelligence Layer</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
                 </a>
 
-                {/* Industries */}
+                {/* 4. Industries */}
                 <a
                   href="/industries"
                   onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
@@ -661,6 +1159,47 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="flex items-center gap-2.5">
                     <Building2 className="w-4 h-4 text-violet-400" />
                     <span>Industry Solutions (14 Sectors)</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                </a>
+
+                {/* 5. Ecosystem */}
+                <a
+                  href="#ecosystem"
+                  onClick={(e) => handleSectionClick(e, 'ecosystem')}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Network className="w-4 h-4 text-violet-400" />
+                    <span>Adaptive Ecosystem</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-600" />
+                </a>
+
+                {/* 6. Insights */}
+                <a
+                  href="/blog"
+                  onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-violet-600/20 text-violet-300 border border-violet-500/30"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <FileText className="w-4 h-4 text-violet-400" />
+                    <span>Insights & Research</span>
+                  </div>
+                  <span className="text-[10px] font-mono-code bg-violet-500/40 px-2 py-0.5 rounded">
+                    NEW
+                  </span>
+                </a>
+
+                {/* 7. Company */}
+                <a
+                  href="/about"
+                  onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
+                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Info className="w-4 h-4 text-violet-400" />
+                    <span>Company & Security</span>
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
                 </a>
@@ -677,32 +1216,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                   <ChevronRight className="w-4 h-4 text-zinc-600" />
                 </a>
-
-                {/* About */}
-                <a
-                  href="/about"
-                  onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-200 hover:bg-white/[0.06]"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Info className="w-4 h-4 text-violet-400" />
-                    <span>About & Security</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-600" />
-                </a>
-
-                {/* Blog */}
-                <a
-                  href="/blog"
-                  onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-violet-600/20 text-violet-300 border border-violet-500/30"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <FileText className="w-4 h-4 text-violet-400" />
-                    <span>Blog & Research</span>
-                  </div>
-                  <span className="text-[10px] font-mono-code bg-violet-500/40 px-2 py-0.5 rounded">NEW</span>
-                </a>
               </div>
 
               {/* Theme Toggle */}
@@ -713,7 +1226,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-white/[0.08] bg-[#12121a] text-zinc-200 text-xs font-semibold"
                 >
                   <div className="flex items-center gap-2.5">
-                    {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-violet-600" />}
+                    {theme === 'dark' ? (
+                      <Sun className="w-4 h-4 text-amber-300" />
+                    ) : (
+                      <Moon className="w-4 h-4 text-violet-600" />
+                    )}
                     <span>{theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}</span>
                   </div>
                 </button>
@@ -730,7 +1247,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border border-white/[0.1] bg-[#151520] text-zinc-200 text-xs font-semibold"
               >
                 <Sparkles className="w-4 h-4 text-violet-400" />
-                <span>Interactive Solution Wizard</span>
+                <span>Build Your Adaptive Solution</span>
               </button>
 
               <a
@@ -738,7 +1255,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={(e) => handleRouteClick(e, onNavigateToContact)}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-violet-600 text-white font-semibold text-xs shadow-lg shadow-violet-600/30"
               >
-                <span>Talk to Artify Solutions</span>
+                <span>Talk to Us</span>
                 <ArrowRight className="w-4 h-4" />
               </a>
             </div>

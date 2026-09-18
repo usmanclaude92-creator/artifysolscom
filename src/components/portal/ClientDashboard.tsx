@@ -581,7 +581,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({
                 : 'bg-white/[0.04] text-zinc-400 hover:text-white'
             }`}
           >
-            AI Projects ({activeProjectsList.length})
+            Enterprise Projects ({activeProjectsList.length})
           </button>
           <button
             onClick={() => setSelectedCategory('agents')}
@@ -607,7 +607,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({
               <h2 id="active-projects-heading" className={`text-sm font-bold font-display uppercase tracking-wider ${
                 isLight ? 'text-slate-900' : 'text-white'
               }`}>
-                Active AI Projects & Deployment Pipelines
+                Active Enterprise Deployments & Pipelines
               </h2>
               <span className={`text-[11px] font-mono-code px-2 py-0.5 rounded-full ${
                 isLight

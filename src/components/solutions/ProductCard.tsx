@@ -133,7 +133,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </p>
 
         {/* Key Feature Highlights */}
-        <div className="mt-5 space-y-2 pt-4 border-t border-white/[0.06]">
+        <div className={`mt-5 space-y-2 pt-4 border-t ${
+          isLight ? 'border-slate-100' : 'border-white/[0.06]'
+        }`}>
           {product.features.slice(0, 2).map((feat, idx) => (
             <div key={idx} className="flex items-start gap-2 text-xs">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
@@ -149,7 +151,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Footer Metrics & CTA */}
-      <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between">
+      <div className={`mt-6 pt-4 border-t flex items-center justify-between ${
+        isLight ? 'border-slate-100' : 'border-white/[0.08]'
+      }`}>
         {/* Metric Pill */}
         <div className="flex items-center gap-1.5">
           <Activity className="w-3.5 h-3.5 text-violet-400" />
