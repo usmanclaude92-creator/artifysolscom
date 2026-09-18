@@ -78,67 +78,67 @@ export const Footer: React.FC<FooterProps> = ({
   };
 
   return (
-    <footer className="bg-background border-t border-border pt-16 sm:pt-20 pb-12 text-subtle-text text-xs transition-colors duration-200">
+    <footer className="bg-background border-t border-border pt-12 sm:pt-16 pb-12 text-subtle-text text-xs transition-colors duration-200">
       <div className="w-full px-[5%] max-w-7xl mx-auto">
-        {/* Main 5-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-16 border-b border-border">
-          {/* Brand Col */}
-          <div className="lg:col-span-4 space-y-4">
-            {/* Artify Brand Logo matching Dark / Light mode */}
-            <div className="flex items-center">
-              <a
-                href="/"
-                onClick={(e) => {
-                  if (onNavigateToHome) {
-                    e.preventDefault();
-                    onNavigateToHome();
-                  }
-                }}
-                className="inline-block group focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-lg"
-                id="footer-brand-logo"
-                aria-label="Artify Solutions Home"
-              >
-                <picture key={isLight ? 'footer-logo-light' : 'footer-logo-dark'}>
-                  <source
-                    srcSet={isLight ? '/logo-header-light.webp' : '/logo-header-dark.webp'}
-                    type="image/webp"
-                  />
-                  <img
-                    key={isLight ? 'img-light' : 'img-dark'}
-                    src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
-                    alt="Artify Solutions"
-                    width={418}
-                    height={132}
-                    className="h-10 sm:h-11 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
-                  />
-                </picture>
-              </a>
-            </div>
+        {/* Brand Logo Row - Placed above columns per specification */}
+        <div className="mb-6 sm:mb-8">
+          <a
+            href="/"
+            onClick={(e) => {
+              if (onNavigateToHome) {
+                e.preventDefault();
+                onNavigateToHome();
+              }
+            }}
+            className="inline-block group focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 rounded-lg"
+            id="footer-brand-logo"
+            aria-label="Artify Solutions Home"
+          >
+            <picture key={isLight ? 'footer-logo-light' : 'footer-logo-dark'}>
+              <source
+                srcSet={isLight ? '/logo-header-light.webp' : '/logo-header-dark.webp'}
+                type="image/webp"
+              />
+              <img
+                key={isLight ? 'img-light' : 'img-dark'}
+                src={isLight ? '/logo-header-light.png' : '/logo-header-dark.png'}
+                alt="Artify Solutions"
+                width={418}
+                height={132}
+                className="h-12 sm:h-14 md:h-16 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
+              />
+            </picture>
+          </a>
+        </div>
 
-            <p className="text-sm font-semibold text-foreground leading-snug">
+        {/* Main 5-Column Grid - Top-aligned across all 5 sections */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 xl:gap-8 pb-16 border-b border-border">
+          {/* Col 1: Brand Info & Positioning */}
+          <div className="lg:col-span-4 space-y-4 max-w-sm sm:max-w-md">
+            <h3 className="text-[15px] sm:text-base font-bold text-foreground leading-snug">
               Adaptive Software. Intelligent Ecosystems. Built Around Your Business.
-            </p>
+            </h3>
 
-            <p className="text-xs text-subtle-text leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-subtle-text leading-relaxed">
               Artify Solutions engineers fully customized, adaptive enterprise software ecosystems enhanced by foundational intelligence, autonomous agent swarms, event-driven pipelines, and sovereign data architecture.
             </p>
 
             {/* Strategic Value Attributes */}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono-code bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20">
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/25 font-medium">
                 Zero Rigid SaaS
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono-code bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/25 font-medium">
                 SOC2 VPC Sovereign
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono-code bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 font-medium">
                 AI Agent Swarms
               </span>
             </div>
 
-            <div className="pt-2 flex flex-col gap-2 text-xs">
+            <div className="pt-2 flex flex-col gap-2.5 text-xs">
               <span className="flex items-center gap-2 text-foreground font-mono-code">
-                <Globe className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
+                <Globe className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 shrink-0" />
                 <a
                   href="https://artifysols.com"
                   target="_blank"
@@ -149,7 +149,7 @@ export const Footer: React.FC<FooterProps> = ({
                 </a>
               </span>
               <span className="flex items-center gap-2 text-foreground font-mono-code">
-                <Mail className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
+                <Mail className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 shrink-0" />
                 <a
                   href="mailto:contact@artifysols.com"
                   className="hover:underline underline-offset-2"
@@ -160,12 +160,12 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
 
-          {/* Solutions Column */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* Col 2: OUR SOLUTIONS */}
+          <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
-              Our Solutions
+              OUR SOLUTIONS
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-xs">
               {AI_PRODUCTS.slice(0, 5).map((p) => (
                 <li key={p.id}>
                   <a
@@ -182,31 +182,31 @@ export const Footer: React.FC<FooterProps> = ({
                   </a>
                 </li>
               ))}
-              <li className="pt-1.5">
-                <a
-                  href="/solutions"
-                  onClick={(e) => {
-                    const nav = onNavigateToSolutionsCatalog || onNavigateToAiSolutions;
-                    if (nav) {
-                      e.preventDefault();
-                      nav();
-                    }
-                  }}
-                  className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center gap-1 group"
-                >
-                  <span>Solutions Catalog (24 Systems)</span>
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                </a>
-              </li>
             </ul>
+            <div className="pt-3 sm:pt-4">
+              <a
+                href="/solutions"
+                onClick={(e) => {
+                  const nav = onNavigateToSolutionsCatalog || onNavigateToAiSolutions;
+                  if (nav) {
+                    e.preventDefault();
+                    nav();
+                  }
+                }}
+                className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center justify-between text-xs group"
+              >
+                <span>Solutions Catalog (24 Systems)</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1.5" />
+              </a>
+            </div>
           </div>
 
-          {/* Navigation Column */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* Col 3: NAVIGATION */}
+          <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
-              Navigation
+              NAVIGATION
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-xs">
               <li>
                 <a
                   href="/solutions"
@@ -267,7 +267,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onNavigateToCaseStudies();
                     }
                   }}
-                  className="text-left text-subtle-text hover:text-foreground transition-colors block"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors block whitespace-nowrap"
                 >
                   Case Studies & Blueprints
                 </a>
@@ -298,7 +298,7 @@ export const Footer: React.FC<FooterProps> = ({
                   className="text-left text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold transition-colors flex items-center gap-1.5"
                 >
                   <span>Insights & Research</span>
-                  <span className="text-[9px] bg-violet-500/20 text-violet-700 dark:text-violet-300 px-1 py-0.5 rounded font-mono-code font-bold">New</span>
+                  <span className="text-[9px] bg-violet-500/20 text-violet-700 dark:text-violet-300 px-1.5 py-0.5 rounded font-mono-code font-bold">New</span>
                 </a>
               </li>
               <li>
@@ -318,12 +318,12 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Client Portal & Advisory Column */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* Col 4: CLIENT & ADVISORY */}
+          <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
-              Client & Advisory
+              CLIENT & ADVISORY
             </h4>
-            <ul className="space-y-2 text-xs">
+            <ul className="space-y-2.5 text-xs">
               {user ? (
                 <>
                   <li>
@@ -367,7 +367,7 @@ export const Footer: React.FC<FooterProps> = ({
                       onClick={() => openAuthModal('login')}
                       className="text-left text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center gap-1.5 transition-colors"
                     >
-                      <Lock className="w-3 h-3" />
+                      <Lock className="w-3.5 h-3.5" />
                       <span>Client Login</span>
                     </button>
                   </li>
@@ -390,7 +390,7 @@ export const Footer: React.FC<FooterProps> = ({
                       }}
                       className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
                     >
-                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
                       <span>Partner Access Policy</span>
                     </button>
                   </li>
@@ -399,12 +399,12 @@ export const Footer: React.FC<FooterProps> = ({
 
               {/* Architectural Tools */}
               {onOpenConsultant && (
-                <li className="pt-1.5 border-t border-border">
+                <li className="pt-2 border-t border-border">
                   <button
                     onClick={onOpenConsultant}
                     className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
                   >
-                    <Bot className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400" />
+                    <Bot className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 shrink-0" />
                     <span>AI Architectural Advisor</span>
                   </button>
                 </li>
@@ -413,35 +413,35 @@ export const Footer: React.FC<FooterProps> = ({
                 <li>
                   <button
                     onClick={onOpenSolutionBuilder}
-                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
+                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-start gap-1.5"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
-                    <span>Solution Blueprint Builder</span>
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <span className="leading-tight">Solution Blueprint Builder</span>
                   </button>
                 </li>
               )}
             </ul>
           </div>
 
-          {/* Architecture & Telemetry */}
-          <div className="lg:col-span-2 space-y-3">
+          {/* Col 5: SYSTEM TELEMETRY */}
+          <div className="lg:col-span-2 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
-              System Telemetry
+              SYSTEM TELEMETRY
             </h4>
-            <div className="p-3.5 rounded-xl surface-card-subtle border border-border space-y-2.5 text-[11px] font-mono-code">
+            <div className="p-3.5 rounded-xl surface-card-subtle border border-border/80 space-y-2.5 text-[11px] font-mono-code">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
                 <span className="text-foreground font-semibold">Nodes: Active</span>
               </div>
-              <div className="text-subtle-text flex items-center justify-between">
+              <div className="text-subtle-text flex items-center justify-between gap-1">
                 <span>Production SLA:</span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-bold">99.99%</span>
               </div>
-              <div className="text-subtle-text flex items-center justify-between">
+              <div className="text-subtle-text flex items-center justify-between gap-1">
                 <span>Isolation:</span>
                 <span className="text-violet-600 dark:text-violet-400 font-bold">SOC2 VPC</span>
               </div>
-              <div className="text-subtle-text flex items-center justify-between pt-1 border-t border-border">
+              <div className="text-subtle-text flex items-center justify-between gap-1">
                 <span>Architecture:</span>
                 <span className="text-foreground font-bold">Adaptive</span>
               </div>
