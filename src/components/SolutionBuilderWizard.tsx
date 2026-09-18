@@ -21,6 +21,7 @@ interface SolutionBuilderWizardProps {
   onClose: () => void;
   onCompleteBrief: (brief: any) => void;
   initialIndustryId?: string;
+  theme?: 'light' | 'dark';
 }
 
 export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
@@ -28,6 +29,7 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
   onClose,
   onCompleteBrief,
   initialIndustryId,
+  theme,
 }) => {
   const [step, setStep] = useState(1);
   const [selectedIndustry, setSelectedIndustry] = useState(initialIndustryId || 'finance');
@@ -110,19 +112,19 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl bg-[#09090e] border border-violet-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+      <div className="relative w-full max-w-3xl surface-modal rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
         
         {/* Header */}
-        <div className="p-6 border-b border-white/[0.08] bg-[#0c0c12] flex items-center justify-between">
+        <div className="p-6 border-b border-border surface-card flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-violet-600/30">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white font-display">
+              <h3 className="text-base font-bold text-foreground font-display">
                 Artify Solution Architect Wizard
               </h3>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-foreground-muted">
                 Step {step} of 4 • Configure your custom AI architecture blueprint
               </p>
             </div>
@@ -130,7 +132,7 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-[#151520] hover:bg-[#1f1f30] text-zinc-400 hover:text-white transition-colors"
+            className="p-2 rounded-xl btn-theme-secondary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -143,16 +145,16 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
           {step === 1 && (
             <div className="space-y-6">
               <div>
-                <h4 className="text-lg font-bold text-white font-display mb-1">
+                <h4 className="text-lg font-bold text-foreground font-display mb-1">
                   Select Your Industry & Organization Scale
                 </h4>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-foreground-muted">
                   We customize AI models and compliance boundaries around your sector's regulatory framework.
                 </p>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-2">
+                <label className="text-xs font-bold text-foreground-muted font-mono-code uppercase block mb-2">
                   Target Industry
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
@@ -163,8 +165,8 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
                       onClick={() => setSelectedIndustry(ind.id)}
                       className={`p-3 rounded-xl text-left text-xs font-semibold transition-all ${
                         selectedIndustry === ind.id
-                          ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30 border border-violet-400'
-                          : 'bg-[#12121a] text-zinc-300 border border-white/[0.06] hover:border-white/[0.2]'
+                          ? 'btn-theme-primary shadow-md shadow-violet-600/30'
+                          : 'surface-card text-foreground-secondary hover:border-violet-500/40'
                       }`}
                     >
                       {ind.name}
@@ -174,7 +176,7 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
               </div>
 
               <div>
-                <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-2">
+                <label className="text-xs font-bold text-foreground-muted font-mono-code uppercase block mb-2">
                   Organization Scale
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -189,8 +191,8 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
                       onClick={() => setOrganizationScale(sc)}
                       className={`p-3 rounded-xl text-left text-xs font-semibold transition-all ${
                         organizationScale === sc
-                          ? 'bg-violet-950/70 text-violet-200 border-2 border-violet-400'
-                          : 'bg-[#12121a] text-zinc-400 border border-white/[0.06] hover:border-white/[0.2]'
+                          ? 'bg-violet-600/20 text-violet-400 border-2 border-violet-500'
+                          : 'surface-card text-foreground-muted hover:border-violet-500/40'
                       }`}
                     >
                       {sc}
@@ -205,10 +207,10 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
           {step === 2 && (
             <div className="space-y-6">
               <div>
-                <h4 className="text-lg font-bold text-white font-display mb-1">
+                <h4 className="text-lg font-bold text-foreground font-display mb-1">
                   Select Required AI Pillars & Architecture Layers
                 </h4>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-foreground-muted">
                   Select one or more intelligence components you wish to deploy.
                 </p>
               </div>
@@ -222,15 +224,15 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
                       onClick={() => toggleCapability(cap.id)}
                       className={`p-4 rounded-2xl cursor-pointer transition-all ${
                         isChecked
-                          ? 'bg-[#151522] border-2 border-violet-400 shadow-[0_0_20px_rgba(139,92,246,0.25)]'
-                          : 'bg-[#101017] border border-white/[0.06] hover:border-white/[0.2]'
+                          ? 'surface-card border-2 border-violet-500 shadow-[0_0_20px_rgba(139,92,246,0.25)]'
+                          : 'surface-card-subtle hover:border-border'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm font-bold text-white font-display">{cap.label}</span>
+                        <span className="text-sm font-bold text-foreground font-display">{cap.label}</span>
                         {isChecked && <CheckCircle2 className="w-4 h-4 text-violet-400" />}
                       </div>
-                      <p className="text-xs text-zinc-400">{cap.desc}</p>
+                      <p className="text-xs text-foreground-muted">{cap.desc}</p>
                     </div>
                   );
                 })}
@@ -242,10 +244,10 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
           {step === 3 && (
             <div className="space-y-6">
               <div>
-                <h4 className="text-lg font-bold text-white font-display mb-1">
+                <h4 className="text-lg font-bold text-foreground font-display mb-1">
                   Select High-Impact Workflows to Automate
                 </h4>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-foreground-muted">
                   Choose operational loops where your teams lose the most manual hours.
                 </p>
               </div>
@@ -259,8 +261,8 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
                       onClick={() => toggleWorkflow(wf)}
                       className={`p-3.5 rounded-xl cursor-pointer text-xs font-semibold flex items-center justify-between transition-all ${
                         isChecked
-                          ? 'bg-violet-950/60 text-violet-200 border border-violet-500'
-                          : 'bg-[#101017] text-zinc-300 border border-white/[0.06] hover:border-white/[0.2]'
+                          ? 'bg-violet-600/20 text-violet-400 border border-violet-500'
+                          : 'surface-card text-foreground-secondary hover:border-violet-500/40'
                       }`}
                     >
                       <span>{wf}</span>
@@ -276,10 +278,10 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
           {step === 4 && (
             <div className="space-y-6">
               <div>
-                <h4 className="text-lg font-bold text-white font-display mb-1">
+                <h4 className="text-lg font-bold text-foreground font-display mb-1">
                   Connect Your Existing Enterprise Stack
                 </h4>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-foreground-muted">
                   Artify integrates directly with your existing software—zero rip-and-replace.
                 </p>
               </div>
@@ -293,8 +295,8 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
                       onClick={() => toggleIntegration(intg)}
                       className={`p-3 rounded-xl cursor-pointer text-xs font-semibold flex items-center justify-between transition-all ${
                         isChecked
-                          ? 'bg-violet-950/60 text-violet-200 border border-violet-500'
-                          : 'bg-[#101017] text-zinc-300 border border-white/[0.06] hover:border-white/[0.2]'
+                          ? 'bg-violet-600/20 text-violet-400 border border-violet-500'
+                          : 'surface-card text-foreground-secondary hover:border-violet-500/40'
                       }`}
                     >
                       <span>{intg}</span>
@@ -305,22 +307,22 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
               </div>
 
               {/* Live Blueprint Summary Box */}
-              <div className="p-5 rounded-2xl bg-[#0e0e16] border border-violet-500/40 text-xs font-mono-code text-zinc-300 space-y-2">
+              <div className="p-5 rounded-2xl surface-card-subtle border border-violet-500/40 text-xs font-mono-code text-foreground-secondary space-y-2">
                 <div className="text-violet-400 font-bold uppercase tracking-wider flex items-center gap-1.5 mb-2">
                   <Zap className="w-4 h-4" />
                   <span>SYNTHESIZED ARCHITECTURAL CONFIGURATION</span>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Industry:</span> <strong className="text-white">{selectedIndustry.toUpperCase()}</strong> ({organizationScale})
+                  <span className="text-foreground-muted">Industry:</span> <strong className="text-foreground">{selectedIndustry.toUpperCase()}</strong> ({organizationScale})
                 </div>
                 <div>
-                  <span className="text-zinc-500">Selected Capabilities:</span> <strong className="text-violet-300">{selectedCapabilities.length} Architecture Layers</strong>
+                  <span className="text-foreground-muted">Selected Capabilities:</span> <strong className="text-violet-400">{selectedCapabilities.length} Architecture Layers</strong>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Target Workflows:</span> <strong className="text-emerald-300">{selectedWorkflows.length} Autonomous Loops</strong>
+                  <span className="text-foreground-muted">Target Workflows:</span> <strong className="text-emerald-400">{selectedWorkflows.length} Autonomous Loops</strong>
                 </div>
                 <div>
-                  <span className="text-zinc-500">Connected Systems:</span> <strong className="text-sky-300">{selectedIntegrations.length} Data Bridges</strong>
+                  <span className="text-foreground-muted">Connected Systems:</span> <strong className="text-sky-400">{selectedIntegrations.length} Data Bridges</strong>
                 </div>
               </div>
             </div>
@@ -329,11 +331,11 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
         </div>
 
         {/* Footer Navigation */}
-        <div className="p-5 border-t border-white/[0.08] bg-[#0c0c12] flex items-center justify-between">
+        <div className="p-5 border-t border-border surface-card flex items-center justify-between">
           {step > 1 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-300 hover:text-white px-4 py-2.5 rounded-xl bg-[#151520] transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold btn-theme-secondary px-4 py-2.5 rounded-xl transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Previous</span>
@@ -345,7 +347,7 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
           {step < 4 ? (
             <button
               onClick={() => setStep(step + 1)}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-500 px-5 py-2.5 rounded-xl shadow-lg shadow-violet-600/30 transition-all"
+              className="inline-flex items-center gap-2 text-xs font-semibold btn-theme-primary px-5 py-2.5 rounded-xl shadow-lg shadow-violet-600/30 transition-all"
             >
               <span>Next Step</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -353,7 +355,7 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
           ) : (
             <button
               onClick={handleFinish}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 px-6 py-2.5 rounded-xl shadow-lg shadow-violet-600/40 transition-all"
+              className="inline-flex items-center gap-2 text-xs font-semibold btn-theme-primary px-6 py-2.5 rounded-xl shadow-lg shadow-violet-600/40 transition-all"
             >
               <span>Transfer to Project Brief →</span>
             </button>

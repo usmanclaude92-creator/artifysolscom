@@ -125,15 +125,15 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
           
           {/* Left Column: Direct Info & Scheduling Card */}
           <div className="lg:col-span-5 flex flex-col justify-between space-y-8">
-            <div className="p-8 rounded-3xl bg-[#09090e] border border-white/[0.08] space-y-6">
-              <h3 className="text-xl font-bold text-white font-display">
+            <div className="p-8 rounded-3xl surface-card space-y-6">
+              <h3 className="text-xl font-bold font-display">
                 The AI Architecture Session
               </h3>
-              <p className="text-xs text-zinc-300 leading-relaxed">
+              <p className="text-xs text-foreground-muted leading-relaxed">
                 During this 45-minute technical discovery session with our senior AI engineers, we will:
               </p>
 
-              <ul className="space-y-3 text-xs text-zinc-300">
+              <ul className="space-y-3 text-xs text-foreground-secondary">
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <span>Audit your current manual operational workflows & bottlenecks</span>
@@ -152,16 +152,16 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                 </li>
               </ul>
 
-              <div className="pt-6 border-t border-white/[0.08] space-y-3">
-                <div className="flex items-center gap-3 text-xs text-zinc-300">
+              <div className="pt-6 border-t border-border space-y-3">
+                <div className="flex items-center gap-3 text-xs text-foreground-secondary">
                   <Globe className="w-4 h-4 text-violet-400" />
-                  <span>Website: <strong className="text-white font-mono-code">artifysols.com</strong></span>
+                  <span>Website: <strong className="font-mono-code">artifysols.com</strong></span>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-zinc-300">
+                <div className="flex items-center gap-3 text-xs text-foreground-secondary">
                   <Mail className="w-4 h-4 text-violet-400" />
-                  <span>Email: <strong className="text-white font-mono-code">contact@artifysols.com</strong></span>
+                  <span>Email: <strong className="font-mono-code">contact@artifysols.com</strong></span>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-zinc-300">
+                <div className="flex items-center gap-3 text-xs text-foreground-secondary">
                   <Clock className="w-4 h-4 text-emerald-400" />
                   <span>Discovery Response SLA: <strong className="text-emerald-400">Under 4 Hours</strong></span>
                 </div>
@@ -169,10 +169,10 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
             </div>
 
             {/* Privacy Promise */}
-            <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3">
+            <div className="p-5 rounded-2xl surface-card-subtle flex items-start gap-3">
               <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-              <div className="text-xs text-zinc-400 leading-relaxed">
-                <strong className="text-zinc-200 block mb-0.5">Strict Confidentiality & NDA</strong>
+              <div className="text-xs text-foreground-muted leading-relaxed">
+                <strong className="text-foreground-secondary block mb-0.5">Strict Confidentiality & NDA</strong>
                 All details, operational schemas, and briefs submitted are protected by our automatic mutual confidentiality agreement.
               </div>
             </div>
@@ -180,17 +180,17 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
           {/* Right Column: Interactive Brief Form */}
           <div className="lg:col-span-7">
-            <div className="p-8 sm:p-10 rounded-3xl bg-[#09090e] border border-violet-500/40 shadow-2xl relative">
+            <div className="p-8 sm:p-10 rounded-3xl surface-card shadow-2xl relative">
               
               {submissionSuccess ? (
                 <div className="py-12 text-center space-y-4 animate-in fade-in">
                   <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white font-display">
+                  <h3 className="text-2xl font-bold font-display">
                     Project Brief Received
                   </h3>
-                  <p className="text-sm text-zinc-300 max-w-md mx-auto leading-relaxed">
+                  <p className="text-sm text-foreground-muted max-w-md mx-auto leading-relaxed">
                     {responseMessage}
                   </p>
                   <div className="pt-4">
@@ -207,7 +207,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Name */}
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Your Name *
                       </label>
                       <input
@@ -217,13 +217,13 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         placeholder="Sarah Jenkins"
                         id="contact-form-name"
-                        className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500"
+                        className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       />
                     </div>
 
                     {/* Company */}
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Company Name *
                       </label>
                       <input
@@ -233,7 +233,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                         onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                         placeholder="Acme Enterprise Holdings"
                         id="contact-form-company"
-                        className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500"
+                        className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       />
                     </div>
                   </div>
@@ -241,7 +241,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Email */}
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Work Email *
                       </label>
                       <input
@@ -251,13 +251,13 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="s.jenkins@acme.com"
                         id="contact-form-email"
-                        className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500"
+                        className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       />
                     </div>
 
                     {/* Phone */}
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Phone (Optional)
                       </label>
                       <input
@@ -266,7 +266,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="+1 (555) 019-2834"
                         id="contact-form-phone"
-                        className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500"
+                        className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       />
                     </div>
                   </div>
@@ -274,14 +274,14 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Industry */}
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Industry
                       </label>
                       <select
                         value={formData.industry}
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                         id="contact-form-industry"
-                        className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500"
+                        className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       >
                         {INDUSTRIES_DATA.map((ind) => (
                           <option key={ind.id} value={ind.name}>
@@ -293,14 +293,14 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                     {/* Estimated Timeline */}
                     <div>
-                      <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Target Timeline
                       </label>
                       <select
                         value={formData.timeline}
                         onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
                         id="contact-form-timeline"
-                        className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-violet-500"
+                        className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       >
                         <option value="Immediate (1-3 Weeks)">Immediate (1-3 Weeks)</option>
                         <option value="1-2 Months">1-2 Months</option>
@@ -312,7 +312,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                   {/* Project Description */}
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                    <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                       What would you like to build or automate? *
                     </label>
                     <textarea
@@ -322,13 +322,13 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                       onChange={(e) => setFormData({ ...formData, projectDescription: e.target.value })}
                       placeholder="Describe your current manual processes, the systems you want connected, or the AI agent capabilities you require..."
                       id="contact-form-description"
-                      className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl p-4 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500 leading-relaxed"
+                      className="w-full surface-input rounded-xl p-4 text-xs focus:outline-none leading-relaxed"
                     />
                   </div>
 
                   {/* Current Tools */}
                   <div>
-                    <label className="text-xs font-bold text-zinc-300 font-mono-code uppercase block mb-1.5">
+                    <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                       Current Software & Database Stack (Optional)
                     </label>
                     <input
@@ -337,7 +337,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                       onChange={(e) => setFormData({ ...formData, currentTools: e.target.value })}
                       placeholder="e.g. NetSuite, Salesforce, PostgreSQL, Slack, Custom REST APIs"
                       id="contact-form-tools"
-                      className="w-full bg-[#12121a] border border-white/[0.1] rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500"
+                      className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                     />
                   </div>
 

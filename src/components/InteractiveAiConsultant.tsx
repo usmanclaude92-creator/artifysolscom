@@ -23,6 +23,7 @@ interface InteractiveAiConsultantProps {
   onSelectSolutionToBuild?: (briefData: any) => void;
   messages?: ConsultantMessage[];
   onMessagesChange?: React.Dispatch<React.SetStateAction<ConsultantMessage[]>>;
+  theme?: 'light' | 'dark';
 }
 
 export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = ({
@@ -31,6 +32,7 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
   onSelectSolutionToBuild,
   messages: externalMessages,
   onMessagesChange,
+  theme,
 }) => {
   const [internalMessages, setInternalMessages] = useState<ConsultantMessage[]>([
     {
@@ -268,24 +270,24 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl h-[88vh] bg-[#09090e] border border-violet-500/40 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="relative w-full max-w-4xl h-[88vh] surface-modal rounded-3xl shadow-2xl flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className="p-5 sm:px-8 border-b border-white/[0.08] bg-[#0c0c12] flex items-center justify-between">
+        <div className="p-5 sm:px-8 border-b border-border surface-card flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-violet-600/30">
               <Bot className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white font-display">
+                <h3 className="text-base font-bold text-foreground font-display">
                   Artify AI Architectural Advisor
                 </h3>
                 <span className="text-[10px] font-mono-code font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded">
                   LIVE DEMO
                 </span>
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-foreground-muted">
                 Explore how Artify engineers custom AI software around your organization
               </p>
             </div>
@@ -295,7 +297,7 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
             <select
               value={selectedIndustry}
               onChange={(e) => setSelectedIndustry(e.target.value)}
-              className="hidden sm:block text-xs bg-[#151520] border border-white/[0.1] text-zinc-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-violet-500"
+              className="hidden sm:block text-xs surface-input rounded-lg px-2.5 py-1.5 focus:outline-none"
             >
               <option value="General Enterprise">General Enterprise</option>
               <option value="Finance & Accounting">Finance & Accounting</option>
@@ -310,7 +312,7 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
             <button
               onClick={onClose}
               id="close-consultant-modal-btn"
-              className="p-2 rounded-xl bg-[#151520] hover:bg-[#1f1f30] text-zinc-400 hover:text-white transition-colors"
+              className="p-2 rounded-xl btn-theme-secondary transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -550,9 +552,9 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
                   : 'Describe your workflow, bottleneck, or system you want to build with AI...'
               }
               id="ai-consultant-input-box"
-              className={`flex-1 bg-[#151520] border ${
-                isListening ? 'border-violet-400 ring-2 ring-violet-500/20' : 'border-white/[0.1]'
-              } rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-violet-500 shadow-inner transition-all`}
+              className={`flex-1 surface-input ${
+                isListening ? 'border-violet-400 ring-2 ring-violet-500/20' : ''
+              } rounded-xl px-4 py-3 text-sm focus:outline-none shadow-inner transition-all`}
             />
 
             {/* Voice to Text Button */}
@@ -565,7 +567,7 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
               className={`p-3 rounded-xl border transition-all focus:outline-none flex items-center justify-center ${
                 isListening
                   ? 'bg-red-500/20 border-red-500 text-red-400 shadow-lg shadow-red-500/30 animate-pulse'
-                  : 'bg-[#151520] hover:bg-[#1f1f30] border-white/[0.1] text-zinc-300 hover:text-white'
+                  : 'btn-theme-secondary'
               }`}
             >
               {isListening ? (
@@ -580,12 +582,12 @@ export const InteractiveAiConsultant: React.FC<InteractiveAiConsultantProps> = (
               type="submit"
               disabled={isLoading || !inputQuery.trim()}
               id="ai-consultant-submit-btn"
-              className="inline-flex items-center justify-center p-3 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white shadow-lg shadow-violet-600/30 transition-all focus:outline-none"
+              className="inline-flex items-center justify-center p-3 rounded-xl btn-theme-primary disabled:opacity-50 shadow-lg shadow-violet-600/30 transition-all focus:outline-none"
             >
               <Send className="w-4 h-4" />
             </button>
           </form>
-          <div className="flex items-center justify-between text-[11px] text-zinc-400 mt-2 px-1">
+          <div className="flex items-center justify-between text-[11px] text-foreground-muted mt-2 px-1">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Zero data retained for public training
             </span>

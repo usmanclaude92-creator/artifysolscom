@@ -172,23 +172,59 @@ function MainAppContent() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Theme synchronization
-  useEffect(() => {
-    if (typeof document !== 'undefined') {
-      if (theme === 'light') {
-        document.documentElement.classList.add('theme-light');
-        document.documentElement.classList.remove('theme-dark');
-        safeSetLocalStorage('artify_theme', 'light');
-      } else {
-        document.documentElement.classList.add('theme-dark');
-        document.documentElement.classList.remove('theme-light');
-        safeSetLocalStorage('artify_theme', 'dark');
-      }
+  // Theme synchronization with atomic DOM updates
+  const applyThemeToDOM = (newTheme: 'light' | 'dark') => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const body = document.body;
+
+    if (newTheme === 'light') {
+      root.classList.add('theme-light');
+      root.classList.remove('theme-dark');
+      body.classList.add('theme-light');
+      body.classList.remove('theme-dark');
+      safeSetLocalStorage('artify_theme', 'light');
+    } else {
+      root.classList.add('theme-dark');
+      root.classList.remove('theme-light');
+      body.classList.add('theme-dark');
+      body.classList.remove('theme-light');
+      safeSetLocalStorage('artify_theme', 'dark');
     }
+  };
+
+  useEffect(() => {
+    applyThemeToDOM(theme);
   }, [theme]);
 
   const handleToggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    const nextTheme: 'light' | 'dark' = theme === 'dark' ? 'light' : 'dark';
+
+    // Trigger smooth atomic transition across all surface elements (nav, modals, cards)
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.add('theme-transitioning');
+      
+      const updateDOM = () => {
+        applyThemeToDOM(nextTheme);
+        setTheme(nextTheme);
+      };
+
+      // Use View Transitions API if supported for seamless atomic cross-fade
+      if ('startViewTransition' in document && typeof (document as any).startViewTransition === 'function') {
+        (document as any).startViewTransition(() => {
+          updateDOM();
+        });
+      } else {
+        updateDOM();
+      }
+
+      // Clean up transitioning class once styles have settled
+      setTimeout(() => {
+        document.documentElement.classList.remove('theme-transitioning');
+      }, 350);
+    } else {
+      setTheme(nextTheme);
+    }
   };
 
   const [isConsultantOpen, setIsConsultantOpen] = useState(false);
@@ -537,6 +573,7 @@ function MainAppContent() {
           <SitemapModal
             isOpen={isSitemapOpen}
             onClose={() => setIsSitemapOpen(false)}
+            theme={theme}
             onNavigateToProduct={(slug) => {
               setIsSitemapOpen(false);
               handleSelectProductBySlug(slug);
@@ -560,6 +597,7 @@ function MainAppContent() {
             onClose={() => setIsConsultantOpen(false)}
             messages={consultantMessages}
             onMessagesChange={setConsultantMessages}
+            theme={theme}
           />
         )}
 
@@ -570,6 +608,7 @@ function MainAppContent() {
             onClose={() => setIsBuilderOpen(false)}
             initialIndustryId={builderInitialIndustry}
             onCompleteBrief={handleCompleteBrief}
+            theme={theme}
           />
         )}
       </Suspense>

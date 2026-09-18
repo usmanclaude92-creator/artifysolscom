@@ -21,6 +21,7 @@ interface SitemapModalProps {
   onClose: () => void;
   onNavigateToProduct?: (slug: string) => void;
   onNavigateToBlog?: (slug: string) => void;
+  theme?: 'light' | 'dark';
 }
 
 export const SitemapModal: React.FC<SitemapModalProps> = ({
@@ -28,6 +29,7 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
   onClose,
   onNavigateToProduct,
   onNavigateToBlog,
+  theme,
 }) => {
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,27 +104,27 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] bg-[#09090e] border border-white/[0.12] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-zinc-100 font-sans"
+        className="relative w-full max-w-4xl max-h-[90vh] surface-modal rounded-2xl shadow-2xl flex flex-col overflow-hidden text-foreground font-sans"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-[#0d0d14]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border surface-card">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 p-[1px] flex items-center justify-center">
-              <div className="w-full h-full bg-[#0d0d14] rounded-[11px] flex items-center justify-center">
+              <div className="w-full h-full surface-card rounded-[11px] flex items-center justify-center">
                 <FileCode className="w-5 h-5 text-violet-400" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white font-display">
+                <h3 className="text-base font-bold text-foreground font-display">
                   Dynamic XML Sitemap Generator
                 </h3>
                 <span className="px-2 py-0.5 rounded-full text-[10px] bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-mono-code">
                   Live Sync
                 </span>
               </div>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-foreground-muted">
                 Auto-indexes all product catalog routes, research articles, category hubs, and core landing endpoints.
               </p>
             </div>
@@ -133,15 +135,15 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
               onClick={() => setViewRawXml(!viewRawXml)}
               className={`px-3 py-1.5 rounded-lg text-xs font-mono-code transition-colors border ${
                 viewRawXml
-                  ? 'bg-violet-600 text-white border-violet-500'
-                  : 'bg-white/[0.04] text-zinc-300 border-white/[0.08] hover:bg-white/[0.08]'
+                  ? 'btn-theme-primary'
+                  : 'btn-theme-secondary'
               }`}
             >
               {viewRawXml ? 'View Table' : 'View XML Code'}
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+              className="p-1.5 rounded-lg text-foreground-muted hover:text-foreground hover:bg-surface-hover transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -149,10 +151,10 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
         </div>
 
         {/* Action / Stats Bar */}
-        <div className="px-6 py-3 bg-[#07070a] border-b border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-4 text-zinc-400 font-mono-code text-[11px]">
+        <div className="px-6 py-3 surface-card-subtle border-b border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-4 text-foreground-muted font-mono-code text-[11px]">
             <span>
-              Total Routes: <strong className="text-white">{urlEntries.length}</strong>
+              Total Routes: <strong className="text-foreground">{urlEntries.length}</strong>
             </span>
             <span>•</span>
             <span>
@@ -208,13 +210,13 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
               {/* Search and Filters */}
               <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
                 <div className="relative w-full sm:w-80">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground-muted" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search canonical URL or title..."
-                    className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500/60"
+                    className="w-full pl-9 pr-3 py-1.5 rounded-xl surface-input text-xs focus:outline-none"
                   />
                 </div>
 
@@ -225,8 +227,8 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
                       onClick={() => setFilterType(type)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-mono-code transition-colors capitalize ${
                         filterType === type
-                          ? 'bg-violet-600 text-white'
-                          : 'bg-white/[0.03] text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.06]'
+                          ? 'btn-theme-primary'
+                          : 'btn-theme-secondary'
                       }`}
                     >
                       {type}
@@ -236,10 +238,10 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
               </div>
 
               {/* Table of Entries */}
-              <div className="rounded-xl border border-white/[0.08] overflow-hidden bg-[#07070c]">
+              <div className="rounded-xl border border-border overflow-hidden surface-card">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-white/[0.08] bg-white/[0.02] text-zinc-400 font-mono-code text-[10px] uppercase">
+                    <tr className="border-b border-border surface-card-subtle text-foreground-muted font-mono-code text-[10px] uppercase">
                       <th className="py-2.5 px-4 font-semibold">Type</th>
                       <th className="py-2.5 px-4 font-semibold">Canonical Location (loc)</th>
                       <th className="py-2.5 px-4 font-semibold hidden md:table-cell">Priority</th>
@@ -247,9 +249,9 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
                       <th className="py-2.5 px-4 font-semibold text-right">Last Modified</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/[0.04] font-mono-code text-[11px]">
+                  <tbody className="divide-y divide-border font-mono-code text-[11px]">
                     {filteredEntries.map((entry, idx) => (
-                      <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+                      <tr key={idx} className="hover:bg-surface-hover transition-colors">
                         <td className="py-2.5 px-4 whitespace-nowrap">
                           {getTypeBadge(entry.type)}
                         </td>
