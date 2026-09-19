@@ -147,6 +147,20 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                 }`}>
                   {user.company}
                 </span>
+                {/*
+                  Phase 1 honesty label (docs/PHASE_1_IMPLEMENTATION.md §26,
+                  Artify-Backend repo): sign-in here does not yet verify a
+                  real password or persist real subscription/billing data —
+                  see docs/CURRENT_STATE.md §2.3. Real auth and portal data
+                  land in Phase 4/10/11 once this frontend consumes the
+                  canonical Platform API.
+                */}
+                <span
+                  title="This portal currently accepts any email as a demo login and simulates subscription/billing data locally. Real authentication and billing land in later phases (see the Artify-Backend repo's docs/IMPLEMENTATION_PLAN.md)."
+                  className="hidden lg:inline-block ml-2 text-[10px] uppercase font-mono-code px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30 text-amber-500"
+                >
+                  Demo Account
+                </span>
               </div>
             </div>
           </div>

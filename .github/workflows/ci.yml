@@ -1,0 +1,40 @@
+name: CI
+
+# Meaningful quality gates (Phase 1 §23, mirrored from the Artify-Backend
+# repo's CI). This repo has no database of its own by design — see
+# docs/ADR/ADR-001-platform-boundary.md in the Artify-Backend repo — so
+# there is no Postgres service container here, only typecheck, lint
+# (scoped to Phase 1's src/lib additions — see docs/CI_CD.md there for why
+# the rest of src/ isn't linted yet), build, and a dependency audit.
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint (Phase 1 additions)
+        run: npm run lint
+
+      - name: Build (frontend + backend bundle)
+        run: npm run build
+
+      - name: Dependency audit (high+ severity)
+        run: npm run audit
