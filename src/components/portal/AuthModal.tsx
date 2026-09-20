@@ -15,6 +15,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { SUBSCRIPTION_PLANS } from '../../data/portalData';
+import { apiClient } from '../../lib/apiClient';
 
 export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propTheme }) => {
   const {
@@ -23,7 +24,6 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
     authModalMode,
     openAuthModal,
     login,
-    loginAsDemo,
     register,
   } = useAuth();
 
@@ -39,6 +39,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
   const [selectedPlanId, setSelectedPlanId] = useState<'starter' | 'growth' | 'enterprise'>('growth');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [infoMsg, setInfoMsg] = useState('');
 
   // Keep mode in sync with context when modal opens
   React.useEffect(() => {
@@ -51,6 +52,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+    setInfoMsg('');
     if (!email || !email.includes('@')) {
       setErrorMsg('Please provide a valid corporate email address.');
       return;
@@ -65,10 +67,31 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
     }
   };
 
+  const handleForgotPassword = async () => {
+    setErrorMsg('');
+    setInfoMsg('');
+    if (!email || !email.includes('@')) {
+      setErrorMsg('Enter your email above first, then use "Forgot password?".');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      // Real backend contract (Phase 3 POST /auth/password-reset/request) —
+      // always a generic response, never reveals whether the account
+      // exists. No fabricated "email dispatched" behavior.
+      const res = await apiClient.post<{ message: string }>('/auth/password-reset/request', { email });
+      setInfoMsg(res.message);
+    } catch (err: any) {
+      setErrorMsg(err?.message || 'Could not process the request. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSignupSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
-    if (!name || !email || !company) {
+    if (!name || !email || !company || !password) {
       setErrorMsg('Please fill in all required fields.');
       return;
     }
@@ -76,11 +99,16 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
       setErrorMsg('Please provide a valid business email address.');
       return;
     }
+    if (password.length < 10) {
+      setErrorMsg('Password must be at least 10 characters.');
+      return;
+    }
     setIsLoading(true);
     try {
       await register({
         name,
         email,
+        password,
         company,
         role,
         planId: selectedPlanId,
@@ -192,104 +220,6 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
             </button>
           </div>
 
-          {/* Quick Demo Access Bar */}
-          <div className={`mb-6 p-3.5 rounded-xl border ${
-            isLight
-              ? 'bg-violet-50/70 border-violet-200'
-              : 'bg-violet-950/30 border-violet-500/20'
-          }`}>
-            <div className="flex items-center justify-between mb-2.5">
-              <span className={`text-[11px] font-semibold flex items-center gap-1.5 font-mono-code uppercase tracking-wider ${
-                isLight ? 'text-violet-800' : 'text-violet-300'
-              }`}>
-                <Sparkles className={`w-3.5 h-3.5 ${isLight ? 'text-violet-600' : 'text-violet-400'}`} />
-                <span>Instant 1-Click Demo Profiles</span>
-              </span>
-              <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>Pre-configured accounts</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => loginAsDemo('enterprise')}
-                id="demo-login-enterprise-btn"
-                className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all group ${
-                  isLight
-                    ? 'bg-white hover:bg-violet-100/60 border-violet-200 shadow-sm'
-                    : 'bg-black/40 hover:bg-violet-900/40 border-violet-500/25'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 group-hover:scale-105 transition-transform ${
-                  isLight
-                    ? 'bg-violet-100 text-violet-700 border border-violet-300'
-                    : 'bg-violet-600/30 border border-violet-400/40 text-violet-300'
-                }`}>
-                  SJ
-                </div>
-                <div className="min-w-0">
-                  <div className={`text-xs font-semibold truncate ${
-                    isLight ? 'text-slate-900 group-hover:text-violet-900' : 'text-white group-hover:text-violet-200'
-                  }`}>
-                    Sarah (Admin)
-                  </div>
-                  <div className={`text-[9px] truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>Apex Logistics</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => loginAsDemo('editor')}
-                id="demo-login-editor-btn"
-                className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all group ${
-                  isLight
-                    ? 'bg-white hover:bg-purple-100/60 border-purple-200 shadow-sm'
-                    : 'bg-black/40 hover:bg-purple-900/40 border-purple-500/25'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 group-hover:scale-105 transition-transform ${
-                  isLight
-                    ? 'bg-purple-100 text-purple-700 border border-purple-300'
-                    : 'bg-purple-600/30 border border-purple-400/40 text-purple-300'
-                }`}>
-                  DV
-                </div>
-                <div className="min-w-0">
-                  <div className={`text-xs font-semibold truncate ${
-                    isLight ? 'text-slate-900 group-hover:text-purple-900' : 'text-white group-hover:text-purple-200'
-                  }`}>
-                    Devon (Editor)
-                  </div>
-                  <div className={`text-[9px] truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>Staff Publisher</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => loginAsDemo('growth')}
-                id="demo-login-growth-btn"
-                className={`flex items-center gap-2 p-2 rounded-lg border text-left transition-all group ${
-                  isLight
-                    ? 'bg-white hover:bg-indigo-100/60 border-indigo-200 shadow-sm'
-                    : 'bg-black/40 hover:bg-indigo-900/40 border-indigo-500/25'
-                }`}
-              >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 group-hover:scale-105 transition-transform ${
-                  isLight
-                    ? 'bg-indigo-100 text-indigo-700 border border-indigo-300'
-                    : 'bg-indigo-600/30 border border-indigo-400/40 text-indigo-300'
-                }`}>
-                  MV
-                </div>
-                <div className="min-w-0">
-                  <div className={`text-xs font-semibold truncate ${
-                    isLight ? 'text-slate-900 group-hover:text-indigo-900' : 'text-white group-hover:text-indigo-200'
-                  }`}>
-                    Marcus (Growth)
-                  </div>
-                  <div className={`text-[9px] truncate ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>FinMatrix.io</div>
-                </div>
-              </button>
-            </div>
-          </div>
 
           {/* Error Message */}
           {errorMsg && (
@@ -331,18 +261,6 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className={`block text-xs font-medium ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>Password</label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail('s.jenkins@apexlogistics.com');
-                      setPassword('demo-enterprise-2026');
-                    }}
-                    className={`text-[11px] font-medium transition-colors ${
-                      isLight ? 'text-violet-700 hover:text-violet-800' : 'text-violet-400 hover:text-violet-300'
-                    }`}
-                  >
-                    Auto-fill demo credentials
-                  </button>
                 </div>
                 <div className="relative">
                   <Lock className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 ${isLight ? 'text-slate-400' : 'text-zinc-500'}`} />
@@ -382,12 +300,22 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                 </label>
                 <button
                   type="button"
-                  onClick={() => alert('Password reset instructions have been dispatched to your corporate email.')}
+                  onClick={() => void handleForgotPassword()}
                   className={`transition-colors ${isLight ? 'text-slate-500 hover:text-slate-900' : 'text-zinc-400 hover:text-white'}`}
                 >
                   Forgot password?
                 </button>
               </div>
+
+              {infoMsg && (
+                <div
+                  className={`p-3 rounded-lg border text-xs ${
+                    isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-emerald-950/30 border-emerald-500/30 text-emerald-300'
+                  }`}
+                >
+                  {infoMsg}
+                </div>
+              )}
 
               <button
                 type="submit"
@@ -478,6 +406,27 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                       }`}
                     />
                   </div>
+                </div>
+              </div>
+
+              <div>
+                <label className={`block text-xs font-medium mb-1 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>Password</label>
+                <div className="relative">
+                  <Lock className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 ${isLight ? 'text-slate-400' : 'text-zinc-500'}`} />
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="At least 10 characters"
+                    required
+                    minLength={10}
+                    id="signup-password-input"
+                    className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-violet-500 border ${
+                      isLight
+                        ? 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white'
+                        : 'bg-[#14141e] border-white/[0.1] text-white placeholder-zinc-500'
+                    }`}
+                  />
                 </div>
               </div>
 

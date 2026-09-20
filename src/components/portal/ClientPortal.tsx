@@ -148,18 +148,22 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                   {user.company}
                 </span>
                 {/*
-                  Phase 1 honesty label (docs/PHASE_1_IMPLEMENTATION.md §26,
-                  Artify-Backend repo): sign-in here does not yet verify a
-                  real password or persist real subscription/billing data —
-                  see docs/CURRENT_STATE.md §2.3. Real auth and portal data
-                  land in Phase 4/10/11 once this frontend consumes the
-                  canonical Platform API.
+                  Phase 4 honesty label (docs/PHASE_4_IMPLEMENTATION.md,
+                  Artify-Backend repo): sign-in now requires a real,
+                  bcrypt-verified account (AuthContext.tsx's login/register
+                  call the Platform API's Phase 3 /auth endpoints) — this is
+                  no longer a demo-credential bypass. Only the subscription/
+                  billing/product data still shown below is local
+                  placeholder content; real Billing/Products/CRM data lands
+                  in a later phase once the Platform API grows those
+                  domains (Phase 2's schema for them has no service layer
+                  yet — see docs/DATABASE_SCHEMA.md in Artify-Backend).
                 */}
                 <span
-                  title="This portal currently accepts any email as a demo login and simulates subscription/billing data locally. Real authentication and billing land in later phases (see the Artify-Backend repo's docs/IMPLEMENTATION_PLAN.md)."
+                  title="Sign-in is real (verified against the Artify Platform API). Subscription, billing, and product data shown here is still local placeholder content pending the Billing/Products phases."
                   className="hidden lg:inline-block ml-2 text-[10px] uppercase font-mono-code px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30 text-amber-500"
                 >
-                  Demo Account
+                  Placeholder Billing Data
                 </span>
               </div>
             </div>

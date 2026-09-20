@@ -74,7 +74,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
   initialPost,
   theme,
 }) => {
-  const { user, openAuthModal, loginAsDemo } = useAuth();
+  const { user, openAuthModal } = useAuth();
 
   // An authorized editor can be an editor, super_admin, admin, or support_agent
   const isAuthorizedEditor = Boolean(
@@ -486,18 +486,6 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
                   <LogIn className="w-3.5 h-3.5" />
                   <span>Sign In as Editor</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => loginAsDemo('editor')}
-                  className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all flex items-center justify-center gap-1 ${
-                    isLight
-                      ? 'bg-white border-amber-300 text-amber-900 hover:bg-amber-100'
-                      : 'bg-black/40 border-amber-500/30 text-amber-300 hover:bg-amber-900/30'
-                  }`}
-                >
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  <span>1-Click Editor Demo</span>
-                </button>
               </div>
             </div>
           ) : !isAuthorizedEditor ? (
@@ -521,15 +509,6 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
                   </p>
                 </div>
               </div>
-
-              <button
-                type="button"
-                onClick={() => loginAsDemo('editor')}
-                className="px-3.5 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm shrink-0"
-              >
-                <Key className="w-3.5 h-3.5" />
-                <span>Switch to Registered Editor</span>
-              </button>
             </div>
           ) : (
             <div

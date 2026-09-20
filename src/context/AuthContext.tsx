@@ -1,14 +1,21 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { UserProfile, PurchasedProduct, ApiKeyRecord, InvoiceRecord } from '../types';
-import { DEMO_USERS, SUBSCRIPTION_PLANS, CATALOG_PRODUCTS } from '../data/portalData';
+import { SUBSCRIPTION_PLANS, CATALOG_PRODUCTS } from '../data/portalData';
 import { safeGetLocalStorage, safeSetLocalStorage, safeRemoveLocalStorage } from '../utils/storage';
+import { apiClient, ApiClientError } from '../lib/apiClient';
 
 interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
-  login: (email: string, password?: string, demoKey?: string) => Promise<boolean>;
-  loginAsDemo: (type: 'enterprise' | 'growth' | 'editor') => void;
-  register: (data: { name: string; email: string; company: string; role: string; planId?: 'starter' | 'growth' | 'enterprise' }) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (data: {
+    name: string;
+    email: string;
+    password: string;
+    company: string;
+    role: string;
+    planId?: 'starter' | 'growth' | 'enterprise';
+  }) => Promise<boolean>;
   logout: () => void;
   
   // Portal & Modal UI States
@@ -107,46 +114,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsPortalOpen(false);
   };
 
-  const loginAsDemo = (type: 'enterprise' | 'growth' | 'editor') => {
-    const demo = DEMO_USERS[type] || DEMO_USERS.enterprise;
-    setUser(demo);
-    setIsAuthModalOpen(false);
-    openPortal('overview');
-  };
+  /**
+   * Real authentication (Phase 4 §4/§9) — verifies the credential against
+   * the Artify Platform API (Artify-Backend's Phase 3 /auth/login). No
+   * password is accepted without a real bcrypt-verified match; there is no
+   * demo-account shortcut, email-based auto-login, or arbitrary-credential
+   * acceptance left in this function (the Phase 0 finding S1 this closes).
+   * A failed call throws, matching AuthModal.tsx's existing try/catch.
+   *
+   * The rich subscription/product/invoice/API-key data attached to the
+   * resulting profile below is still local placeholder shape, NOT fetched
+   * from a real backend — the Platform API's CRM/Billing/Products domains
+   * are schema-only as of Phase 2 (docs/DATABASE_SCHEMA.md) and have no
+   * service/route layer yet (that's Phase 5+, explicitly out of Phase 4's
+   * scope). Only the identity fields (name/email/role) below come from the
+   * real verified account; the business data is clearly out-of-scope
+   * placeholder content, not a security boundary.
+   */
+  const login = async (email: string, password: string): Promise<boolean> => {
+    const verified = await apiClient.post<{
+      user: { firstName: string; lastName: string; email: string; role: { name: string } };
+    }>('/auth/login', { email, password });
 
-  const login = async (email: string, _password?: string, demoKey?: string): Promise<boolean> => {
-    if (demoKey && DEMO_USERS[demoKey]) {
-      setUser(DEMO_USERS[demoKey]);
-      setIsAuthModalOpen(false);
-      openPortal('overview');
-      return true;
-    }
-
-    // Check if email matches demo users
-    const matchedKey = Object.keys(DEMO_USERS).find(
-      (k) => DEMO_USERS[k].email.toLowerCase() === email.toLowerCase()
-    );
-    if (matchedKey) {
-      setUser(DEMO_USERS[matchedKey]);
-      setIsAuthModalOpen(false);
-      openPortal('overview');
-      return true;
-    }
-
-    // Otherwise create or log in as standard user
-    const firstName = email.split('@')[0].split('.')[0] || 'User';
-    const lastName = email.split('@')[0].split('.')[1] || 'Executive';
-    const fullName = `${firstName.charAt(0).toUpperCase() + firstName.slice(1)} ${lastName.charAt(0).toUpperCase() + lastName.slice(1)}`;
+    const firstName = verified.user.firstName;
+    const lastName = verified.user.lastName;
+    const fullName = `${firstName} ${lastName}`;
 
     const newUser: UserProfile = {
       id: `usr_${Math.random().toString(36).substring(2, 9)}`,
       firstName,
       lastName,
       name: fullName,
-      email: email,
+      email: verified.user.email,
       company: 'Enterprise Client Org',
       role: 'customer',
-      jobTitle: 'Head of Technology',
+      jobTitle: verified.user.role.name,
       emailVerified: true,
       mfaEnabled: true,
       country: 'United States',
@@ -306,9 +308,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return true;
   };
 
+  /**
+   * Real registration (Phase 4 §4) — creates the account via the Platform
+   * API's Phase 3 /auth/register (real bcrypt hash, real organization +
+   * ADMIN-role membership row; never a client-fabricated account). See
+   * login()'s doc comment above for why the subscription/product data
+   * below stays local placeholder shape pending the Billing/Products
+   * phases.
+   */
   const register = async (data: {
     name: string;
     email: string;
+    password: string;
     company: string;
     role: string;
     planId?: 'starter' | 'growth' | 'enterprise';
@@ -319,12 +330,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const regFirstName = nameParts[0] || 'User';
     const regLastName = nameParts.slice(1).join(' ') || 'Member';
 
-    const newUser: UserProfile = {
-      id: `usr_${Math.random().toString(36).substring(2, 9)}`,
+    const verified = await apiClient.post<{
+      user: { firstName: string; lastName: string; email: string };
+    }>('/auth/register', {
+      email: data.email,
+      password: data.password,
       firstName: regFirstName,
       lastName: regLastName,
+      organizationName: data.company,
+    });
+
+    const newUser: UserProfile = {
+      id: `usr_${Math.random().toString(36).substring(2, 9)}`,
+      firstName: verified.user.firstName,
+      lastName: verified.user.lastName,
       name: data.name,
-      email: data.email,
+      email: verified.user.email,
       company: data.company,
       role: 'customer',
       jobTitle: data.role || 'Enterprise Lead',
@@ -716,7 +737,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         user,
         isAuthenticated: !!user,
         login,
-        loginAsDemo,
         register,
         logout,
         isAuthModalOpen,
