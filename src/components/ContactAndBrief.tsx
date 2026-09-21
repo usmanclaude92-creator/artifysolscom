@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { INDUSTRIES_DATA } from '../data/solutionsData';
 import { ProjectBriefSubmission } from '../types';
+import { publicApi } from '../lib/publicApi';
+import { ApiClientError } from '../lib/apiClient';
 
 interface ContactAndBriefProps {
   prefilledBrief?: any;
@@ -38,6 +40,9 @@ export const ContactAndBrief: React.FC<ContactAndBriefProps> = ({ prefilledBrief
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [consent, setConsent] = useState(false);
+  // Honeypot — real visitors never see this field; a filled value is a bot signal.
+  const [website, setWebsite] = useState('');
 
   useEffect(() => {
     if (prefilledBrief) {
@@ -72,28 +77,40 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!consent) {
+      setErrorMessage('Please confirm you agree to be contacted about this request.');
+      return;
+    }
     setIsSubmitting(true);
     setErrorMessage('');
     setSubmissionSuccess(false);
 
-    try {
-      const res = await fetch('/api/brief-submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+    const message = `${formData.projectDescription}\n\nTimeline: ${formData.timeline}${
+      formData.currentTools ? `\nCurrent tools: ${formData.currentTools}` : ''
+    }`;
 
-      const data = await res.json();
-      if (res.ok && data.success) {
-        setSubmissionSuccess(true);
-        setResponseMessage(data.message || 'Your project brief was received successfully!');
-      } else {
-        setErrorMessage(data.error || 'Failed to submit brief. Please try again.');
-      }
-    } catch (err: any) {
+    try {
+      const { message: confirmation } = await publicApi.submitLead({
+        name: formData.name,
+        company: formData.company,
+        email: formData.email,
+        phone: formData.phone || undefined,
+        subject: `Project brief — ${formData.industry}`,
+        message,
+        productInterest: formData.industry,
+        source: 'project_brief',
+        consent: true,
+        website,
+      });
       setSubmissionSuccess(true);
-      setResponseMessage(
-        'Thank you! Your AI Architecture briefing has been recorded. An Artify Solutions Partner will reach out within 4 business hours.'
+      setResponseMessage(confirmation);
+    } catch (err: unknown) {
+      // Honest failure state — never claim success when the request didn't
+      // reach the platform API.
+      setErrorMessage(
+        err instanceof ApiClientError
+          ? err.message
+          : 'We could not submit your brief right now. Please try again in a moment.'
       );
     } finally {
       setIsSubmitting(false);
@@ -340,6 +357,31 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                       className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                     />
                   </div>
+
+                  {/* Honeypot — hidden from real visitors via CSS, never via type=hidden (bots skip those) */}
+                  <div className="absolute left-[-9999px] opacity-0" aria-hidden="true">
+                    <label htmlFor="contact-form-website">Website</label>
+                    <input
+                      type="text"
+                      id="contact-form-website"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                    />
+                  </div>
+
+                  <label className="flex items-start gap-2.5 text-xs text-foreground-muted leading-relaxed">
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      onChange={(e) => setConsent(e.target.checked)}
+                      id="contact-form-consent"
+                      className="mt-0.5"
+                    />
+                    <span>I agree to be contacted by Artify Solutions about this request. *</span>
+                  </label>
 
                   {errorMessage && (
                     <div className="p-3 rounded-lg bg-red-950/40 border border-red-800/40 text-xs text-red-300 font-mono-code">

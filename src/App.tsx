@@ -34,8 +34,7 @@ import { BlogPreviewSection } from './components/BlogPreviewSection';
 import { Bot, Sparkles, ArrowRight, MessageSquare, Zap, Cpu, Layers } from 'lucide-react';
 import { playHoverSound } from './utils/soundEffects';
 import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
-import { ConsultantMessage, AiProductItem, AppRoute } from './types';
-import { AI_PRODUCTS, getAiProductBySlug } from './data/aiProductsData';
+import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
 import {
   AnimatedSection,
@@ -138,7 +137,7 @@ function MainAppContent() {
       const { route, slug } = getRouteFromPath(window.location.pathname);
       if (route === 'product-detail' && slug) return slug;
     }
-    return AI_PRODUCTS[0].slug;
+    return '';
   });
 
   const { isPortalOpen, isAuthModalOpen } = useAuth();
@@ -275,7 +274,7 @@ function MainAppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSelectProduct = (product: AiProductItem) => {
+  const handleSelectProduct = (product: { slug: string }) => {
     setActiveProductSlug(product.slug);
     setActiveRoute('product-detail');
     const path = `/ai-solutions/${product.slug}`;
@@ -286,18 +285,7 @@ function MainAppContent() {
   };
 
   const handleSelectProductBySlug = (slug: string) => {
-    const prod = getAiProductBySlug(slug);
-    if (prod) {
-      handleSelectProduct(prod);
-    } else {
-      setActiveProductSlug(slug);
-      setActiveRoute('product-detail');
-      const path = `/ai-solutions/${slug}`;
-      if (typeof window !== 'undefined' && window.location.pathname !== path) {
-        window.history.pushState({}, '', path);
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    handleSelectProduct({ slug });
   };
 
   const handleNavigateToContact = (customBrief?: any) => {

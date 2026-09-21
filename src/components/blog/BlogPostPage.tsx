@@ -117,49 +117,26 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSectionId, setActiveSectionId] = useState<string>('');
 
-  // Rating State
-  const initialRating = post.rating || 4.9;
-  const initialRatingCount = post.ratingCount || 142;
+  // Rating State — honest defaults; there is no real ratings backend yet,
+  // so a fresh post starts at zero rather than a fabricated seed score.
+  const initialRating = post.rating || 0;
+  const initialRatingCount = post.ratingCount || 0;
   const [currentRating, setCurrentRating] = useState<number>(initialRating);
   const [ratingCount, setRatingCount] = useState<number>(initialRatingCount);
   const [userRating, setUserRating] = useState<number>(post.userRating || 0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [ratingSubmitted, setRatingSubmitted] = useState<boolean>(Boolean(post.userRating));
 
-  // Reactions state
+  // Reactions state — session-local only, starts at zero (no real backend).
   const [reactionCounts, setReactionCounts] = useState<{ [key: string]: number }>({
-    insightful: 48,
-    helpful: 89,
-    gamechanger: 34,
+    insightful: 0,
+    helpful: 0,
+    gamechanger: 0,
   });
   const [activeReactions, setActiveReactions] = useState<{ [key: string]: boolean }>({});
 
-  // Comments state
-  const [comments, setComments] = useState<BlogComment[]>(() => {
-    if (post.comments && post.comments.length > 0) return post.comments;
-    return [
-      {
-        id: 'c-1',
-        authorName: 'Marcus Lindqvist',
-        authorRole: 'Enterprise Chief Architect @ GlobalNordic',
-        authorAvatar: 'ML',
-        date: '2 days ago',
-        content:
-          'The dual-verification consensus architecture is remarkable. We were facing severe latency when parsing cross-border VAT invoices, and this deterministic fallback approach resolved our compliance bottlenecks completely.',
-        likes: 19,
-      },
-      {
-        id: 'c-2',
-        authorName: 'Dr. Priya Ramesh',
-        authorRole: 'Head of Machine Learning @ FinVector Corp',
-        authorAvatar: 'PR',
-        date: '4 days ago',
-        content:
-          'Crucial observation regarding the Cosine Agreement Index (>0.994). Setting strict validation thresholds on ledger mutations is what separates production-ready enterprise systems from toy AI demos.',
-        likes: 14,
-      },
-    ];
-  });
+  // Comments state — real comments only; there is no fabricated seed thread.
+  const [comments, setComments] = useState<BlogComment[]>(() => post.comments || []);
   const [newCommentText, setNewCommentText] = useState('');
   const [newCommentName, setNewCommentName] = useState(user?.name || '');
   const [newCommentRole, setNewCommentRole] = useState(
@@ -654,7 +631,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                 <Globe className="w-3.5 h-3.5 text-emerald-400" />
                 <span className="hidden sm:inline">SEO & Schema</span>
                 <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300">
-                  {post.seo?.seoScore || 92}/100
+                  {post.seo?.seoScore ?? '—'}/100
                 </span>
               </button>
             )}

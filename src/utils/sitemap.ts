@@ -1,7 +1,3 @@
-import { INITIAL_BLOG_POSTS, BLOG_CATEGORIES } from '../data/blogData.js';
-import { AI_PRODUCTS, AI_PRODUCT_CATEGORIES } from '../data/aiProductsData.js';
-import { BlogPost, AiProductItem } from '../types.js';
-
 export const DEFAULT_BASE_URL = 'https://artifysols.com';
 
 export interface SitemapUrlEntry {
@@ -17,6 +13,26 @@ export interface SitemapUrlEntry {
     title?: string;
     caption?: string;
   };
+}
+
+interface RemotePost {
+  slug: string;
+  title: string;
+  category: { slug: string; name: string } | null;
+  featuredMedia: { url: string } | null;
+  publishedAt: string | null;
+  updatedAt: string;
+}
+
+interface RemoteProduct {
+  slug: string;
+  name: string;
+  shortDescription: string;
+}
+
+interface RemoteCategory {
+  slug: string;
+  name: string;
 }
 
 /**
@@ -49,189 +65,126 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, '&apos;');
 }
 
-/**
- * Compiles a full structured list of all canonical URL entries across the Artify Solutions platform.
- * Automatically synchronizes with all blog posts, product catalog items, and enterprise category hubs.
- */
-export function getSitemapUrlList(
-  customBaseUrl?: string,
-  options?: {
-    customBlogPosts?: BlogPost[];
-    customProducts?: AiProductItem[];
+/** Resolves the Platform API base URL in whatever environment this runs in
+ * (browser via Vite's `import.meta.env`, or Node via `process.env` when
+ * called from server.ts) without importing apiClient.ts, which assumes a
+ * browser/Vite context. */
+function resolveApiBaseUrl(explicit?: string): string | null {
+  if (explicit) return explicit;
+  if (typeof window !== 'undefined') {
+    const configured = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env
+      ?.VITE_PLATFORM_API_BASE_URL;
+    return configured && configured.length > 0 ? configured : '/api/v1';
   }
-): SitemapUrlEntry[] {
+  if (typeof process !== 'undefined' && process.env?.PLATFORM_API_BASE_URL) {
+    return process.env.PLATFORM_API_BASE_URL;
+  }
+  return null;
+}
+
+async function fetchPublicData(apiBaseUrl?: string): Promise<{
+  posts: RemotePost[];
+  products: RemoteProduct[];
+  categories: RemoteCategory[];
+}> {
+  const base = resolveApiBaseUrl(apiBaseUrl);
+  if (!base) return { posts: [], products: [], categories: [] };
+
+  try {
+    const [postsRes, productsRes, categoriesRes] = await Promise.all([
+      fetch(`${base}/public/posts?limit=50`),
+      fetch(`${base}/public/products?limit=50`),
+      fetch(`${base}/public/categories`),
+    ]);
+    const [postsBody, productsBody, categoriesBody] = await Promise.all([
+      postsRes.json(),
+      productsRes.json(),
+      categoriesRes.json(),
+    ]);
+    return {
+      posts: postsRes.ok && postsBody.success ? postsBody.data.posts : [],
+      products: productsRes.ok && productsBody.success ? productsBody.data.products : [],
+      categories: categoriesRes.ok && categoriesBody.success ? categoriesBody.data.categories : [],
+    };
+  } catch {
+    // Honest degrade — sitemap just omits dynamic entries rather than
+    // fabricating URLs for content that may not exist.
+    return { posts: [], products: [], categories: [] };
+  }
+}
+
+/**
+ * Compiles the full structured list of canonical URL entries across the
+ * public site. Dynamic entries (articles, products, category hubs) are
+ * sourced live from the real Platform API's published/ACTIVE content —
+ * never from a static or fabricated list.
+ */
+export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: string): Promise<SitemapUrlEntry[]> {
   const baseUrl = (customBaseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL)).replace(/\/+$/, '');
-  const blogPosts = options?.customBlogPosts || INITIAL_BLOG_POSTS;
-  const products = options?.customProducts || AI_PRODUCTS;
+  const { posts, products, categories } = await fetchPublicData(apiBaseUrl);
   const currentDate = formatSitemapDate();
 
   const entries: SitemapUrlEntry[] = [];
 
-  // 1. Core Top-Level Landing Pages (Priority 1.0 - 0.9)
+  // 1. Core Top-Level Landing Pages
   entries.push(
-    {
-      loc: `${baseUrl}/`,
-      lastmod: currentDate,
-      changefreq: 'daily',
-      priority: 1.0,
-      type: 'core',
-      title: 'Artify Solutions | AI-Native Enterprise Software & Autonomous Systems',
-      image: {
-        loc: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=630&q=85',
-        title: 'Artify Solutions Enterprise AI Platform',
-        caption: 'Autonomous agent swarms, hybrid vector RAG, and custom enterprise AI engineering.',
-      },
-    },
-    {
-      loc: `${baseUrl}/solutions`,
-      lastmod: currentDate,
-      changefreq: 'daily',
-      priority: 0.98,
-      type: 'core',
-      title: 'Enterprise Solutions Catalog | 24 Modular Systems & Architectures',
-    },
-    {
-      loc: `${baseUrl}/ai-solutions`,
-      lastmod: currentDate,
-      changefreq: 'daily',
-      priority: 0.95,
-      type: 'core',
-      title: 'AI Solutions Suite & Autonomous Agent Catalog',
-    },
-    {
-      loc: `${baseUrl}/blog`,
-      lastmod: currentDate,
-      changefreq: 'daily',
-      priority: 0.9,
-      type: 'core',
-      title: 'Intelligence Feed & Enterprise AI Engineering Research',
-    },
-    {
-      loc: `${baseUrl}/case-studies`,
-      lastmod: currentDate,
-      changefreq: 'weekly',
-      priority: 0.85,
-      type: 'core',
-      title: 'Enterprise Case Studies & Digital Transformation Proofs',
-    },
-    {
-      loc: `${baseUrl}/services`,
-      lastmod: currentDate,
-      changefreq: 'weekly',
-      priority: 0.85,
-      type: 'core',
-      title: 'AI Architecture & Custom Engineering Services',
-    },
-    {
-      loc: `${baseUrl}/about`,
-      lastmod: currentDate,
-      changefreq: 'monthly',
-      priority: 0.8,
-      type: 'core',
-      title: 'About Artify Solutions | AI Architects & Mission',
-    },
-    {
-      loc: `${baseUrl}/contact`,
-      lastmod: currentDate,
-      changefreq: 'monthly',
-      priority: 0.8,
-      type: 'core',
-      title: 'Request Enterprise Project Brief & Architect Consultation',
-    }
+    { loc: `${baseUrl}/`, lastmod: currentDate, changefreq: 'daily', priority: 1.0, type: 'core', title: 'Artify Solutions' },
+    { loc: `${baseUrl}/solutions`, lastmod: currentDate, changefreq: 'daily', priority: 0.95, type: 'core', title: 'Solutions Catalog' },
+    { loc: `${baseUrl}/ai-solutions`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'AI Solutions' },
+    { loc: `${baseUrl}/blog`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'Blog' },
+    { loc: `${baseUrl}/case-studies`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Case Studies' },
+    { loc: `${baseUrl}/services`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Services' },
+    { loc: `${baseUrl}/about`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'About' },
+    { loc: `${baseUrl}/contact`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' }
   );
 
-  // 2. Dynamic AI Products Detail Routes (Priority 0.9)
+  // 2. Dynamic Product Detail Routes
   products.forEach((product) => {
-    const productCover =
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=630&q=85';
-
     entries.push({
       loc: `${baseUrl}/ai-solutions/${product.slug}`,
       lastmod: currentDate,
       changefreq: 'weekly',
-      priority: 0.9,
+      priority: 0.85,
       type: 'product',
-      title: `${product.name} - ${product.tagline}`,
-      category: product.categoryLabel,
-      image: {
-        loc: productCover,
-        title: product.name,
-        caption: product.shortDescription,
-      },
+      title: product.name,
     });
   });
 
-  // 3. Dynamic Blog Post Detail Routes (Priority 0.85)
-  blogPosts.forEach((post) => {
-    // Only index published posts in public sitemap
-    if (post.status !== 'draft') {
-      const lastModDate = formatSitemapDate(post.lastModified || post.publishDate);
-      const postImage = post.coverImage || post.seo?.ogImage;
-
-      entries.push({
-        loc: `${baseUrl}/blog/${post.slug}`,
-        lastmod: lastModDate,
-        changefreq: 'weekly',
-        priority: 0.85,
-        type: 'article',
-        title: post.title,
-        category: post.category,
-        image: postImage
-          ? {
-              loc: postImage,
-              title: post.title,
-              caption: post.excerpt,
-            }
-          : undefined,
-      });
-    }
+  // 3. Dynamic Blog Post Detail Routes — published only, straight from the API
+  posts.forEach((post) => {
+    entries.push({
+      loc: `${baseUrl}/blog/${post.slug}`,
+      lastmod: formatSitemapDate(post.updatedAt || post.publishedAt || undefined),
+      changefreq: 'weekly',
+      priority: 0.75,
+      type: 'article',
+      title: post.title,
+      category: post.category?.name,
+      image: post.featuredMedia ? { loc: post.featuredMedia.url, title: post.title } : undefined,
+    });
   });
 
-  // 4. Product Category Hubs (Priority 0.75)
-  AI_PRODUCT_CATEGORIES.forEach((cat) => {
-    if (cat.id !== 'all') {
-      entries.push({
-        loc: `${baseUrl}/ai-solutions?category=${encodeURIComponent(cat.id)}`,
-        lastmod: currentDate,
-        changefreq: 'weekly',
-        priority: 0.75,
-        type: 'category',
-        title: `${cat.label} AI Products`,
-        category: cat.label,
-      });
-    }
-  });
-
-  // 5. Blog Category Hubs (Priority 0.75)
-  BLOG_CATEGORIES.forEach((cat) => {
-    if (cat !== 'All') {
-      entries.push({
-        loc: `${baseUrl}/blog?category=${encodeURIComponent(cat)}`,
-        lastmod: currentDate,
-        changefreq: 'weekly',
-        priority: 0.75,
-        type: 'category',
-        title: `${cat} Research Articles`,
-        category: cat,
-      });
-    }
+  // 4. Blog Category Hubs
+  categories.forEach((cat) => {
+    entries.push({
+      loc: `${baseUrl}/blog?category=${encodeURIComponent(cat.slug)}`,
+      lastmod: currentDate,
+      changefreq: 'weekly',
+      priority: 0.6,
+      type: 'category',
+      title: `${cat.name} Articles`,
+      category: cat.name,
+    });
   });
 
   return entries;
 }
 
 /**
- * Generates standards-compliant XML Sitemap string for Google, Bing, Yandex, DuckDuckGo.
- * Includes Image sitemap extensions (<image:image>) for rich image search indexing.
+ * Generates a standards-compliant XML Sitemap string for Google, Bing, etc.
  */
-export function generateSitemapXml(
-  customBaseUrl?: string,
-  options?: {
-    customBlogPosts?: BlogPost[];
-    customProducts?: AiProductItem[];
-  }
-): string {
-  const entries = getSitemapUrlList(customBaseUrl, options);
+export async function generateSitemapXml(customBaseUrl?: string, apiBaseUrl?: string): Promise<string> {
+  const entries = await getSitemapUrlList(customBaseUrl, apiBaseUrl);
 
   const xmlUrls = entries
     .map((entry) => {
@@ -241,8 +194,6 @@ export function generateSitemapXml(
     <image:image>
       <image:loc>${escapeXml(entry.image.loc)}</image:loc>${
           entry.image.title ? `\n      <image:title>${escapeXml(entry.image.title)}</image:title>` : ''
-        }${
-          entry.image.caption ? `\n      <image:caption>${escapeXml(entry.image.caption)}</image:caption>` : ''
         }
     </image:image>`;
       }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   FileCode,
@@ -35,11 +35,29 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
   const [viewRawXml, setViewRawXml] = useState(false);
+  const [urlEntries, setUrlEntries] = useState<SitemapUrlEntry[]>([]);
+  const [rawXml, setRawXml] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    setIsLoading(true);
+    Promise.all([getSitemapUrlList(), generateSitemapXml()])
+      .then(([entries, xml]) => {
+        if (cancelled) return;
+        setUrlEntries(entries);
+        setRawXml(xml);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
-
-  const urlEntries = getSitemapUrlList();
-  const rawXml = generateSitemapXml();
 
   const filteredEntries = urlEntries.filter((entry) => {
     const matchesSearch =
@@ -283,7 +301,7 @@ export const SitemapModal: React.FC<SitemapModalProps> = ({
                     {filteredEntries.length === 0 && (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-foreground-muted font-sans">
-                          No matching sitemap URLs found for "{searchQuery}"
+                          {isLoading ? 'Loading sitemap…' : `No matching sitemap URLs found for "${searchQuery}"`}
                         </td>
                       </tr>
                     )}

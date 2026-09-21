@@ -37,10 +37,10 @@ async function startServer() {
   app.use("/api/v1", v1Router);
 
   // Dynamic XML Sitemap for search engine indexers (Google, Bing, Yandex, etc.)
-  app.get(["/sitemap.xml", "/api/sitemap.xml"], (req, res) => {
+  app.get(["/sitemap.xml", "/api/sitemap.xml"], async (req, res) => {
     try {
       const baseUrl = getBaseUrl(req);
-      const sitemapXml = generateSitemapXml(baseUrl);
+      const sitemapXml = await generateSitemapXml(baseUrl, process.env.PLATFORM_API_BASE_URL);
       res.setHeader("Content-Type", "application/xml; charset=utf-8");
       res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=14400"); // Cache 1hr, CDN 4hr
       res.status(200).send(sitemapXml);
@@ -65,10 +65,10 @@ async function startServer() {
   });
 
   // Structured Sitemap URL list JSON API
-  app.get("/api/sitemap", (req, res) => {
+  app.get("/api/sitemap", async (req, res) => {
     try {
       const baseUrl = getBaseUrl(req);
-      const urls = getSitemapUrlList(baseUrl);
+      const urls = await getSitemapUrlList(baseUrl, process.env.PLATFORM_API_BASE_URL);
       res.json({
         success: true,
         baseUrl,
@@ -169,18 +169,6 @@ Keep your response punchy, precise, and professional. Avoid buzzwords and clichÃ
       console.error("AI Consultant endpoint error:", err);
       return res.status(500).json({ error: "Internal AI processing error" });
     }
-  });
-
-  // Brief submission endpoint
-  app.post("/api/brief-submit", (req, res) => {
-    const { name, company, email, phone, industry, challenge, blueprint } = req.body;
-    console.log(`[Project Brief Received] From: ${name} (${company} - ${email}) - Industry: ${industry}`);
-    res.json({
-      success: true,
-      message: "Project brief successfully received. An Artify Solutions Principal Architect will contact you within 24 hours.",
-      referenceId: `ART-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-      receivedAt: new Date().toISOString(),
-    });
   });
 
   // Vite middleware for development vs static in production

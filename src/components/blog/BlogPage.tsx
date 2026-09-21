@@ -3,45 +3,20 @@ import {
   Search,
   Sparkles,
   BookOpen,
-  Filter,
-  PlusCircle,
   Calendar,
   Clock,
   ArrowRight,
-  TrendingUp,
   Radio,
-  Share2,
-  Bookmark,
   Check,
   ChevronRight,
   ArrowLeft,
   Mail,
   Zap,
-  ShieldCheck,
-  Cpu,
-  Layers,
-  Heart,
-  Bot,
-  Sun,
-  Moon,
   Linkedin,
-  Copy,
-  FolderOpen,
-  Edit3,
-  Globe,
 } from 'lucide-react';
-import { BlogPost, BlogCategory } from '../../types';
-import {
-  BLOG_CATEGORIES,
-  getStoredBlogPosts,
-  saveStoredBlogPosts,
-  getStoredBlogDrafts,
-  saveStoredBlogDrafts,
-} from '../../data/blogData';
+import { BlogPost } from '../../types';
+import { publicApi, mapPostToBlogPost } from '../../lib/publicApi';
 import { BlogPostPage } from './BlogPostPage';
-import { CreateArticleModal } from './CreateArticleModal';
-import { DraftsManagerDrawer } from './DraftsManagerDrawer';
-import { useAuth } from '../../context/AuthContext';
 import { updatePageSeo, generateCategoryKeywords, generateDynamicKeywords } from '../../utils/seo';
 
 // Crisp X / Twitter brand icon component
@@ -71,27 +46,46 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   onOpenConsultant,
   onToggleTheme,
 }) => {
-  const { user, openAuthModal } = useAuth();
-  const isEditor = Boolean(
-    user && (user.role === 'editor' || user.role === 'super_admin' || user.role === 'admin' || user.role === 'support_agent')
-  );
-
-  const [posts, setPosts] = useState<BlogPost[]>(() => getStoredBlogPosts());
-  const [drafts, setDrafts] = useState<BlogPost[]>(() => getStoredBlogDrafts());
-  const [selectedCategory, setSelectedCategory] = useState<BlogCategory>('All');
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedType, setSelectedType] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activePost, setActivePost] = useState<BlogPost | null>(null);
-  const [isReaderOpen, setIsReaderOpen] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isDraftsDrawerOpen, setIsDraftsDrawerOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
   const isLight = theme === 'light';
+
+  // Load published posts + categories from the real Platform API. This is
+  // the only source of blog content — there is no local/fallback dataset,
+  // so an unconfigured or unreachable public API honestly shows an empty
+  // or error state rather than fabricated articles.
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoading(true);
+    setLoadError(null);
+    Promise.all([publicApi.listPosts({ limit: 50 }), publicApi.listCategories()])
+      .then(([{ posts: rows }, cats]) => {
+        if (cancelled) return;
+        setPosts(rows.map(mapPostToBlogPost));
+        setCategories(cats.map((c) => c.name));
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setLoadError(err instanceof Error ? err.message : 'Unable to load articles right now.');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Filtered posts
   const filteredPosts = useMemo(() => {
@@ -130,9 +124,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       const path = window.location.pathname.replace(/\/+$/, '') || '/';
       if (path.startsWith('/blog/')) {
         const slug = decodeURIComponent(path.replace('/blog/', ''));
-        const found =
-          posts.find((p) => p.slug === slug || p.id === slug) ||
-          drafts.find((d) => d.slug === slug || d.id === slug);
+        const found = posts.find((p) => p.slug === slug || p.id === slug);
         if (found) {
           setActivePost(found);
         }
@@ -144,7 +136,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     handlePath();
     window.addEventListener('popstate', handlePath);
     return () => window.removeEventListener('popstate', handlePath);
-  }, [posts, drafts]);
+  }, [posts]);
 
   // Update SEO metadata for the Blog Hub Feed when no individual post is active
   useEffect(() => {
@@ -162,7 +154,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               'Business Automation Case Studies',
               'Artify Solutions Intelligence',
             ],
-            tags: BLOG_CATEGORIES.filter((c) => c !== 'All'),
+            tags: categories,
           });
 
       const cleanup = updatePageSeo({
@@ -185,119 +177,16 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       });
       return () => cleanup();
     }
-  }, [activePost, selectedCategory]);
+  }, [activePost, selectedCategory, categories]);
 
   const handleOpenReader = (post: BlogPost) => {
-    // Increment view counter if published
-    if (post.status !== 'draft') {
-      const updated = posts.map((p) =>
-        p.id === post.id ? { ...p, views: (p.views || 0) + 1 } : p
-      );
-      setPosts(updated);
-      saveStoredBlogPosts(updated);
-      setActivePost({ ...post, views: (post.views || 0) + 1 });
-    } else {
-      setActivePost(post);
-    }
+    setActivePost(post);
     if (typeof window !== 'undefined') {
       const path = `/blog/${post.slug}`;
       if (window.location.pathname !== path) {
         window.history.pushState({}, '', path);
       }
     }
-  };
-
-  const handleLikePost = (postId: string) => {
-    const updated = posts.map((p) =>
-      p.id === postId ? { ...p, likes: p.likes + 1 } : p
-    );
-    setPosts(updated);
-    saveStoredBlogPosts(updated);
-  };
-
-  // Publish a new or edited post live
-  const handlePublishNewPost = (newPost: BlogPost) => {
-    // Check if updating existing published post
-    const existingIndex = posts.findIndex((p) => p.id === newPost.id);
-    let updatedPosts: BlogPost[];
-    if (existingIndex >= 0) {
-      updatedPosts = [...posts];
-      updatedPosts[existingIndex] = newPost;
-    } else {
-      updatedPosts = [newPost, ...posts];
-    }
-    setPosts(updatedPosts);
-    saveStoredBlogPosts(updatedPosts);
-
-    // If it was a draft, remove from drafts list
-    const updatedDrafts = drafts.filter((d) => d.id !== newPost.id);
-    setDrafts(updatedDrafts);
-    saveStoredBlogDrafts(updatedDrafts);
-
-    setEditingPost(null);
-    handleOpenReader(newPost);
-  };
-
-  // Draft Management Handlers
-  const handleSaveDraft = (draft: BlogPost) => {
-    const existingIndex = drafts.findIndex((d) => d.id === draft.id);
-    let updatedDrafts: BlogPost[];
-    if (existingIndex >= 0) {
-      updatedDrafts = [...drafts];
-      updatedDrafts[existingIndex] = draft;
-    } else {
-      updatedDrafts = [draft, ...drafts];
-    }
-    setDrafts(updatedDrafts);
-    saveStoredBlogDrafts(updatedDrafts);
-  };
-
-  const handleDeleteDraft = (draftId: string) => {
-    const updatedDrafts = drafts.filter((d) => d.id !== draftId);
-    setDrafts(updatedDrafts);
-    saveStoredBlogDrafts(updatedDrafts);
-  };
-
-  const handleDuplicateDraft = (draft: BlogPost) => {
-    const duplicated: BlogPost = {
-      ...draft,
-      id: `draft-${Date.now()}`,
-      title: `${draft.title} (Copy)`,
-      slug: `${draft.slug}-copy`,
-      publishDate: `Draft (Saved ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})`,
-      lastModified: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-    handleSaveDraft(duplicated);
-  };
-
-  const handleEditDraft = (draft: BlogPost) => {
-    setEditingPost(draft);
-    setIsCreateOpen(true);
-  };
-
-  const handleEditPublishedPost = (post: BlogPost) => {
-    setEditingPost(post);
-    setIsCreateOpen(true);
-  };
-
-  const handleCreateNewArticle = () => {
-    setEditingPost(null);
-    setIsCreateOpen(true);
-  };
-
-  const handlePublishDraft = (draft: BlogPost) => {
-    const published: BlogPost = {
-      ...draft,
-      status: 'published',
-      publishDate: new Date().toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      }),
-      views: 1,
-    };
-    handlePublishNewPost(published);
-    setIsDraftsDrawerOpen(false);
   };
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
@@ -325,24 +214,10 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           }}
           onBackToHome={onBackToHome}
           onSelectRelatedPost={(p) => handleOpenReader(p)}
-          onEditPost={handleEditPublishedPost}
           allPosts={posts}
           onOpenSolutionBuilder={onOpenSolutionBuilder}
           onOpenConsultant={onOpenConsultant}
           onToggleTheme={onToggleTheme}
-        />
-
-        {/* Author / Create Article Modal */}
-        <CreateArticleModal
-          isOpen={isCreateOpen}
-          onClose={() => {
-            setIsCreateOpen(false);
-            setEditingPost(null);
-          }}
-          onPublish={handlePublishNewPost}
-          onSaveDraft={handleSaveDraft}
-          initialPost={editingPost}
-          theme={theme}
         />
       </div>
     );
@@ -392,77 +267,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            {/* Drafts Desk Button */}
-            <button
-              type="button"
-              onClick={() => setIsDraftsDrawerOpen(true)}
-              id="open-drafts-desk-btn"
-              title="Open Editorial Drafts Desk"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
-                drafts.length > 0
-                  ? isLight
-                    ? 'bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100 shadow-sm'
-                    : 'bg-violet-950/40 border-violet-500/30 text-violet-300 hover:bg-violet-900/60'
-                  : isLight
-                  ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                  : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:bg-white/[0.08]'
-              }`}
-            >
-              <FolderOpen className="w-3.5 h-3.5 text-violet-400" />
-              <span className="hidden sm:inline">Drafts Desk</span>
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-mono-code font-bold bg-violet-500/20 text-violet-300">
-                {drafts.length}
-              </span>
-            </button>
-
-            {/* Editor Account Status / Switch Badge */}
-            {user ? (
-              <div
-                className={`hidden md:flex items-center gap-2 px-2.5 py-1 rounded-lg border text-xs ${
-                  isEditor
-                    ? isLight
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                      : 'bg-emerald-950/30 border-emerald-500/30 text-emerald-300'
-                    : isLight
-                    ? 'bg-amber-50 border-amber-200 text-amber-800'
-                    : 'bg-amber-950/30 border-amber-500/30 text-amber-300'
-                }`}
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    isEditor ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-                  }`}
-                />
-                <span className="font-semibold">{user.name}</span>
-                <span className="text-[10px] font-mono-code uppercase px-1.5 py-0.2 rounded bg-black/10 dark:bg-white/10 font-bold">
-                  {user.role}
-                </span>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={() => openAuthModal('login')}
-                className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
-                  isLight
-                    ? 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
-                    : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/[0.08] text-zinc-300'
-                }`}
-              >
-                <ShieldCheck className="w-3.5 h-3.5 text-violet-400" />
-                <span>Editor Sign In</span>
-              </button>
-            )}
-
-            <button
-              onClick={handleCreateNewArticle}
-              id="open-create-article-btn"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md shadow-violet-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Composer & SEO</span>
-            </button>
-          </div>
         </div>
       </header>
 
@@ -492,35 +296,59 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           </p>
         </div>
 
-        {/* Live News Ticker / Bulletin Ribbon */}
-        <div
-          className={`p-3 rounded-xl border flex items-center gap-3 overflow-hidden ${
-            isLight
-              ? 'bg-violet-50/80 border-violet-200 text-slate-900'
-              : 'bg-violet-950/20 border-violet-500/20 text-zinc-200'
-          }`}
-        >
-          <div className="flex items-center gap-1.5 text-xs font-bold font-mono-code text-violet-500 shrink-0 uppercase tracking-wider">
-            <Zap className="w-3.5 h-3.5" />
-            <span>Latest News:</span>
+        {/* Loading state */}
+        {isLoading && (
+          <div
+            className={`p-10 text-center rounded-2xl border text-xs ${
+              isLight ? 'bg-white border-slate-200 text-slate-500' : 'bg-[#0e0e16] border-white/[0.08] text-zinc-400'
+            }`}
+          >
+            Loading articles…
           </div>
-          <div className="truncate text-xs text-zinc-300">
-            <a
-              href={`/blog/${(posts[1] || posts[0])?.slug || ''}`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleOpenReader(posts[1] || posts[0]);
-              }}
-              className="cursor-pointer hover:underline text-violet-400 font-semibold inline-flex items-center gap-1"
-            >
-              Artify Kernel V3.0 is live with dual-engine model routing and real-time agent memory mesh
-              <ChevronRight className="w-3 h-3" />
-            </a>
+        )}
+
+        {/* Honest error state — never a fabricated fallback article list */}
+        {!isLoading && loadError && (
+          <div
+            className={`p-10 text-center rounded-2xl border text-xs ${
+              isLight ? 'bg-white border-amber-200 text-amber-700' : 'bg-[#0e0e16] border-amber-500/30 text-amber-300'
+            }`}
+          >
+            We couldn't load articles right now. Please try again shortly.
           </div>
-        </div>
+        )}
+
+        {/* Live News Ticker / Bulletin Ribbon — surfaces the latest real post */}
+        {!isLoading && !loadError && posts.length > 0 && (
+          <div
+            className={`p-3 rounded-xl border flex items-center gap-3 overflow-hidden ${
+              isLight
+                ? 'bg-violet-50/80 border-violet-200 text-slate-900'
+                : 'bg-violet-950/20 border-violet-500/20 text-zinc-200'
+            }`}
+          >
+            <div className="flex items-center gap-1.5 text-xs font-bold font-mono-code text-violet-500 shrink-0 uppercase tracking-wider">
+              <Zap className="w-3.5 h-3.5" />
+              <span>Latest:</span>
+            </div>
+            <div className="truncate text-xs text-zinc-300">
+              <a
+                href={`/blog/${posts[0].slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleOpenReader(posts[0]);
+                }}
+                className="cursor-pointer hover:underline text-violet-400 font-semibold inline-flex items-center gap-1"
+              >
+                {posts[0].title}
+                <ChevronRight className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Spotlight Featured Article Card */}
-        {featuredPost && (
+        {!isLoading && !loadError && featuredPost && (
           <a
             href={`/blog/${featuredPost.slug}`}
             onClick={(e) => {
@@ -657,11 +485,13 @@ export const BlogPage: React.FC<BlogPageProps> = ({
         )}
 
         {/* Filter Controls & Search Bar */}
+        {!isLoading && !loadError && (
+        <>
         <div className="space-y-4 pt-4">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             {/* Category Filter Chips */}
             <div className="flex items-center gap-1.5 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0 scrollbar-none">
-              {BLOG_CATEGORIES.map((cat) => (
+              {['All', ...categories].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -757,7 +587,9 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                 No articles matching your filters
               </h3>
               <p className="text-xs max-w-sm mx-auto mb-4">
-                Try searching for a different keyword, selecting "All" categories, or publish your own article.
+                {posts.length === 0
+                  ? 'No articles have been published yet. Check back soon.'
+                  : 'Try searching for a different keyword or selecting "All" categories.'}
               </p>
               <button
                 onClick={() => {
@@ -916,23 +748,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                       </div>
 
                       <div className="flex items-center gap-1.5">
-                        {isEditor && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditPublishedPost(post);
-                            }}
-                            title="Edit Article & SEO"
-                            className={`p-1.5 rounded-lg border text-xs transition-colors ${
-                              isLight
-                                ? 'bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100'
-                                : 'bg-violet-950/40 border-violet-500/30 text-violet-300 hover:bg-violet-900/60'
-                            }`}
-                          >
-                            <Edit3 className="w-3 h-3" />
-                          </button>
-                        )}
-
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -978,6 +793,8 @@ export const BlogPage: React.FC<BlogPageProps> = ({
             </div>
           )}
         </div>
+        </>
+        )}
 
         {/* Weekly Engineering Briefing Subscription Card */}
         <div
@@ -1030,36 +847,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           </div>
         </div>
       </main>
-
-      {/* Author / Create Article Modal */}
-      <CreateArticleModal
-        isOpen={isCreateOpen}
-        onClose={() => {
-          setIsCreateOpen(false);
-          setEditingPost(null);
-        }}
-        onPublish={handlePublishNewPost}
-        onSaveDraft={handleSaveDraft}
-        initialPost={editingPost}
-        theme={theme}
-      />
-
-      {/* Drafts Manager Drawer */}
-      <DraftsManagerDrawer
-        isOpen={isDraftsDrawerOpen}
-        onClose={() => setIsDraftsDrawerOpen(false)}
-        drafts={drafts}
-        onEditDraft={handleEditDraft}
-        onPublishDraft={handlePublishDraft}
-        onDeleteDraft={handleDeleteDraft}
-        onDuplicateDraft={handleDuplicateDraft}
-        onCreateNew={() => {
-          setEditingPost(null);
-          setIsCreateOpen(true);
-        }}
-        onPreviewDraft={handleOpenReader}
-        theme={theme}
-      />
     </div>
   );
 };

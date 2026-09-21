@@ -14,8 +14,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { AI_PRODUCTS } from '../data/aiProductsData';
-import { AiProductItem } from '../types';
+import { publicApi, PublicProduct } from '../lib/publicApi';
 
 interface FooterProps {
   theme?: 'dark' | 'light';
@@ -29,7 +28,7 @@ interface FooterProps {
   onNavigateToAbout?: () => void;
   onNavigateToContact?: () => void;
   onNavigateToLegal?: (type: 'privacy' | 'terms') => void;
-  onSelectProduct?: (product: AiProductItem) => void;
+  onSelectProduct?: (product: { slug: string }) => void;
   onOpenSitemap?: () => void;
   onOpenConsultant?: () => void;
   onOpenSolutionBuilder?: () => void;
@@ -53,6 +52,22 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenSolutionBuilder,
 }) => {
   const { user, openPortal, openAuthModal } = useAuth();
+  const [footerProducts, setFooterProducts] = React.useState<PublicProduct[]>([]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    publicApi
+      .listProducts({ limit: 5 })
+      .then(({ products }) => {
+        if (!cancelled) setFooterProducts(products);
+      })
+      .catch(() => {
+        // Honest empty state — the quick-links list just doesn't render.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const isLight =
     theme === 'light' ||
     (typeof document !== 'undefined' && document.documentElement.classList.contains('theme-light'));
@@ -166,8 +181,8 @@ export const Footer: React.FC<FooterProps> = ({
               OUR SOLUTIONS
             </h4>
             <ul className="space-y-2.5 text-xs">
-              {AI_PRODUCTS.slice(0, 5).map((p) => (
-                <li key={p.id}>
+              {footerProducts.map((p) => (
+                <li key={p.slug}>
                   <a
                     href={`/ai-solutions/${p.slug}`}
                     onClick={(e) => {

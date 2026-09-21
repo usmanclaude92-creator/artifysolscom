@@ -18,7 +18,6 @@ import {
   Bot,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { AiProductItem } from '../types';
 
 interface NavbarProps {
   onOpenSolutionBuilder: () => void;
@@ -35,7 +34,7 @@ interface NavbarProps {
   onNavigateToPlatform?: () => void;
   onNavigateToIntelligence?: () => void;
   onNavigateToEcosystem?: () => void;
-  onSelectProduct?: (product: AiProductItem) => void;
+  onSelectProduct?: (product: { slug: string }) => void;
   activeRoute?: string;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
