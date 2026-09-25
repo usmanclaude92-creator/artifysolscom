@@ -1,6 +1,14 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { TheArtifyApproach } from './components/TheArtifyApproach';
+import { ArtifyEcosystemDiagram } from './components/ArtifyEcosystemDiagram';
+import { EnterpriseSystemsGrid } from './components/EnterpriseSystemsGrid';
+import { AiWithinEcosystem } from './components/AiWithinEcosystem';
+import { HowWeBuildJourney } from './components/HowWeBuildJourney';
+import { FeaturedEcosystemShowcase } from './components/FeaturedEcosystemShowcase';
+import { SecurityAndSovereigntySection } from './components/SecurityAndSovereigntySection';
+import { EcosystemCtaBanner } from './components/EcosystemCtaBanner';
 import { TrustStatement } from './components/TrustStatement';
 import { AdaptiveEcosystem } from './components/AdaptiveEcosystem';
 import { NextGenAiLayer } from './components/NextGenAiLayer';
@@ -567,7 +575,7 @@ function MainAppContent() {
 
         {activeRoute === 'home' && (
           <>
-            {/* 1. Hero: Adaptive Software & Intelligent Ecosystems */}
+            {/* 01. Hero: Your business is unique. Your technology should be too. */}
             <AnimatedSection variant="fade" duration={0.8}>
               <Hero
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
@@ -577,103 +585,70 @@ function MainAppContent() {
               />
             </AnimatedSection>
 
-            {/* Subtle, professional horizontal separator between Hero and Problem Section */}
-            <div className="relative w-full max-w-7xl mx-auto px-6 py-2 overflow-hidden" aria-hidden="true">
-              <div className="relative flex items-center justify-center">
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-violet-500/25 to-transparent" />
-                <div className="absolute flex items-center gap-2 px-3 py-1 rounded-full surface-card border border-border shadow-sm text-[10px] font-mono-code text-foreground-muted uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <span>The Paradigm Shift</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Core Philosophy: Technology Adapts to Business */}
+            {/* 02. The Artify Approach: Software should adapt to your business */}
             <AnimatedSection variant="fade-up">
-              <TrustStatement />
-            </AnimatedSection>
-
-            {/* 3. The Adaptive Enterprise Ecosystem (16 Integrated Nodes) */}
-            <AnimatedSection variant="fade-up">
-              <AdaptiveEcosystem
+              <TheArtifyApproach
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-                onNavigateToContact={handleNavigateToContact}
+                onNavigateToAbout={() => navigateToRoute('about', '/about')}
               />
             </AnimatedSection>
 
-            {/* 4. Enterprise Intelligence Layer: Next-Gen AI Fabric */}
+            {/* 03. The Artify Ecosystem: An integrated digital environment for your entire business */}
             <AnimatedSection variant="fade-up">
-              <NextGenAiLayer onOpenConsultant={() => setIsConsultantOpen(true)} />
-            </AnimatedSection>
-
-            {/* 5. Continuous Enterprise Adaptability: Software That Evolves With You */}
-            <AnimatedSection variant="fade-up">
-              <AdaptiveIntelligence onNavigateToContact={handleNavigateToContact} />
-            </AnimatedSection>
-
-            {/* 6. Specialized Enterprise Solutions: 6 Core Business Ecosystems */}
-            <AnimatedSection variant="fade-up">
-              <EnterpriseSolutions
+              <ArtifyEcosystemDiagram
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-                onNavigateToContact={handleNavigateToContact}
+                onNavigateToSolutions={() => navigateToRoute('solutions-catalog', '/solutions')}
               />
             </AnimatedSection>
 
-            {/* 7. Domain-Specific Solutions: Industry Architecture */}
+            {/* 04. Enterprise Systems: Solutions for every part of your business */}
             <AnimatedSection variant="fade-up">
-              <IndustryShowcase
-                onSelectIndustry={(id) => handleOpenSolutionBuilder(id)}
-                onNavigateToContact={handleNavigateToContact}
-                onNavigateToAllIndustries={() => navigateToRoute('industries', '/industries')}
+              <EnterpriseSystemsGrid
+                onOpenSolutionBuilder={(sysId) => handleOpenSolutionBuilder(sysId)}
+                onNavigateToSolutions={() => navigateToRoute('solutions-catalog', '/solutions')}
               />
             </AnimatedSection>
 
-            {/* 8. Live Real-World Enterprise Scenarios */}
+            {/* 05. AI Within Your Ecosystem: AI that understands your business */}
             <AnimatedSection variant="fade-up">
-              <LiveScenarios
+              <AiWithinEcosystem
+                onOpenConsultant={() => setIsConsultantOpen(true)}
+                onNavigateToAi={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+              />
+            </AnimatedSection>
+
+            {/* 06. How We Build: From your business process to an intelligent ecosystem */}
+            <AnimatedSection variant="fade-up">
+              <HowWeBuildJourney
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-                onNavigateToContact={handleNavigateToContact}
               />
             </AnimatedSection>
 
-            {/* 9. Cross-Agent Orchestration Engine */}
+            {/* 07. Featured Ecosystem: Construction Management Ecosystem */}
             <AnimatedSection variant="fade-up">
-              <AiOrchestration />
+              <FeaturedEcosystemShowcase
+                onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder('construction')}
+              />
             </AnimatedSection>
 
-            {/* 10. Operational Transformation: Before vs. After */}
-            <AnimatedSection variant="scale-up">
-              <BeforeAfterSlider />
-            </AnimatedSection>
-
-            {/* 11. Conversational Business Intelligence: AI Command Center */}
-            <AnimatedSection variant="blur-up">
-              <AiCommandCenter />
-            </AnimatedSection>
-
-            {/* 12. Enterprise Architecture: 5-Layer Production Blueprint */}
+            {/* 08. Security & Data Sovereignty: Your business data belongs to you */}
             <AnimatedSection variant="fade-up">
-              <EnterpriseArchitecture onNavigateToContact={handleNavigateToContact} />
+              <SecurityAndSovereigntySection
+                onNavigateToArchitecture={() => {
+                  const el = document.getElementById('architecture');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                onOpenConsultant={() => setIsConsultantOpen(true)}
+              />
             </AnimatedSection>
 
-            {/* 13. Security, Compliance & Data Sovereignty */}
+            {/* 09. Ready to Build Your Enterprise Ecosystem? (Pre-Footer CTA Banner) */}
             <AnimatedSection variant="fade-up">
-              <SecurityAndSovereignty onNavigateToContact={handleNavigateToContact} />
-            </AnimatedSection>
-
-            {/* 14. Rapid Deployment Methodology: From Audit to Production */}
-            <AnimatedSection variant="fade-up">
-              <DeploymentMethodology onNavigateToContact={handleNavigateToContact} />
-            </AnimatedSection>
-
-            {/* 15. The Human + AI Symbiotic Enterprise */}
-            <AnimatedSection variant="fade-up">
-              <HumanPlusAi />
-            </AnimatedSection>
-
-            {/* 16. Technical Contact & Solution Brief */}
-            <AnimatedSection variant="fade-up">
-              <ContactAndBrief prefilledBrief={prefilledBrief} />
+              <EcosystemCtaBanner
+                onNavigateToContact={handleNavigateToContact}
+                onNavigateToSolutions={() => navigateToRoute('solutions-catalog', '/solutions')}
+              />
             </AnimatedSection>
           </>
         )}
