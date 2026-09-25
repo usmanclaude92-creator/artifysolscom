@@ -51,7 +51,7 @@ export const SecurityAndGovernance: React.FC = () => {
   ];
 
   return (
-    <section className="py-28 bg-[#050505] border-t border-white/[0.06] relative overflow-hidden">
+    <section className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/3 w-96 h-96 bg-red-600/5 rounded-full blur-[160px] pointer-events-none" />
 

@@ -253,7 +253,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({
         elements.push(
           <hr
             key={`hr-${idx}`}
-            className={`my-8 border-t ${isLight ? 'border-slate-200' : 'border-white/[0.08]'}`}
+            className={`my-4 border-t ${isLight ? 'border-slate-200' : 'border-white/[0.08]'}`}
           />
         );
         return;

@@ -76,7 +76,7 @@ interface BlogPostPageProps {
   allPosts?: BlogPost[];
   onOpenSolutionBuilder?: () => void;
   onOpenConsultant?: () => void;
-  onToggleTheme?: () => void;
+  onToggleTheme?: (event?: React.MouseEvent) => void;
 }
 
 export const BlogPostPage: React.FC<BlogPostPageProps> = ({
@@ -480,7 +480,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
         elements.push(
           <hr
             key={`hr-${idx}`}
-            className={`my-10 border-t ${isLight ? 'border-slate-200' : 'border-white/[0.08]'}`}
+            className={`my-5 border-t ${isLight ? 'border-slate-200' : 'border-white/[0.08]'}`}
           />
         );
         return;
@@ -680,15 +680,30 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
             {onToggleTheme && (
               <button
                 type="button"
-                onClick={onToggleTheme}
-                className={`p-2 rounded-lg border text-xs transition-colors ${
+                onClick={(e) => onToggleTheme(e)}
+                className={`relative flex items-center justify-center p-2 rounded-lg border text-xs transition-all duration-300 overflow-hidden ${
                   isLight
                     ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                     : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:bg-white/[0.08]'
                 }`}
                 title="Toggle visual theme"
               >
-                {isLight ? <Moon className="w-3.5 h-3.5" /> : <Sun className="w-3.5 h-3.5" />}
+                <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+                  <Sun
+                    className={`w-3.5 h-3.5 text-amber-400 absolute transition-all duration-300 transform ${
+                      !isLight
+                        ? 'rotate-0 scale-100 opacity-100'
+                        : 'rotate-90 scale-0 opacity-0 pointer-events-none'
+                    }`}
+                  />
+                  <Moon
+                    className={`w-3.5 h-3.5 text-violet-600 absolute transition-all duration-300 transform ${
+                      isLight
+                        ? 'rotate-0 scale-100 opacity-100'
+                        : '-rotate-90 scale-0 opacity-0 pointer-events-none'
+                    }`}
+                  />
+                </div>
               </button>
             )}
 

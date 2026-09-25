@@ -12,6 +12,7 @@ import {
   Lock,
   ArrowRight,
   Cpu,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AI_PRODUCTS } from '../data/aiProductsData';
@@ -33,6 +34,8 @@ interface FooterProps {
   onOpenSitemap?: () => void;
   onOpenConsultant?: () => void;
   onOpenSolutionBuilder?: () => void;
+  onOpenAuditSpec?: () => void;
+  onOpenGlobalSearch?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -51,6 +54,8 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenSitemap,
   onOpenConsultant,
   onOpenSolutionBuilder,
+  onOpenAuditSpec,
+  onOpenGlobalSearch,
 }) => {
   const { user, openPortal, openAuthModal } = useAuth();
   const isLight =
@@ -417,6 +422,28 @@ export const Footer: React.FC<FooterProps> = ({
                   >
                     <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
                     <span className="leading-tight">Solution Blueprint Builder</span>
+                  </button>
+                </li>
+              )}
+              {onOpenAuditSpec && (
+                <li>
+                  <button
+                    onClick={onOpenAuditSpec}
+                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                    <span>Technical &amp; SEO Audit Spec</span>
+                  </button>
+                </li>
+              )}
+              {onOpenGlobalSearch && (
+                <li>
+                  <button
+                    onClick={onOpenGlobalSearch}
+                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
+                  >
+                    <Search className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+                    <span>Global Search (⌘K)</span>
                   </button>
                 </li>
               )}

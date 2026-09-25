@@ -134,7 +134,7 @@ export const Hero: React.FC<HeroProps> = ({
   return (
     <section
       id="hero"
-      className="relative min-h-[90vh] sm:min-h-[92vh] pt-20 sm:pt-28 lg:pt-32 pb-8 sm:pb-16 lg:pb-20 flex items-center justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
+      className="relative min-h-[90vh] sm:min-h-[92vh] pt-20 sm:pt-28 lg:pt-32 pb-4 sm:pb-8 lg:pb-10 flex items-center justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
     >
       {/* Glow aura */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-violet-700/10 rounded-full blur-[140px] pointer-events-none" />

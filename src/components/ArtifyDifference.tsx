@@ -23,7 +23,7 @@ export const ArtifyDifference: React.FC = () => {
   ];
 
   return (
-    <section className="py-28 bg-[#070709] border-t border-white/[0.06] relative overflow-hidden">
+    <section className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/2 right-1/4 w-[500px] h-[500px] bg-violet-600/5 rounded-full blur-[140px] pointer-events-none" />
 

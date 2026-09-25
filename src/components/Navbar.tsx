@@ -16,6 +16,7 @@ import {
   Network,
   Building2,
   Bot,
+  Search,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { AiProductItem } from '../types';
@@ -36,9 +37,11 @@ interface NavbarProps {
   onNavigateToIntelligence?: () => void;
   onNavigateToEcosystem?: () => void;
   onSelectProduct?: (product: AiProductItem) => void;
+  onOpenGlobalSearch?: () => void;
+  onOpenAuditSpec?: () => void;
   activeRoute?: string;
   theme: 'dark' | 'light';
-  onToggleTheme: () => void;
+  onToggleTheme: (event?: React.MouseEvent) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -57,6 +60,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateToIntelligence,
   onNavigateToEcosystem,
   onSelectProduct,
+  onOpenGlobalSearch,
+  onOpenAuditSpec,
   activeRoute = 'home',
   theme,
   onToggleTheme,
@@ -254,13 +259,55 @@ export const Navbar: React.FC<NavbarProps> = ({
           </a>
         </nav>
 
+        {/* Global Search Bar - Positioned directly between Menu Bar and Theme Toggle */}
+        <div className="hidden lg:flex items-center">
+          <button
+            onClick={onOpenGlobalSearch}
+            id="nav-global-search-btn"
+            className={`group flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-full border text-xs transition-all duration-200 shadow-sm w-44 xl:w-56 focus:outline-none focus:ring-2 focus:ring-violet-500/40 ${
+              isLight
+                ? 'bg-slate-100/90 hover:bg-slate-200/80 border-slate-200 text-slate-500 hover:text-slate-800'
+                : 'bg-[#0f0f18]/80 hover:bg-[#161622] border-white/[0.08] text-zinc-400 hover:text-zinc-200'
+            }`}
+            title="Search solutions, agents, and insights (Press ⌘K or /)"
+            aria-label="Open Global Search"
+          >
+            <div className="flex items-center gap-2 truncate">
+              <Search className="w-3.5 h-3.5 shrink-0 text-violet-400" />
+              <span className="truncate text-[11px] xl:text-xs">Search solutions, agents...</span>
+            </div>
+            <kbd
+              className={`hidden xl:inline-flex items-center gap-0.5 text-[10px] font-mono px-1.5 py-0.5 rounded border shrink-0 ${
+                isLight ? 'bg-white border-slate-200 text-slate-500' : 'bg-white/5 border-white/10 text-zinc-400'
+              }`}
+            >
+              ⌘K
+            </kbd>
+          </button>
+        </div>
+
         {/* Desktop Right Controls (>= 768px) */}
         <div className="hidden md:flex items-center gap-2 lg:gap-2.5">
+          {/* Tablet/Medium Screen Search Icon Trigger */}
+          <button
+            onClick={onOpenGlobalSearch}
+            id="nav-global-search-compact-btn"
+            className={`lg:hidden flex items-center justify-center p-2 rounded-lg border transition-all duration-200 shadow-sm focus:outline-none ${
+              isLight
+                ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+                : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-300 hover:text-white'
+            }`}
+            title="Search solutions & agents (⌘K)"
+            aria-label="Search"
+          >
+            <Search className="w-4 h-4 text-violet-400" />
+          </button>
+
           {/* Theme Toggle */}
           <button
-            onClick={onToggleTheme}
+            onClick={(e) => onToggleTheme(e)}
             id="nav-theme-toggle-btn"
-            className={`flex items-center justify-center p-2 rounded-lg border transition-all shadow-sm focus:outline-none ${
+            className={`relative flex items-center justify-center p-2 rounded-lg border transition-all duration-300 shadow-sm focus:outline-none overflow-hidden ${
               isLight
                 ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
                 : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-300 hover:text-white'
@@ -268,11 +315,22 @@ export const Navbar: React.FC<NavbarProps> = ({
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label="Toggle Theme"
           >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-300 transition-transform duration-300 hover:rotate-45" />
-            ) : (
-              <Moon className="w-4 h-4 text-violet-600 transition-transform duration-300 hover:-rotate-12" />
-            )}
+            <div className="relative w-4 h-4 flex items-center justify-center">
+              <Sun
+                className={`w-4 h-4 text-amber-400 absolute transition-all duration-300 transform ${
+                  theme === 'dark'
+                    ? 'rotate-0 scale-100 opacity-100'
+                    : 'rotate-90 scale-0 opacity-0 pointer-events-none'
+                }`}
+              />
+              <Moon
+                className={`w-4 h-4 text-violet-600 absolute transition-all duration-300 transform ${
+                  theme === 'light'
+                    ? 'rotate-0 scale-100 opacity-100'
+                    : '-rotate-90 scale-0 opacity-0 pointer-events-none'
+                }`}
+              />
+            </div>
           </button>
 
           {/* AI Interactive Advisor */}
@@ -407,6 +465,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           )}
 
+          {/* Mobile Global Search Button */}
+          <button
+            onClick={onOpenGlobalSearch}
+            id="mobile-nav-search-btn"
+            className={`p-2 rounded-xl border transition-all active:scale-95 focus:outline-none ${
+              isLight
+                ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800'
+                : 'bg-[#121217] hover:bg-[#1a1a24] border-white/[0.1] text-zinc-200 hover:text-white'
+            }`}
+            aria-label="Open Global Search"
+            title="Search solutions & agents (⌘K)"
+          >
+            <Search className="w-4 h-4 text-violet-400" />
+          </button>
+
           {/* Hamburger Trigger Button */}
           <button
             onClick={() => setSideMenuOpen(true)}
@@ -478,6 +551,26 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Drawer Scrollable Content */}
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin">
+              {/* Mobile Quick Search Bar Button */}
+              <button
+                onClick={() => {
+                  setSideMenuOpen(false);
+                  if (onOpenGlobalSearch) onOpenGlobalSearch();
+                }}
+                id="mobile-drawer-search-btn"
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-medium transition-all ${
+                  isLight
+                    ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+                    : 'bg-[#151522] hover:bg-[#1e1e2d] border-white/10 text-zinc-300'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <Search className="w-4 h-4 text-violet-400" />
+                  <span>Search solutions & agents...</span>
+                </div>
+                <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-500/15 text-zinc-400">⌘K</kbd>
+              </button>
+
               {/* Navigation Items: Our Solutions | Industries | Ecosystem | Insights | About Artify */}
               <div className="space-y-1">
                 {/* 1. Our Solutions */}
@@ -580,6 +673,27 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                   <ChevronRight className={`w-4 h-4 ${isLight ? 'text-slate-400' : 'text-zinc-600'}`} />
                 </a>
+
+                {/* Audit & Rebuild Spec */}
+                {onOpenAuditSpec && (
+                  <button
+                    onClick={() => {
+                      setSideMenuOpen(false);
+                      onOpenAuditSpec();
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
+                      isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <FileText className="w-4 h-4 text-emerald-400" />
+                      <span>Audit &amp; Rebuild Spec</span>
+                    </div>
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                      Ready
+                    </span>
+                  </button>
+                )}
               </div>
 
               {/* Account / Authentication State in Drawer */}
@@ -651,20 +765,31 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Theme Toggle */}
               <div className="pt-2">
                 <button
-                  onClick={onToggleTheme}
+                  onClick={(e) => onToggleTheme(e)}
                   id="drawer-theme-toggle-btn"
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors duration-300 ${
                     isLight
                       ? 'border-slate-200 bg-slate-100 text-slate-800'
                       : 'border-white/[0.08] bg-[#12121a] text-zinc-200'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    {theme === 'dark' ? (
-                      <Sun className="w-4 h-4 text-amber-300" />
-                    ) : (
-                      <Moon className="w-4 h-4 text-violet-600" />
-                    )}
+                    <div className="relative w-4 h-4 flex items-center justify-center">
+                      <Sun
+                        className={`w-4 h-4 text-amber-400 absolute transition-all duration-300 transform ${
+                          theme === 'dark'
+                            ? 'rotate-0 scale-100 opacity-100'
+                            : 'rotate-90 scale-0 opacity-0 pointer-events-none'
+                        }`}
+                      />
+                      <Moon
+                        className={`w-4 h-4 text-violet-600 absolute transition-all duration-300 transform ${
+                          theme === 'light'
+                            ? 'rotate-0 scale-100 opacity-100'
+                            : '-rotate-90 scale-0 opacity-0 pointer-events-none'
+                        }`}
+                      />
+                    </div>
                     <span>{theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}</span>
                   </div>
                 </button>

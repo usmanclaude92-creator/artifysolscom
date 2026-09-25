@@ -57,7 +57,7 @@ export const SecurityAndSovereignty: React.FC<{ onNavigateToContact?: () => void
   ];
 
   return (
-    <section id="security" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section id="security" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
       <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none" />
 

@@ -4,7 +4,7 @@ import { XCircle, CheckCircle2, ShieldAlert, Sparkles, Sliders, ArrowRight, Refr
 
 export const TrustStatement: React.FC = () => {
   return (
-    <section id="problem" className="relative py-24 bg-background border-y border-border overflow-hidden transition-colors duration-200">
+    <section id="problem" className="relative py-12 bg-background border-y border-border overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-violet-600/5 rounded-full blur-[160px] pointer-events-none" />
 

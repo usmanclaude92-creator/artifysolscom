@@ -116,7 +116,7 @@ export const AiOrchestration: React.FC = () => {
   const StepIcon = activeStep.icon;
 
   return (
-    <section id="orchestration" className="py-28 bg-[#050505] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="orchestration" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Glow */}
       <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
 

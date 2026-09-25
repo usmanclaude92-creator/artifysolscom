@@ -61,7 +61,7 @@ interface BlogPageProps {
   onBackToHome: () => void;
   onOpenSolutionBuilder?: () => void;
   onOpenConsultant?: () => void;
-  onToggleTheme?: () => void;
+  onToggleTheme?: (event?: React.MouseEvent) => void;
 }
 
 export const BlogPage: React.FC<BlogPageProps> = ({

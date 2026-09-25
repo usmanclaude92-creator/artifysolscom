@@ -166,7 +166,7 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
   const activeCap = capabilities[activeCapabilityIndex];
 
   return (
-    <section id="intelligence" data-section="ai-layer" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section id="intelligence" data-section="ai-layer" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-sky-600/5 rounded-full blur-[160px] pointer-events-none" />
 
