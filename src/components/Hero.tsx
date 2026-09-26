@@ -1,50 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   ArrowRight,
-  ShieldCheck,
   Bot,
-  Layers,
-  Users,
-  Cog,
-  Database,
-  Briefcase,
-  BadgeDollarSign,
-  Cpu,
   Sparkles,
-  Building2,
-  CheckCircle2,
+  Database,
+  Cpu,
   Workflow,
-  Compass,
+  LineChart,
+  Network,
+  ShieldCheck,
+  Zap,
+  Activity,
 } from 'lucide-react';
 
 interface HeroProps {
   onOpenSolutionBuilder: () => void;
   onOpenConsultant: () => void;
-  onNavigateToCapabilities?: () => void;
+  onNavigateToCapabilities: () => void;
   onNavigateToContact: () => void;
 }
 
-type ArchitectureNodeId =
-  | 'business'
-  | 'people'
-  | 'processes'
-  | 'data'
-  | 'artify'
-  | 'erp'
-  | 'crm'
-  | 'hcms'
-  | 'finance'
-  | 'ai'
-  | 'operations';
-
-interface NodeInfo {
-  id: ArchitectureNodeId;
-  label: string;
-  category: 'BUSINESS' | 'CORE' | 'SYSTEM' | 'OUTCOME';
-  description: string;
-  metric: string;
+interface OrbitNode {
+  id: string;
+  name: string;
+  category: string;
+  icon: any;
+  angle: number;
+  distance: number;
+  telemetry: string;
+  status: string;
   color: string;
-  badge: string;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -53,408 +39,339 @@ export const Hero: React.FC<HeroProps> = ({
   onNavigateToCapabilities,
   onNavigateToContact,
 }) => {
-  const [activeNode, setActiveNode] = useState<ArchitectureNodeId>('artify');
+  const [activeNode, setActiveNode] = useState<string | null>('agents');
+  const [pulseCount, setPulseCount] = useState(0);
 
-  const NODE_DETAILS: Record<ArchitectureNodeId, NodeInfo> = {
-    business: {
-      id: 'business',
-      label: 'YOUR BUSINESS',
-      category: 'BUSINESS',
-      description: 'Your distinct business model, operating cadence, organizational DNA, and strategic goals.',
-      metric: 'Source of Truth & Strategic Purpose',
-      color: 'text-blue-500',
-      badge: 'Enterprise Foundation',
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseCount((prev) => prev + 1);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
+  const nodes: OrbitNode[] = [
+    {
+      id: 'agents',
+      name: 'AUTONOMOUS',
+      category: 'Autonomous Workforce',
+      icon: Bot,
+      angle: 0,
+      distance: 175,
+      telemetry: '7 Specialized Agents Active • 4,200 Ops/sec',
+      status: 'Synchronized',
+      color: '#8B5CF6',
     },
-    people: {
-      id: 'people',
-      label: 'PEOPLE',
-      category: 'BUSINESS',
-      description: 'Teams, executives, field specialists, clients, and partners interacting seamlessly across intuitive interfaces.',
-      metric: 'Stakeholder Experience & Adoption',
-      color: 'text-cyan-500',
-      badge: 'Workforce & Clients',
-    },
-    processes: {
-      id: 'processes',
-      label: 'PROCESSES',
-      category: 'BUSINESS',
-      description: 'Real-world business rules, operational handoffs, compliance requirements, and custom approval hierarchies.',
-      metric: 'Zero-Workaround Choreography',
-      color: 'text-indigo-500',
-      badge: 'Operational Logic',
-    },
-    data: {
+    {
       id: 'data',
-      label: 'DATA',
-      category: 'BUSINESS',
-      description: 'Sovereign transactional records, documents, telemetry, and business intelligence retained under your absolute control.',
-      metric: 'Cryptographic Sovereign Storage',
-      color: 'text-emerald-500',
-      badge: 'Infrastructure Asset',
+      name: 'DATABASE',
+      category: 'Unified Knowledge Graph',
+      icon: Database,
+      angle: 51,
+      distance: 180,
+      telemetry: 'Vector Embeddings Live • 12 DB Bridges Active',
+      status: 'Real-Time Sync',
+      color: '#38BDF8',
     },
-    artify: {
-      id: 'artify',
-      label: 'ARTIFY ECOSYSTEM',
-      category: 'CORE',
-      description: 'The intelligent operating fabric designed specifically around your business — synchronizing systems, automating flows, and eliminating data silos.',
-      metric: 'Custom Orchestration Layer',
-      color: 'text-[#0066FF]',
-      badge: 'Unified Architecture',
+    {
+      id: 'automation',
+      name: 'AUTOMATION',
+      category: 'Zero-Touch Execution',
+      icon: Cpu,
+      angle: 102,
+      distance: 175,
+      telemetry: '99.4% Touchless Processing • Zero Lag',
+      status: 'Optimized',
+      color: '#10B981',
     },
-    erp: {
-      id: 'erp',
-      label: 'ERP',
-      category: 'SYSTEM',
-      description: 'Bespoke enterprise resource planning covering multi-entity supply chain, asset inventory, and operational milestones.',
-      metric: 'Real-Time Inventory & Procurement',
-      color: 'text-blue-600',
-      badge: 'Core Resources',
+    {
+      id: 'software',
+      name: 'SOFTWARE',
+      category: 'Adaptive Enterprise Platforms',
+      icon: Zap,
+      angle: 154,
+      distance: 185,
+      telemetry: 'Full-Stack Web & Mobile • Enterprise Architecture',
+      status: 'High Availability',
+      color: '#F59E0B',
     },
-    crm: {
-      id: 'crm',
-      label: 'CRM',
-      category: 'SYSTEM',
-      description: 'Commercial pipelines, custom client onboarding journeys, SLA management, and unified contract tracking.',
-      metric: 'Pipeline & Client Engagement',
-      color: 'text-sky-600',
-      badge: 'Client Engine',
+    {
+      id: 'workflows',
+      name: 'WORKFLOWS',
+      category: 'Self-Healing Pipelines',
+      icon: Workflow,
+      angle: 205,
+      distance: 175,
+      telemetry: 'Cross-Department Orchestration Active',
+      status: 'Active Flow',
+      color: '#EC4899',
     },
-    hcms: {
-      id: 'hcms',
-      label: 'HCMS',
-      category: 'SYSTEM',
-      description: 'Human capital management, automated attendance, WPS statutory compliance, biometrics, and payroll calculation.',
-      metric: 'Workforce & Statutory Compliance',
-      color: 'text-teal-600',
-      badge: 'Human Capital',
+    {
+      id: 'analytics',
+      name: 'ANALYTICS',
+      category: 'Predictive Intelligence',
+      icon: LineChart,
+      angle: 257,
+      distance: 180,
+      telemetry: 'Conversational BI • Instant Root-Cause Analysis',
+      status: 'Live Stream',
+      color: '#6366F1',
     },
-    finance: {
-      id: 'finance',
-      label: 'FINANCE',
-      category: 'SYSTEM',
-      description: 'General ledgers, automated 3-way invoice matching, banking integration, tax reporting, and cash telemetry.',
-      metric: 'Automated Ledger Reconciliation',
-      color: 'text-amber-600',
-      badge: 'Financial Operations',
+    {
+      id: 'integrations',
+      name: 'INTEGRATIONS',
+      category: 'Connected Ecosystem',
+      icon: Network,
+      angle: 308,
+      distance: 175,
+      telemetry: 'ERP, CRM, Banking, Cloud & APIs Linked',
+      status: 'Continuous Link',
+      color: '#14B8A6',
     },
-    ai: {
-      id: 'ai',
-      label: 'AI',
-      category: 'SYSTEM',
-      description: 'Deep cognitive models operating inside the workflow — parsing documents, identifying anomalies, and executing approved tasks.',
-      metric: 'Autonomous Coworkers in Logic',
-      color: 'text-purple-600',
-      badge: 'Cognitive Engine',
-    },
-    operations: {
-      id: 'operations',
-      label: 'INTELLIGENT OPERATIONS',
-      category: 'OUTCOME',
-      description: 'A connected, self-optimizing business environment where humans make high-value decisions and technology eliminates friction.',
-      metric: 'Autonomous Real-Time Business',
-      color: 'text-emerald-500',
-      badge: 'Operational Outcome',
-    },
-  };
+  ];
 
-  const currentInfo = NODE_DETAILS[activeNode] || NODE_DETAILS.artify;
-
-  const handleExploreEcosystem = () => {
-    if (onNavigateToCapabilities) {
-      onNavigateToCapabilities();
-    } else {
-      const el = document.getElementById('ecosystem');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        onOpenSolutionBuilder();
-      }
-    }
-  };
+  const selectedNodeData = nodes.find((n) => n.id === activeNode) || nodes[0];
 
   return (
-    <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 lg:pt-40 lg:pb-28 overflow-hidden bg-background">
-      {/* Ambient background soft glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[550px] bg-blue-500/[0.04] dark:bg-blue-500/[0.07] rounded-full blur-[140px] pointer-events-none" />
+    <section
+      id="hero"
+      className="relative min-h-[90vh] sm:min-h-[92vh] pt-20 sm:pt-28 lg:pt-32 pb-4 sm:pb-8 lg:pb-10 flex items-center justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
+    >
+      {/* Glow aura */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-violet-700/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-sky-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full px-4 sm:px-6 lg:px-[4%] xl:px-[5%] max-w-[1400px] mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 xl:gap-12 items-center">
+      <div className="w-full px-3.5 sm:px-6 lg:px-[10%] relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center">
           
-          {/* Left Column: Authoritative Positioning Copy */}
-          <div className="lg:col-span-6 space-y-6 sm:space-y-7">
-            {/* Tagline Badge */}
-            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-[#0066FF] uppercase font-mono-code">
-              <span>ARTIFY</span>
+          {/* Left Column: Brand Message & Hero Copy */}
+          <motion.div
+            className="lg:col-span-7 flex flex-col items-start text-left"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1 sm:py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-[11px] sm:text-sm md:text-base font-semibold tracking-wide mb-3 sm:mb-5 shadow-inner max-w-full">
+              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-primary animate-pulse shrink-0" />
+              <span className="truncate">We Design Solutions, not just Software...</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold text-foreground tracking-tight leading-[1.12] font-display">
-              Your business is unique.{' '}
-              <span className="block text-[#0066FF]">
-                Your technology should be too.
+            {/* Main Headline - beautifully scaled for mobile to prevent line-wrapping clutter */}
+            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.1] md:leading-[1.08] mb-3 sm:mb-5 font-display">
+              <span className="block sm:inline whitespace-nowrap sm:whitespace-normal">
+                Your Business is Unique.
+              </span>{' '}
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500 pb-1 sm:pb-[6px] whitespace-nowrap sm:whitespace-normal">
+                Your Software Should Be Too.
               </span>
             </h1>
 
-            {/* Subheadline / Paragraph */}
-            <p className="text-base sm:text-lg text-foreground-secondary leading-relaxed font-normal max-w-xl">
-              We design enterprise ecosystems around the way your business actually works — connecting people, processes, data, software, AI and operations into one intelligent environment.
+            {/* Supporting Copy */}
+            <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl mb-3.5 sm:mb-6">
+              Fully Customized and Adaptive Eco-System designed around your Business enhanced by Next-generation AI, Intelligent Automation and connected Technology.
             </p>
 
-            {/* 3 Pillars / Feature Badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="flex items-center gap-3 p-3 rounded-2xl surface-card border border-card-border shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 flex items-center justify-center text-[#0066FF] shrink-0">
-                  <Layers className="w-4 h-4" />
+            {/* Core Capability Callout */}
+            <div className="relative w-full max-w-2xl p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                  <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                 </div>
-                <span className="text-xs font-bold text-foreground leading-tight">
-                  Bespoke Enterprise Systems
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-2xl surface-card border border-card-border shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
-                  <Bot className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-bold text-foreground leading-tight">
-                  Autonomous AI Workflows
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-2xl surface-card border border-card-border shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <span className="text-xs font-bold text-foreground leading-tight">
-                  Sovereign Data Architecture
-                </span>
+                <p className="text-xs sm:text-sm md:text-base font-semibold text-foreground-secondary tracking-tight leading-snug">
+                  Bespoke Enterprise Systems • Autonomous AI Workflows • Sovereign Data Architecture
+                </p>
               </div>
             </div>
 
-            {/* Hero CTA Buttons - Exactly as requested */}
-            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-4 w-full sm:w-auto">
               <button
-                onClick={handleExploreEcosystem}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#0066FF] hover:bg-blue-700 text-white font-semibold text-sm transition-all shadow-lg shadow-blue-500/25 active:scale-95 group"
+                onClick={onNavigateToContact}
+                id="hero-primary-cta"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold btn-theme-primary px-5 sm:px-7 py-3 sm:py-3.5 rounded-xl shadow-xl shadow-violet-600/30 transition-all duration-200 active:scale-[0.98]"
               >
-                <span>Explore the Artify Ecosystem</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span>Build Your Adaptive Solution</span>
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={onNavigateToCapabilities}
+                id="hero-secondary-cta"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold btn-theme-secondary px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl transition-all shadow-sm"
+              >
+                <span>Explore Capabilities</span>
               </button>
 
               <button
                 onClick={onOpenSolutionBuilder}
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full surface-card border border-border text-foreground hover:bg-background-subtle font-semibold text-sm transition-all active:scale-95"
+                id="hero-wizard-cta"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-semibold text-primary hover:text-primary-hover bg-primary/10 hover:bg-primary/20 border border-primary/30 px-4 py-2.5 sm:py-3 rounded-xl transition-colors"
               >
-                <span>Build Your Ecosystem</span>
-                <ArrowRight className="w-4 h-4 text-[#0066FF]" />
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span>Launch Solution Wizard</span>
               </button>
             </div>
-          </div>
 
-          {/* Right Column: Signature Interactive Enterprise Ecosystem Architecture Visual */}
-          <div className="lg:col-span-6 relative mt-6 lg:mt-0">
-            <div className="relative w-full max-w-[620px] mx-auto select-none surface-card rounded-3xl border border-card-border shadow-2xl shadow-blue-500/10 p-5 sm:p-7 backdrop-blur-sm">
+            {/* Quick Metrics Bar */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-6 pt-6 sm:pt-10 mt-6 sm:mt-10 border-t border-border w-full max-w-xl">
+              <div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground font-display">100%</div>
+                <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Custom Engineered</div>
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-primary font-display">24/7</div>
+                <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Autonomous Execution</div>
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-sky-500 font-display">0-Legacy</div>
+                <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Zero-Lockin Architecture</div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Interactive Neural Ecosystem Visual */}
+          <motion.div
+            className="lg:col-span-5 flex flex-col items-center justify-center relative w-full"
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="relative w-full max-w-[340px] xs:max-w-[420px] sm:max-w-[506px] aspect-square flex items-center justify-center scale-[0.88] xs:scale-95 sm:scale-100 origin-center">
               
-              {/* Header inside Architecture Panel */}
-              <div className="flex items-center justify-between pb-4 mb-4 border-b border-border/80">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#0066FF] animate-pulse" />
-                  <span className="text-xs font-bold font-mono-code uppercase tracking-wider text-foreground">
-                    ENTERPRISE ECOSYSTEM ARCHITECTURE
-                  </span>
-                </div>
-                <span className="text-[11px] font-mono-code text-foreground-muted">
-                  Interactive Model • Click Node
+              {/* Concentric subtle rings */}
+              <div className="absolute inset-4 rounded-full border border-violet-500/15 animate-[spin_60s_linear_infinite]" />
+              <div className="absolute inset-16 rounded-full border border-sky-500/15 animate-[spin_40s_linear_infinite_reverse]" />
+              <div className="absolute inset-28 rounded-full border border-indigo-500/20" />
+
+              {/* Dynamic SVG Connection Lines & Data Pulses */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 460 460">
+                <defs>
+                  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.6" />
+                    <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.2" />
+                  </linearGradient>
+                </defs>
+                {nodes.map((node, i) => {
+                  const rad = (node.angle * Math.PI) / 180;
+                  const centerX = 230;
+                  const centerY = 230;
+                  const targetX = centerX + Math.cos(rad) * (node.distance * 0.95);
+                  const targetY = centerY + Math.sin(rad) * (node.distance * 0.95);
+                  const isSelected = activeNode === node.id;
+
+                  return (
+                    <g key={`connection-${node.id}`}>
+                      {/* Connection Line */}
+                      <line
+                        x1={centerX}
+                        y1={centerY}
+                        x2={targetX}
+                        y2={targetY}
+                        stroke={isSelected ? '#8B5CF6' : 'currentColor'}
+                        strokeWidth={isSelected ? '2' : '1'}
+                        strokeDasharray={isSelected ? 'none' : '3 3'}
+                        className={`transition-all duration-300 ${
+                          isSelected ? 'text-violet-500' : 'text-slate-400/60 dark:text-white/20'
+                        }`}
+                      />
+                      {/* Animated traveling data packet */}
+                      <circle
+                        r={isSelected ? '3.5' : '2'}
+                        fill={node.color}
+                        opacity={isSelected ? 0.9 : 0.5}
+                      >
+                        <animateMotion
+                          path={`M ${centerX} ${centerY} L ${targetX} ${targetY}`}
+                          dur={`${2.2 + (i % 3) * 0.6}s`}
+                          repeatCount="indefinite"
+                        />
+                      </circle>
+                    </g>
+                  );
+                })}
+              </svg>
+
+              {/* Center Node: YOUR BUSINESS */}
+              <div className="relative z-20 flex flex-col items-center justify-center w-28 h-28 rounded-full bg-gradient-to-b from-[#181822] to-[#0d0d12] border-2 border-violet-500/60 shadow-[0_0_40px_rgba(139,92,246,0.35)] cursor-pointer group">
+                <div className="absolute inset-0 rounded-full bg-violet-600/10 animate-ping opacity-30" />
+                <div className="w-3 h-3 rounded-full bg-violet-400 mb-1.5 shadow-sm shadow-violet-300 animate-pulse" />
+                <span className="text-[12px] uppercase tracking-widest text-violet-300 font-bold font-mono-code">
+                  NEXUS
+                </span>
+                <span className="text-[14.5px] font-black tracking-tight text-white font-display text-center leading-tight">
+                  YOUR<br />BUSINESS
                 </span>
               </div>
 
-              {/* The Architecture Schematic Visual */}
-              <div className="space-y-4 relative">
+              {/* Orbiting Nodes */}
+              {nodes.map((node) => {
+                const rad = (node.angle * Math.PI) / 180;
+                const top = 50 + (Math.sin(rad) * node.distance * 100) / 460;
+                const left = 50 + (Math.cos(rad) * node.distance * 100) / 460;
+                const isSelected = activeNode === node.id;
+                const IconComponent = node.icon;
 
-                {/* Level 1: YOUR BUSINESS */}
-                <div className="flex justify-center">
+                return (
                   <button
-                    onClick={() => setActiveNode('business')}
-                    className={`px-5 py-2.5 rounded-xl border font-mono-code font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-xs ${
-                      activeNode === 'business'
-                        ? 'bg-[#0066FF] text-white border-[#0066FF] shadow-lg shadow-blue-500/25 scale-105 ring-2 ring-[#0066FF]/30'
-                        : 'surface-card border-border hover:border-[#0066FF]/50 text-foreground'
+                    key={node.id}
+                    onClick={() => setActiveNode(node.id)}
+                    id={`hero-node-${node.id}`}
+                    style={{
+                      top: `${top}%`,
+                      left: `${left}%`,
+                      transform: 'translate(-50%, -50%)',
+                    }}
+                    className={`absolute z-20 flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 group focus:outline-none ${
+                      isSelected
+                        ? 'surface-card border-2 border-primary shadow-[0_0_25px_rgba(139,92,246,0.4)] scale-110'
+                        : 'surface-card-subtle border border-card-border hover:border-primary/40'
                     }`}
                   >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>YOUR BUSINESS</span>
-                  </button>
-                </div>
-
-                {/* Central Connector 1 -> 3 Split */}
-                <div className="flex justify-center">
-                  <div className="w-0.5 h-4 bg-gradient-to-b from-[#0066FF] to-border" />
-                </div>
-
-                {/* Level 2: PEOPLE | PROCESSES | DATA */}
-                <div className="relative">
-                  {/* Horizontal T-bar Connector */}
-                  <div className="hidden sm:block absolute -top-2 left-[15%] right-[15%] h-2 border-t-2 border-x-2 border-border/90 rounded-t-lg pointer-events-none" />
-
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
-                    <button
-                      onClick={() => setActiveNode('people')}
-                      className={`p-2.5 rounded-xl border text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
-                        activeNode === 'people'
-                          ? 'bg-cyan-500/15 border-cyan-500 text-cyan-600 dark:text-cyan-400 font-bold scale-105 shadow-md'
-                          : 'surface-card border-border hover:border-cyan-500/40 text-foreground-secondary'
-                      }`}
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center mb-1"
+                      style={{
+                        backgroundColor: `${node.color}20`,
+                        color: node.color,
+                      }}
                     >
-                      <Users className="w-4 h-4 text-cyan-500" />
-                      <span className="text-[11px] font-mono-code font-bold tracking-tight">PEOPLE</span>
-                    </button>
-
-                    <button
-                      onClick={() => setActiveNode('processes')}
-                      className={`p-2.5 rounded-xl border text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
-                        activeNode === 'processes'
-                          ? 'bg-indigo-500/15 border-indigo-500 text-indigo-600 dark:text-indigo-400 font-bold scale-105 shadow-md'
-                          : 'surface-card border-border hover:border-indigo-500/40 text-foreground-secondary'
-                      }`}
-                    >
-                      <Cog className="w-4 h-4 text-indigo-500" />
-                      <span className="text-[11px] font-mono-code font-bold tracking-tight">PROCESSES</span>
-                    </button>
-
-                    <button
-                      onClick={() => setActiveNode('data')}
-                      className={`p-2.5 rounded-xl border text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
-                        activeNode === 'data'
-                          ? 'bg-emerald-500/15 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-bold scale-105 shadow-md'
-                          : 'surface-card border-border hover:border-emerald-500/40 text-foreground-secondary'
-                      }`}
-                    >
-                      <Database className="w-4 h-4 text-emerald-500" />
-                      <span className="text-[11px] font-mono-code font-bold tracking-tight">DATA</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Converging Connector into Artify Ecosystem */}
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-0.5 h-4 bg-gradient-to-b from-border to-[#0066FF]" />
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#0066FF] animate-ping" />
-                </div>
-
-                {/* Level 3: Central Node — ARTIFY ECOSYSTEM */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => setActiveNode('artify')}
-                    className={`w-full max-w-[340px] py-3.5 px-6 rounded-2xl border transition-all duration-300 flex items-center justify-between shadow-md ${
-                      activeNode === 'artify'
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-xl shadow-blue-500/25 scale-[1.02] ring-2 ring-blue-400/40'
-                        : 'surface-card border-[#0066FF]/40 text-foreground hover:border-[#0066FF]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0">
-                        <Sparkles className="w-4 h-4" />
-                      </div>
-                      <div className="text-left">
-                        <div className="text-xs font-mono-code uppercase font-bold tracking-wider leading-none">
-                          ARTIFY ECOSYSTEM
-                        </div>
-                        <span className="text-[10px] opacity-80 font-mono-code">
-                          Central Orchestration Fabric
-                        </span>
-                      </div>
+                      <IconComponent className="w-4 h-4" />
                     </div>
-                    <ArrowRight className="w-4 h-4 text-white/80 shrink-0" />
-                  </button>
-                </div>
-
-                {/* Diverging Connector to 5 Operational Systems */}
-                <div className="flex justify-center">
-                  <div className="w-0.5 h-4 bg-gradient-to-b from-[#0066FF] to-border" />
-                </div>
-
-                {/* Level 4: The 5 Enterprise Engines: ERP | CRM | HCMS | FINANCE | AI */}
-                <div className="relative">
-                  <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
-                    {[
-                      { id: 'erp' as ArchitectureNodeId, label: 'ERP', icon: Layers, color: 'text-blue-500' },
-                      { id: 'crm' as ArchitectureNodeId, label: 'CRM', icon: Briefcase, color: 'text-sky-500' },
-                      { id: 'hcms' as ArchitectureNodeId, label: 'HCMS', icon: Users, color: 'text-teal-500' },
-                      { id: 'finance' as ArchitectureNodeId, label: 'FINANCE', icon: BadgeDollarSign, color: 'text-amber-500' },
-                      { id: 'ai' as ArchitectureNodeId, label: 'AI', icon: Bot, color: 'text-purple-500' },
-                    ].map((sys) => {
-                      const Icon = sys.icon;
-                      const isSelected = activeNode === sys.id;
-                      return (
-                        <button
-                          key={sys.id}
-                          onClick={() => setActiveNode(sys.id)}
-                          className={`py-2 px-1 rounded-xl border text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 ${
-                            isSelected
-                              ? 'bg-[#0066FF]/15 border-[#0066FF] text-[#0066FF] font-bold scale-105 shadow-md ring-1 ring-[#0066FF]'
-                              : 'surface-card border-border hover:border-[#0066FF]/30 text-foreground-secondary'
-                          }`}
-                        >
-                          <Icon className={`w-3.5 h-3.5 ${sys.color}`} />
-                          <span className="text-[10px] font-mono-code font-bold tracking-tight">
-                            {sys.label}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Connector into Intelligent Operations */}
-                <div className="flex justify-center">
-                  <div className="w-0.5 h-3 bg-gradient-to-b from-border to-emerald-500" />
-                </div>
-
-                {/* Level 5: Outcome — INTELLIGENT OPERATIONS */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => setActiveNode('operations')}
-                    className={`px-5 py-2 rounded-xl border font-mono-code font-bold text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shadow-xs ${
-                      activeNode === 'operations'
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-lg shadow-emerald-500/25 scale-105'
-                        : 'surface-card border-border hover:border-emerald-500/50 text-foreground'
-                    }`}
-                  >
-                    <Workflow className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
-                    <span>INTELLIGENT OPERATIONS</span>
-                  </button>
-                </div>
-
-              </div>
-
-              {/* Dynamic Interactive Node Inspection HUD */}
-              <div className="mt-5 pt-4 border-t border-border/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-background-subtle/70 rounded-2xl p-3.5">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono-code font-bold uppercase text-[#0066FF] px-2 py-0.5 rounded bg-blue-500/10">
-                      {currentInfo.badge}
+                    <span className="text-[11px] font-bold tracking-wider text-foreground whitespace-nowrap font-mono-code">
+                      {node.name}
                     </span>
-                    <span className="text-xs font-bold text-foreground font-display">
-                      {currentInfo.label}
-                    </span>
-                  </div>
-                  <p className="text-xs text-foreground-secondary leading-snug">
-                    {currentInfo.description}
-                  </p>
-                </div>
-
-                <div className="shrink-0 flex sm:flex-col items-center sm:items-end gap-1.5 self-stretch sm:self-auto justify-between sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0 border-border">
-                  <span className="text-[9px] font-mono-code text-foreground-muted">
-                    Telemetry Focus
-                  </span>
-                  <span className="text-[10px] font-bold text-foreground font-mono-code text-right">
-                    {currentInfo.metric}
-                  </span>
-                </div>
-              </div>
-
+                  </button>
+                );
+              })}
             </div>
-          </div>
 
+            {/* Active Node Telemetry Card */}
+            <div className="w-full max-w-[420px] mt-4 p-4 rounded-xl surface-card border border-card-border backdrop-blur-md shadow-xl transition-all duration-300">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-2.5 h-2.5 rounded-full animate-pulse"
+                    style={{ backgroundColor: selectedNodeData.color }}
+                  />
+                  <span className="text-xs font-bold text-foreground uppercase tracking-wider font-mono-code">
+                    {selectedNodeData.name}
+                  </span>
+                </div>
+                <span className="text-[10px] font-semibold text-foreground-muted surface-card-subtle border border-border px-2 py-0.5 rounded">
+                  {selectedNodeData.status}
+                </span>
+              </div>
+              <p className="text-xs text-foreground-secondary font-medium leading-relaxed">
+                {selectedNodeData.telemetry}
+              </p>
+              <div className="mt-2 pt-2 border-t border-border flex items-center justify-between text-[11px] text-foreground-muted">
+                <span>Intelligence Layer Sync</span>
+                <span className="text-emerald-500 dark:text-emerald-400 flex items-center gap-1 font-mono-code font-semibold">
+                  <Activity className="w-3 h-3" /> 99.98% Coherence
+                </span>
+              </div>
+            </div>
+
+          </motion.div>
         </div>
       </div>
     </section>
