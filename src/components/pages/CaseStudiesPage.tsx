@@ -34,13 +34,13 @@ export const CaseStudiesPage: React.FC<CaseStudiesPageProps> = ({
       <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto mb-10 text-center">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-4">
           <BookOpen className="w-3.5 h-3.5" />
-          <span>Real-World Architecture Outcomes</span>
+          <span>Illustrative Architecture Scenarios</span>
         </div>
         <h1 className="text-4xl sm:text-6xl font-bold font-display tracking-tight text-white">
           Case Studies & Architectures
         </h1>
         <p className="mt-4 text-base sm:text-lg text-zinc-400 leading-relaxed max-w-3xl mx-auto">
-          Explore production blueprints, systems connected, challenge breakdowns, and measurable operational returns achieved through Artify AI systems.
+          Illustrative scenarios showing how Artify's architecture patterns apply to common enterprise problems — representative examples, not published customer results.
         </p>
       </div>
 

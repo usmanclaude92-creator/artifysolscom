@@ -48,6 +48,16 @@ export class DatabaseStore {
     return crypto.createHash('sha256').update(password).digest('hex');
   }
 
+  /**
+   * Dev-only fixture credential — generated fresh per process start, never a
+   * static literal in source. This whole in-memory store is dead/legacy code
+   * (see server/README.md); nothing production-facing should ever depend on
+   * being able to log in with a seeded account.
+   */
+  private randomDevSecret(): string {
+    return crypto.randomBytes(24).toString('base64url');
+  }
+
   private seedInitialData() {
     const now = new Date().toISOString();
 
@@ -133,7 +143,7 @@ export class DatabaseStore {
       id: 'usr_artify_admin',
       companyId: primaryCompany.id,
       email: 'admin@artifysols.com',
-      passwordHash: this.hashPassword('ArtifyAdmin2026!'),
+      passwordHash: this.hashPassword(this.randomDevSecret()),
       fullName: 'Dr. Sarah Al-Hashimi',
       title: 'VP of AI Architecture & Systems',
       role: 'Super Administrator',
@@ -149,7 +159,7 @@ export class DatabaseStore {
       id: 'usr_content_lead',
       companyId: primaryCompany.id,
       email: 'editor@artifysols.com',
-      passwordHash: this.hashPassword('ArtifyEditor2026!'),
+      passwordHash: this.hashPassword(this.randomDevSecret()),
       fullName: 'Marcus Vance',
       title: 'Principal Technical Content Lead',
       role: 'Content Manager',
@@ -178,7 +188,7 @@ export class DatabaseStore {
       id: 'usr_apex_lead',
       companyId: clientCompany.id,
       email: 'alex.chen@apexlogistics.io',
-      passwordHash: this.hashPassword('ApexClient2026!'),
+      passwordHash: this.hashPassword(this.randomDevSecret()),
       fullName: 'Alex Chen',
       title: 'Head of Operations & Logistics',
       role: 'Company Administrator',
@@ -282,7 +292,7 @@ export class DatabaseStore {
       companyId: primaryCompany.id,
       name: 'Production Ingress Key',
       keyPrefix: 'art_live_recon',
-      keyHash: this.hashPassword('art_live_recon_9948271649281'),
+      keyHash: this.hashPassword(this.randomDevSecret()),
       fullKeyPreview: 'art_live_recon_••••••••••••9281',
       scopes: ['recon.read', 'recon.write', 'audit.stream'],
       environment: 'production',

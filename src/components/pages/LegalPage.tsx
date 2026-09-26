@@ -17,7 +17,7 @@ export const LegalPage: React.FC<LegalPageProps> = ({ type, theme = 'dark' }) =>
       description: isPrivacy
         ? 'Artify Solutions enterprise data privacy protocols, zero-data-retention options, and cryptographic protection standards.'
         : 'Artify Solutions standard terms of service, deployment SLAs, and intellectual property ownership provisions.',
-      canonicalUrl: `https://artifysols.com/${isPrivacy ? 'privacy-policy' : 'terms'}`,
+      canonicalUrl: `https://artifysols.com/${isPrivacy ? 'privacy' : 'terms'}`,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [type]);

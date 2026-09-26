@@ -595,8 +595,8 @@ export function generateBlogPostSeo(
   const baseUrl = options?.baseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL);
   const postUrl = post.seo?.canonicalUrl || `${baseUrl}/blog/${post.slug}`;
   const coverImage = post.coverImage || post.seo?.ogImage || DEFAULT_OG_IMAGE;
-  const ratingValue = (options?.currentRating || post.rating || 4.9).toFixed(1);
-  const ratingCount = options?.ratingCount || post.ratingCount || 128;
+  const realRating = options?.currentRating ?? post.rating;
+  const realRatingCount = options?.ratingCount ?? post.ratingCount;
   const publishIso = post.publishDate ? new Date(post.publishDate).toISOString() : new Date().toISOString();
   const modifiedIso = post.lastModified ? new Date(post.lastModified).toISOString() : publishIso;
 
@@ -648,13 +648,17 @@ export function generateBlogPostSeo(
             url: `${baseUrl}/favicon.svg`,
           },
         },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: ratingValue,
-          bestRating: '5.0',
-          worstRating: '1.0',
-          ratingCount: ratingCount,
-        },
+        ...(realRating && realRatingCount
+          ? {
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: realRating.toFixed(1),
+                bestRating: '5.0',
+                worstRating: '1.0',
+                ratingCount: realRatingCount,
+              },
+            }
+          : {}),
         mainEntityOfPage: {
           '@type': 'WebPage',
           '@id': postUrl,
@@ -743,24 +747,10 @@ export function generateProductSeo(
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'Cloud Native, VPC Private, Multi-Tenant Kubernetes',
         description: productDesc,
-        offers: {
-          '@type': 'Offer',
-          price: '0.00',
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock',
-          seller: {
-            '@type': 'Organization',
-            name: DEFAULT_SITE_NAME,
-            url: baseUrl,
-          },
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: (product.rating || 4.9).toFixed(1),
-          ratingCount: 84,
-          bestRating: '5.0',
-          worstRating: '1.0',
-        },
+        // No real pricing or review-count data exists in the product model
+        // today — omit `offers`/`aggregateRating` rather than ship a
+        // fabricated $0.00 price or invented review count (schema.org
+        // spam-policy risk). Revisit once Product has real commercial fields.
         brand: {
           '@type': 'Brand',
           name: DEFAULT_SITE_NAME,
@@ -824,8 +814,8 @@ export function generateProductSeo(
       brand: DEFAULT_SITE_NAME,
       category: product.categoryLabel,
       availability: 'InStock',
-      rating: product.rating || 4.9,
-      uptime: product.uptime || '99.99%',
+      rating: product.rating,
+      uptime: product.uptime,
     },
     twitterCard: 'summary_large_image',
     twitterTitle: `${product.name} - ${product.tagline}`,

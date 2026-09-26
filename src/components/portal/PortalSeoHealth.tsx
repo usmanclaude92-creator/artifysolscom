@@ -100,7 +100,12 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiGeneratedResult, setAiGeneratedResult] = useState<any>(null);
+  const [aiGenerationError, setAiGenerationError] = useState<string | null>(null);
   const [applyFeedback, setApplyFeedback] = useState<string | null>(null);
+  // Whether the numbers below are real, fetched telemetry — no live SEO/analytics
+  // integration exists yet, so this starts false and the UI must say so rather
+  // than silently presenting the illustrative starting values as live data.
+  const [telemetryLive, setTelemetryLive] = useState(false);
 
   // Telemetry Data (Live from backend or default structured fixture)
   const [telemetry, setTelemetry] = useState<any>({
@@ -329,17 +334,24 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
     },
   });
 
-  // Fetch telemetry from server on mount
+  // Fetch telemetry from server on mount. No live Search Console/analytics
+  // integration exists today — on any failure (including a 404, which is
+  // what actually happens right now) this must NOT keep presenting the
+  // illustrative initial state as if it were real, live data.
   useEffect(() => {
     fetch('/api/v1/cms/seo-telemetry')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`seo-telemetry returned ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         if (data && data.success && data.data) {
           setTelemetry(data.data);
+          setTelemetryLive(true);
         }
       })
-      .catch((_) => {
-        // Keep initial state on offline fallback
+      .catch(() => {
+        setTelemetryLive(false);
       });
   }, []);
 
@@ -363,6 +375,7 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
   const handleOptimizeMeta = async () => {
     setIsGenerating(true);
     setApplyFeedback(null);
+    setAiGenerationError(null);
     try {
       const response = await fetch('/api/v1/cms/optimize-meta', {
         method: 'POST',
@@ -382,41 +395,12 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
         throw new Error(data?.error?.message || 'Failed to generate');
       }
     } catch (err: any) {
-      // Fallback client optimization
-      setAiGeneratedResult({
-        metaTitle: `${aiTitle.slice(0, 48)} | Artify Solutions`,
-        metaTitleLength: `${aiTitle.slice(0, 48)} | Artify Solutions`.length,
-        metaDescription: `Deploy high-performance autonomous AI systems for ${aiFocusKeyword}. Guaranteed sub-40ms latency and continuous compliance audit trails.`,
-        metaDescriptionLength: 154,
-        focusKeywords: [
-          aiFocusKeyword,
-          'sub-40ms vector RAG',
-          'autonomous workflow orchestration',
-          'deterministic AI coworkers',
-          'private VPC compliance',
-        ],
-        ogTitle: `${aiTitle} — Enterprise AI Architecture`,
-        ogDescription: `Learn how Artify Solutions enables autonomous multi-agent mesh topologies with continuous compliance verification.`,
-        estimatedCtrBoost: '+152% projected CTR boost',
-        healthScore: 99,
-        recommendations: [
-          'Frontloaded primary focus keyword in Title tag for maximum SERP relevance',
-          'Optimized Meta Description to 154 characters for zero mobile SERP truncation',
-          'Injected JSON-LD TechArticle schema with author provenance and rating signals',
-        ],
-        jsonLdSchemaSnippet: JSON.stringify(
-          {
-            '@context': 'https://schema.org',
-            '@type': 'TechArticle',
-            headline: aiTitle,
-            description: aiCurrentDesc,
-            author: { '@type': 'Organization', name: 'Artify Solutions', url: 'https://artifysols.com' },
-            publisher: { '@type': 'Organization', name: 'Artify Solutions', url: 'https://artifysols.com' },
-          },
-          null,
-          2
-        ),
-      });
+      // Honest failure — never fabricate an AI result that looks identical
+      // to a real one. No live meta-optimization backend exists yet.
+      setAiGeneratedResult(null);
+      setAiGenerationError(
+        'AI meta-tag optimization is not connected yet. Please try again later or contact support if this persists.'
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -526,15 +510,17 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
             >
               Search Intelligence Engine
             </span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[10px] font-mono-code font-semibold border ${
-                isLight
-                  ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                  : 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30'
-              }`}
-            >
-              100% Index Sync
-            </span>
+            {telemetryLive && (
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] font-mono-code font-semibold border ${
+                  isLight
+                    ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                    : 'bg-emerald-950/70 text-emerald-300 border-emerald-500/30'
+                }`}
+              >
+                Live
+              </span>
+            )}
           </div>
           <h1
             className={`text-2xl sm:text-3xl font-bold font-display tracking-tight mt-1 ${
@@ -581,6 +567,20 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
           </button>
         </div>
       </div>
+
+      {!telemetryLive && (
+        <div
+          className={`p-4 rounded-xl border text-xs font-medium flex items-start gap-2 ${
+            isLight ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-amber-950/20 border-amber-500/30 text-amber-300'
+          }`}
+        >
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span>
+            Live SEO/analytics telemetry is not connected yet — the numbers below are illustrative placeholders, not
+            real Search Console or traffic data.
+          </span>
+        </div>
+      )}
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1748,6 +1748,16 @@ export const PortalSeoHealth: React.FC<PortalSeoHealthProps> = ({ theme = 'dark'
             <span className="text-xs text-emerald-500 font-semibold animate-pulse">{applyFeedback}</span>
           )}
         </div>
+
+        {aiGenerationError && (
+          <div
+            className={`mt-4 p-4 rounded-xl border text-xs font-medium ${
+              isLight ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-amber-950/20 border-amber-500/30 text-amber-300'
+            }`}
+          >
+            {aiGenerationError}
+          </div>
+        )}
 
         {/* AI Generated Results Card */}
         {aiGeneratedResult && (

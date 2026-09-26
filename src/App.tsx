@@ -148,6 +148,34 @@ function MainAppContent() {
 
   const { isPortalOpen, isAuthModalOpen, user, openPortal, openAuthModal } = useAuth();
 
+  // Routes whose page doesn't own a dedicated component with its own SEO
+  // effect (Home is inline JSX; solutions-catalog/ai-solutions render a
+  // shared component but are cheap enough to just set explicitly here too).
+  // Called on every navigation into these routes — nav-bar clicks
+  // (navigateToRoute) as much as browser back/forward (popstate) — so a
+  // page's meta/canonical/JSON-LD never goes stale after a client-side nav.
+  const applySeoForRoute = (route: AppRoute) => {
+    if (route === 'solutions-catalog') {
+      updatePageSeo({
+        title: 'Enterprise Solutions Catalog | Artify Solutions',
+        description: 'Explore the full catalog of 24 modular enterprise software solutions, autonomous AI agent swarms, and sovereign private cloud architectures.',
+        canonicalUrl: 'https://artifysols.com/solutions',
+      });
+    } else if (route === 'ai-solutions') {
+      updatePageSeo({
+        title: 'AI Solutions Built for the Next Generation of Business',
+        description: 'Explore the full Artify Solutions AI product suite, autonomous agent swarms, and enterprise neural RAG engines.',
+        canonicalUrl: 'https://artifysols.com/ai-solutions',
+      });
+    } else if (route === 'home') {
+      updatePageSeo({
+        title: 'Artify Solutions - Enterprise AI Products & Autonomous Systems Architecture',
+        description: 'Artify Solutions transforms business operations with autonomous AI agent swarms, hybrid neural RAG engines, and real-time enterprise event meshes.',
+        canonicalUrl: 'https://artifysols.com',
+      });
+    }
+  };
+
   // Listen for browser back/forward navigation (popstate fires for
   // history.pushState-driven route changes, not hashchange).
   useEffect(() => {
@@ -158,29 +186,9 @@ function MainAppContent() {
       if (route === 'product-detail' && slug) {
         setActiveProductSlug(slug);
         setActiveRoute('product-detail');
-      } else if (route === 'solutions-catalog') {
-        setActiveRoute('solutions-catalog');
-        updatePageSeo({
-          title: 'Enterprise Solutions Catalog | Artify Solutions',
-          description: 'Explore the full catalog of 24 modular enterprise software solutions, autonomous AI agent swarms, and sovereign private cloud architectures.',
-          canonicalUrl: 'https://artifysols.com/solutions',
-        });
-      } else if (route === 'ai-solutions') {
-        setActiveRoute('ai-solutions');
-        updatePageSeo({
-          title: 'AI Solutions Built for the Next Generation of Business',
-          description: 'Explore the full Artify Solutions AI product suite, autonomous agent swarms, and enterprise neural RAG engines.',
-          canonicalUrl: 'https://artifysols.com/ai-solutions',
-        });
-      } else if (route === 'home') {
-        setActiveRoute('home');
-        updatePageSeo({
-          title: 'Artify Solutions - Enterprise AI Products & Autonomous Systems Architecture',
-          description: 'Artify Solutions transforms business operations with autonomous AI agent swarms, hybrid neural RAG engines, and real-time enterprise event meshes.',
-          canonicalUrl: 'https://artifysols.com',
-        });
       } else {
         setActiveRoute(route);
+        applySeoForRoute(route);
       }
     };
 
@@ -373,6 +381,7 @@ function MainAppContent() {
   // route is a distinct, crawlable, shareable URL.
   const navigateToRoute = (route: AppRoute, path: string) => {
     setActiveRoute(route);
+    applySeoForRoute(route);
     if (typeof window !== 'undefined' && window.location.pathname !== path) {
       window.history.pushState({}, '', path);
     }
