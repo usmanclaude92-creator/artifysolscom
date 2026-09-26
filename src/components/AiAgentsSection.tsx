@@ -42,7 +42,7 @@ export const AiAgentsSection: React.FC = () => {
   ];
 
   return (
-    <section id="ai-agents" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section id="ai-agents" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/3 right-10 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 

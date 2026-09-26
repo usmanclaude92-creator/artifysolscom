@@ -45,7 +45,7 @@ export const SolutionsByFunction: React.FC<SolutionsByFunctionProps> = ({
   const IconComponent = getFunctionIcon(selectedFunction.icon);
 
   return (
-    <section id="functions" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section id="functions" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Glow */}
       <div className="absolute top-1/3 left-10 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

@@ -28,7 +28,7 @@ export const HumanPlusAi: React.FC = () => {
   ];
 
   return (
-    <section className="py-28 bg-[#070709] border-t border-white/[0.06] relative overflow-hidden">
+    <section className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-[140px] pointer-events-none" />
 

@@ -36,7 +36,7 @@ export const BeforeAfterSlider: React.FC = () => {
   ];
 
   return (
-    <section className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Glow */}
       <div className="absolute top-1/3 right-1/4 w-[450px] h-[450px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

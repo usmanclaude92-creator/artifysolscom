@@ -118,7 +118,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
   };
 
   return (
-    <section id="contact" className="py-28 bg-[#050505] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="contact" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Glow */}
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-violet-700/10 rounded-full blur-[180px] pointer-events-none" />
 

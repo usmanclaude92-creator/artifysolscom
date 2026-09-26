@@ -40,7 +40,7 @@ export const TechnologyStack: React.FC = () => {
   ];
 
   return (
-    <section className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Glow */}
       <div className="absolute top-1/2 right-1/3 w-96 h-96 bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
 

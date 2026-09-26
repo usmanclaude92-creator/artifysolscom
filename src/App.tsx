@@ -89,6 +89,12 @@ const SolutionBuilderWizard = lazy(() =>
 const SitemapModal = lazy(() =>
   import('./components/SitemapModal').then((m) => ({ default: m.SitemapModal }))
 );
+const GlobalSearchModal = lazy(() =>
+  import('./components/GlobalSearchModal').then((m) => ({ default: m.GlobalSearchModal }))
+);
+const AuditRebuildModal = lazy(() =>
+  import('./components/AuditRebuildModal').then((m) => ({ default: m.AuditRebuildModal }))
+);
 
 // Reserves viewport height so a route swap never causes layout shift.
 const RouteFallback = () => <div className="min-h-screen" aria-hidden="true" />;
@@ -140,7 +146,7 @@ function MainAppContent() {
     return '';
   });
 
-  const { isPortalOpen, isAuthModalOpen } = useAuth();
+  const { isPortalOpen, isAuthModalOpen, user, openPortal, openAuthModal } = useAuth();
 
   // Listen for browser back/forward navigation (popstate fires for
   // history.pushState-driven route changes, not hashchange).
@@ -207,39 +213,138 @@ function MainAppContent() {
     applyThemeToDOM(theme);
   }, [theme]);
 
-  const handleToggleTheme = () => {
+  const handleToggleTheme = (event?: React.MouseEvent | MouseEvent) => {
     const nextTheme: 'light' | 'dark' = theme === 'dark' ? 'light' : 'dark';
 
-    // Trigger smooth atomic transition across all surface elements (nav, modals, cards)
-    if (typeof document !== 'undefined') {
-      document.documentElement.classList.add('theme-transitioning');
-      
-      const updateDOM = () => {
-        applyThemeToDOM(nextTheme);
-        setTheme(nextTheme);
-      };
+    if (typeof document === 'undefined') {
+      setTheme(nextTheme);
+      return;
+    }
 
-      // Use View Transitions API if supported for seamless atomic cross-fade
-      if ('startViewTransition' in document && typeof (document as any).startViewTransition === 'function') {
-        (document as any).startViewTransition(() => {
-          updateDOM();
-        });
+    const isReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const supportsViewTransition =
+      !isReducedMotion &&
+      'startViewTransition' in document &&
+      typeof (document as any).startViewTransition === 'function';
+
+    if (supportsViewTransition) {
+      // Calculate origin coordinates from the click event or target button for radial wave reveal
+      let x = typeof window !== 'undefined' ? window.innerWidth / 2 : 0;
+      let y = 0;
+
+      if (event && 'clientX' in event && typeof event.clientX === 'number') {
+        x = event.clientX;
+        y = event.clientY;
       } else {
-        updateDOM();
+        const toggleBtn =
+          document.getElementById('nav-theme-toggle-btn') ||
+          document.getElementById('drawer-theme-toggle-btn');
+        if (toggleBtn) {
+          const rect = toggleBtn.getBoundingClientRect();
+          x = rect.left + rect.width / 2;
+          y = rect.top + rect.height / 2;
+        }
       }
 
-      // Clean up transitioning class once styles have settled
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      // Disable CSS transitions during DOM snapshot capture to ensure clean, artifact-free frame capture
+      document.documentElement.classList.add('disable-theme-transitions');
+
+      try {
+        const transition = (document as any).startViewTransition(() => {
+          applyThemeToDOM(nextTheme);
+          setTheme(nextTheme);
+        });
+
+        transition.ready
+          .then(() => {
+            document.documentElement.classList.remove('disable-theme-transitions');
+            try {
+              document.documentElement.animate(
+                {
+                  clipPath: [
+                    `circle(0px at ${x}px ${y}px)`,
+                    `circle(${endRadius}px at ${x}px ${y}px)`,
+                  ],
+                },
+                {
+                  duration: 450,
+                  easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
+                  pseudoElement: '::view-transition-new(root)',
+                }
+              );
+            } catch {
+              // Graceful fallback to CSS view transition animation if pseudoElement Web Animation API is not available
+            }
+          })
+          .catch(() => {
+            document.documentElement.classList.remove('disable-theme-transitions');
+          });
+
+        transition.finished.finally(() => {
+          document.documentElement.classList.remove('disable-theme-transitions');
+        });
+      } catch {
+        // Fallback for sandboxed iframes where startViewTransition may be restricted
+        document.documentElement.classList.remove('disable-theme-transitions');
+        document.documentElement.classList.add('theme-transitioning');
+        applyThemeToDOM(nextTheme);
+        setTheme(nextTheme);
+        setTimeout(() => {
+          document.documentElement.classList.remove('theme-transitioning');
+        }, 400);
+      }
+    } else {
+      // Smooth CSS transition fallback across all surfaces, tokens and text
+      document.documentElement.classList.add('theme-transitioning');
+      applyThemeToDOM(nextTheme);
+      setTheme(nextTheme);
+
       setTimeout(() => {
         document.documentElement.classList.remove('theme-transitioning');
-      }, 350);
-    } else {
-      setTheme(nextTheme);
+      }, 400);
     }
   };
 
   const [isConsultantOpen, setIsConsultantOpen] = useState(false);
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [isSitemapOpen, setIsSitemapOpen] = useState(false);
+  const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+  const [isAuditSpecOpen, setIsAuditSpecOpen] = useState(false);
+
+  // Global hotkeys for Search: ⌘K, Ctrl+K, or "/"
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsGlobalSearchOpen((prev) => !prev);
+      } else if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setIsGlobalSearchOpen(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
   const [builderInitialIndustry, setBuilderInitialIndustry] = useState<string | undefined>(undefined);
   const [prefilledBrief, setPrefilledBrief] = useState<any>(null);
   const [isHoveringLauncher, setIsHoveringLauncher] = useState(false);
@@ -348,6 +453,8 @@ function MainAppContent() {
         onNavigateToAbout={() => navigateToRoute('about', '/about')}
         onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
         onSelectProduct={handleSelectProduct}
+        onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
+        onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
         activeRoute={activeRoute}
         theme={theme}
         onToggleTheme={handleToggleTheme}
@@ -459,11 +566,11 @@ function MainAppContent() {
             </AnimatedSection>
 
             {/* Subtle, professional horizontal separator between Hero and Problem Section */}
-            <div className="relative w-full max-w-7xl mx-auto px-6 py-4 overflow-hidden" aria-hidden="true">
+            <div className="relative w-full max-w-7xl mx-auto px-6 py-2 overflow-hidden" aria-hidden="true">
               <div className="relative flex items-center justify-center">
                 <div className="h-px w-full bg-gradient-to-r from-transparent via-violet-500/25 to-transparent" />
-                <div className="absolute flex items-center gap-2 px-3 py-1 rounded-full bg-[#050508] border border-white/[0.08] shadow-sm text-[10px] font-mono-code text-zinc-400 uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400/80 animate-pulse" />
+                <div className="absolute flex items-center gap-2 px-3 py-1 rounded-full surface-card border border-border shadow-sm text-[10px] font-mono-code text-foreground-muted uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   <span>The Paradigm Shift</span>
                 </div>
               </div>
@@ -578,6 +685,8 @@ function MainAppContent() {
         onOpenSitemap={() => setIsSitemapOpen(true)}
         onOpenConsultant={() => setIsConsultantOpen(true)}
         onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+        onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
+        onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
       />
 
       {/* Overlay modals. Each is mounted only while open so its chunk is
@@ -604,6 +713,36 @@ function MainAppContent() {
               }
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
+          />
+        )}
+
+        {/* Global Search Command Palette */}
+        {isGlobalSearchOpen && (
+          <GlobalSearchModal
+            isOpen={isGlobalSearchOpen}
+            onClose={() => setIsGlobalSearchOpen(false)}
+            onSelectProduct={handleSelectProduct}
+            onNavigateToRoute={navigateToRoute}
+            onOpenConsultant={() => setIsConsultantOpen(true)}
+            onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+            onOpenClientPortal={() => {
+              if (user) {
+                openPortal('overview');
+              } else {
+                openAuthModal('login');
+              }
+            }}
+            onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
+            theme={theme}
+          />
+        )}
+
+        {/* Technical & SEO Audit Spec Modal */}
+        {isAuditSpecOpen && (
+          <AuditRebuildModal
+            isOpen={isAuditSpecOpen}
+            onClose={() => setIsAuditSpecOpen(false)}
+            theme={theme}
           />
         )}
 

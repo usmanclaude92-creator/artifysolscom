@@ -141,7 +141,7 @@ export const WhatWeBuild: React.FC<WhatWeBuildProps> = ({
   const Icon = currentItem.icon;
 
   return (
-    <section id="what-we-build" className="py-28 bg-[#050505] relative overflow-hidden">
+    <section id="what-we-build" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Subtle background glow */}
       <div className="absolute top-1/2 left-0 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-sky-600/5 rounded-full blur-3xl pointer-events-none" />

@@ -41,7 +41,7 @@ export const AiCommandCenter: React.FC = () => {
   };
 
   return (
-    <section id="command-center" className="py-28 bg-[#050505] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="command-center" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background glow */}
       <div className="absolute top-1/4 left-1/3 w-[600px] h-[600px] bg-violet-600/10 rounded-full blur-[160px] pointer-events-none" />
 

@@ -42,7 +42,7 @@ export const DevelopmentMethodology: React.FC<DevelopmentMethodologyProps> = ({
   const StepIcon = getStepIcon(currentStep.number);
 
   return (
-    <section id="methodology" className="py-28 bg-[#050505] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="methodology" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-0 w-80 h-80 bg-violet-600/10 rounded-full blur-[140px] pointer-events-none" />
 

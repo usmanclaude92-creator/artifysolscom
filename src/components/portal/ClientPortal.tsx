@@ -32,7 +32,7 @@ import {
 
 interface ClientPortalProps {
   theme: 'dark' | 'light';
-  onToggleTheme: () => void;
+  onToggleTheme: (event?: React.MouseEvent) => void;
 }
 
 export const ClientPortal: React.FC<ClientPortalProps> = ({
@@ -173,19 +173,30 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
           <div className="flex items-center gap-2.5">
             {/* Theme Toggle */}
             <button
-              onClick={onToggleTheme}
-              className={`p-2 rounded-lg border transition-colors ${
+              onClick={(e) => onToggleTheme(e)}
+              className={`relative flex items-center justify-center p-2 rounded-lg border transition-all duration-300 overflow-hidden ${
                 isLight
                   ? 'bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900'
                   : 'bg-[#12121c] border-white/[0.08] text-zinc-300 hover:text-white'
               }`}
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-300" />
-              ) : (
-                <Moon className="w-4 h-4 text-violet-600" />
-              )}
+              <div className="relative w-4 h-4 flex items-center justify-center">
+                <Sun
+                  className={`w-4 h-4 text-amber-300 absolute transition-all duration-300 transform ${
+                    theme === 'dark'
+                      ? 'rotate-0 scale-100 opacity-100'
+                      : 'rotate-90 scale-0 opacity-0 pointer-events-none'
+                  }`}
+                />
+                <Moon
+                  className={`w-4 h-4 text-violet-600 absolute transition-all duration-300 transform ${
+                    theme === 'light'
+                      ? 'rotate-0 scale-100 opacity-100'
+                      : '-rotate-90 scale-0 opacity-0 pointer-events-none'
+                  }`}
+                />
+              </div>
             </button>
 
             {/* Notifications Bell */}

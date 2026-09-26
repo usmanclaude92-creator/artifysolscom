@@ -336,7 +336,7 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
   });
 
   return (
-    <section id="ecosystem" className="py-28 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
+    <section id="ecosystem" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 

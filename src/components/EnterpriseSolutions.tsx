@@ -110,25 +110,25 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
   const ActiveIcon = activeSolution.icon;
 
   return (
-    <section id="enterprise-solutions" className="py-28 bg-[#050508] border-t border-white/[0.06] relative overflow-hidden">
+    <section id="enterprise-solutions" className="py-14 bg-background border-t border-border relative overflow-hidden transition-colors duration-200">
       {/* Background illumination */}
-      <div className="absolute top-1/3 left-1/4 w-[650px] h-[650px] bg-violet-600/5 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[650px] h-[650px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 
       <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
         
         {/* Header */}
         <div className="max-w-4xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-violet-950/40 border border-violet-700/30 text-violet-300 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Layers className="w-3.5 h-3.5 text-violet-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+            <Layers className="w-3.5 h-3.5 text-primary" />
             <span>ENTERPRISE SOLUTIONS ARCHITECTURE</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight font-display mb-4">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-4">
             Specialized Ecosystems.{' '}
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-sky-300 to-indigo-300">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-sky-400 to-indigo-500">
               Architected Around Your Entire Business.
             </span>
           </h2>
-          <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
+          <p className="text-base sm:text-lg text-foreground-muted leading-relaxed font-normal">
             We do not present Artify as a monolithic, rigid ERP product. We engineer six interconnected solution ecosystems that fit your exact commercial reality, each capable of standalone deployment or unified cross-organization scale.
           </p>
         </div>
@@ -142,14 +142,14 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
               <button
                 key={sol.id}
                 onClick={() => setSelectedSolutionId(sol.id)}
-                className={`p-4 rounded-2xl text-left border transition-all duration-200 flex flex-col justify-between ${
+                className={`p-4 rounded-2xl text-left border transition-all duration-200 flex flex-col justify-between group ${
                   isSelected
-                    ? 'bg-gradient-to-br from-violet-950/70 to-[#0e0e18] border-violet-500/70 shadow-lg shadow-violet-950/50 scale-[1.03]'
-                    : 'bg-[#09090f] border-white/[0.08] hover:border-violet-500/30'
+                    ? 'surface-card border-2 border-violet-600 dark:border-violet-500 dark:bg-gradient-to-br dark:from-violet-950/50 dark:to-card shadow-lg shadow-violet-500/10 ring-1 ring-violet-500/20 scale-[1.03]'
+                    : 'surface-card-subtle border-card-border hover:border-primary/40 hover:bg-surface-hover/70'
                 }`}
               >
                 <div
-                  className="w-8 h-8 rounded-xl flex items-center justify-center mb-3"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105"
                   style={{
                     backgroundColor: `${sol.color}20`,
                     color: sol.color,
@@ -158,10 +158,12 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
                   <Icon className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-white line-clamp-1 leading-snug">
+                  <h3 className={`text-xs font-bold line-clamp-1 leading-snug transition-colors ${
+                    isSelected ? 'text-foreground' : 'text-foreground group-hover:text-primary'
+                  }`}>
                     {sol.name}
                   </h3>
-                  <span className="text-[10px] text-zinc-400 font-mono-code block mt-1">
+                  <span className="text-[10px] text-foreground-muted font-mono-code block mt-1">
                     {sol.metrics}
                   </span>
                 </div>
@@ -171,7 +173,7 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
         </div>
 
         {/* Active Solution Deep-Dive Bento Display */}
-        <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-[#0c0c14] to-[#07070b] border border-violet-500/30 shadow-2xl relative overflow-hidden">
+        <div className="p-8 sm:p-10 rounded-3xl surface-card border border-primary/30 shadow-2xl relative overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Left 7 Columns: Solution Overview & Modules */}
@@ -188,30 +190,30 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
                   <ActiveIcon className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold uppercase font-mono-code tracking-wider text-violet-400">
+                  <span className="text-xs font-bold uppercase font-mono-code tracking-wider text-primary">
                     SOLUTION DOMAIN
                   </span>
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground font-display">
                     {activeSolution.name}
                   </h3>
                 </div>
               </div>
 
-              <p className="text-base text-zinc-300 leading-relaxed font-normal">
+              <p className="text-base text-foreground-muted leading-relaxed font-normal">
                 {activeSolution.description}
               </p>
 
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono-code block mb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-foreground-muted font-mono-code block mb-3">
                   Included Sub-Modules & Data Engines:
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {activeSolution.modules.map((mod, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2.5 text-xs text-zinc-200"
+                      className="p-3 rounded-xl surface-card-subtle border border-card-border flex items-center gap-2.5 text-xs text-foreground"
                     >
-                      <CheckCircle2 className="w-4 h-4 text-violet-400 shrink-0" />
+                      <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                       <span className="font-medium">{mod}</span>
                     </div>
                   ))}
@@ -220,32 +222,32 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
             </div>
 
             {/* Right 5 Columns: Verified Outcomes & Call to Action */}
-            <div className="lg:col-span-5 p-7 rounded-2xl bg-[#09090f] border border-white/[0.08] shadow-xl flex flex-col justify-between h-full">
+            <div className="lg:col-span-5 p-7 rounded-2xl surface-card-subtle border border-card-border shadow-xl flex flex-col justify-between h-full">
               <div>
-                <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.08]">
-                  <span className="text-xs font-bold uppercase font-mono-code text-zinc-400">
+                <div className="flex items-center justify-between pb-4 mb-4 border-b border-border">
+                  <span className="text-xs font-bold uppercase font-mono-code text-foreground-muted">
                     Performance Benchmark
                   </span>
-                  <span className="text-xs font-bold font-mono-code text-emerald-400">
+                  <span className="text-xs font-bold font-mono-code text-emerald-600 dark:text-emerald-400">
                     {activeSolution.metrics}
                   </span>
                 </div>
 
-                <span className="text-xs font-bold uppercase tracking-wider text-violet-300 font-mono-code block mb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-primary font-mono-code block mb-3">
                   Measurable Operational Outcomes:
                 </span>
 
                 <div className="space-y-3 mb-6">
                   {activeSolution.outcomes.map((outcome, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-300 leading-relaxed">
-                      <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0 mt-0.5" />
+                    <div key={idx} className="flex items-start gap-2.5 text-xs text-foreground-secondary leading-relaxed">
+                      <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                       <span>{outcome}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="pt-5 border-t border-white/[0.08] space-y-3">
+              <div className="pt-5 border-t border-border space-y-3">
                 {onOpenSolutionBuilder && (
                   <button
                     onClick={onOpenSolutionBuilder}
@@ -258,7 +260,7 @@ export const EnterpriseSolutions: React.FC<EnterpriseSolutionsProps> = ({
                 {onNavigateToContact && (
                   <button
                     onClick={onNavigateToContact}
-                    className="w-full py-2.5 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 text-xs font-semibold border border-white/[0.08] transition-colors"
+                    className="w-full py-2.5 px-4 rounded-xl surface-card hover:bg-surface-hover text-foreground text-xs font-semibold border border-border transition-colors"
                   >
                     Schedule Enterprise Demo
                   </button>
