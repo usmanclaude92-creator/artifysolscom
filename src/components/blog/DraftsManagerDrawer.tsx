@@ -58,7 +58,7 @@ export const DraftsManagerDrawer: React.FC<DraftsManagerDrawerProps> = ({
   const isLight = theme === 'light';
 
   const isEditor = Boolean(
-    user && (user.role === 'editor' || user.role === 'super_admin' || user.role === 'admin' || user.role === 'support_agent')
+    user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
   );
 
   const filteredDrafts = drafts.filter((draft) => {

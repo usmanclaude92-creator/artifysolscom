@@ -14,7 +14,6 @@ import {
   CheckCircle2,
   Zap,
 } from 'lucide-react';
-import { SUBSCRIPTION_PLANS } from '../../data/portalData';
 import { apiClient } from '../../lib/apiClient';
 
 export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propTheme }) => {
@@ -35,8 +34,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
-  const [role, setRole] = useState('VP of Operations');
-  const [selectedPlanId, setSelectedPlanId] = useState<'starter' | 'growth' | 'enterprise'>('growth');
+  const [role, setRole] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
@@ -111,7 +109,6 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
         password,
         company,
         role,
-        planId: selectedPlanId,
       });
     } catch (err: any) {
       setErrorMsg(err?.message || 'Registration failed. Please try again.');
@@ -177,7 +174,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                 </span>
               </h2>
               <p className={`text-xs mt-0.5 ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
-                Manage your enterprise subscriptions, agent fleets, and purchased AI systems.
+                Manage your contracts, subscriptions, and billing in one place.
               </p>
             </div>
           </div>
@@ -452,7 +449,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                 </div>
 
                 <div>
-                  <label className={`block text-xs font-medium mb-1 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>Role / Title</label>
+                  <label className={`block text-xs font-medium mb-1 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>Role / Title (optional)</label>
                   <input
                     type="text"
                     value={role}
@@ -465,39 +462,6 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                         : 'bg-[#14141e] border-white/[0.1] text-white placeholder-zinc-500'
                     }`}
                   />
-                </div>
-              </div>
-
-              {/* Initial Plan Selection */}
-              <div>
-                <label className={`block text-xs font-medium mb-1.5 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
-                  Select Initial Subscription Tier
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {SUBSCRIPTION_PLANS.map((plan) => (
-                    <button
-                      key={plan.id}
-                      type="button"
-                      onClick={() => setSelectedPlanId(plan.id as any)}
-                      className={`p-2.5 rounded-xl border text-left transition-all ${
-                        selectedPlanId === plan.id
-                          ? isLight
-                            ? 'bg-violet-50 border-violet-500 shadow-md shadow-violet-500/10'
-                            : 'bg-violet-950/50 border-violet-500 shadow-md shadow-violet-500/20'
-                          : isLight
-                          ? 'bg-slate-50 border-slate-200 hover:border-slate-300'
-                          : 'bg-[#12121c] border-white/[0.08] hover:border-white/[0.2]'
-                      }`}
-                    >
-                      <div className={`text-[11px] font-bold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                        {plan.name.split(' ')[0]}
-                      </div>
-                      <div className={`text-[10px] font-mono-code font-semibold ${isLight ? 'text-violet-700' : 'text-violet-400'}`}>
-                        ${plan.priceMonthly}/mo
-                      </div>
-                      <div className={`text-[9px] mt-0.5 ${isLight ? 'text-slate-500' : 'text-zinc-400'}`}>{plan.agentConcurrencyLimit} Agents</div>
-                    </button>
-                  ))}
                 </div>
               </div>
 

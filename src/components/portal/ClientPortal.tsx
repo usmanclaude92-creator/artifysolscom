@@ -41,6 +41,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 }) => {
   const {
     user,
+    isAuthLoading,
     portalActiveTab,
     setPortalActiveTab,
     closePortal,
@@ -48,9 +49,16 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
     openAuthModal,
   } = useAuth();
 
-  const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -84,9 +92,9 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
 
   const tabs = [
     { id: 'overview', label: 'Client Dashboard', icon: LayoutDashboard, badge: null },
-    { id: 'seo', label: 'SEO Health & SERP', icon: TrendingUp, badge: '94/100' },
-    { id: 'subscriptions', label: 'Subscriptions & Billing', icon: CreditCard, badge: user.subscription.planId.toUpperCase() },
-    { id: 'products', label: 'Purchased AI Systems', icon: Layers, badge: user.purchasedProducts.length.toString() },
+    { id: 'seo', label: 'SEO Health & SERP', icon: TrendingUp, badge: null },
+    { id: 'subscriptions', label: 'Contracts & Subscriptions', icon: CreditCard, badge: null },
+    { id: 'products', label: 'Purchased AI Systems', icon: Layers, badge: null },
     { id: 'invoices', label: 'Invoices & Receipts', icon: Receipt, badge: null },
     { id: 'apikeys', label: 'API Keys & Webhooks', icon: Key, badge: null },
     { id: 'settings', label: 'Organization Settings', icon: Settings, badge: null },
@@ -146,24 +154,6 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                     : 'bg-violet-950/70 border-violet-500/30 text-violet-300'
                 }`}>
                   {user.company}
-                </span>
-                {/*
-                  Phase 4 honesty label (docs/PHASE_4_IMPLEMENTATION.md,
-                  Artify-Backend repo): sign-in now requires a real,
-                  bcrypt-verified account (AuthContext.tsx's login/register
-                  call the Platform API's Phase 3 /auth endpoints) — this is
-                  no longer a demo-credential bypass. Only the subscription/
-                  billing/product data still shown below is local
-                  placeholder content; real Billing/Products/CRM data lands
-                  in a later phase once the Platform API grows those
-                  domains (Phase 2's schema for them has no service layer
-                  yet — see docs/DATABASE_SCHEMA.md in Artify-Backend).
-                */}
-                <span
-                  title="Sign-in is real (verified against the Artify Platform API). Subscription, billing, and product data shown here is still local placeholder content pending the Billing/Products phases."
-                  className="hidden lg:inline-block ml-2 text-[10px] uppercase font-mono-code px-2 py-0.5 rounded-full border bg-amber-500/10 border-amber-500/30 text-amber-500"
-                >
-                  Placeholder Billing Data
                 </span>
               </div>
             </div>
@@ -273,7 +263,7 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
                   <div className={`text-[10px] font-mono-code leading-none mt-0.5 truncate max-w-[120px] ${
                     isLight ? 'text-violet-700' : 'text-violet-400'
                   }`}>
-                    {user.subscription.planName.split(' ')[0]} Tier
+                    {user.roleName}
                   </div>
                 </div>
                 <ChevronDown className={`w-3.5 h-3.5 hidden sm:block ${isLight ? 'text-slate-500' : 'text-zinc-400'}`} />
@@ -409,25 +399,14 @@ export const ClientPortal: React.FC<ClientPortalProps> = ({
         {/* Tab Content Panel */}
         <main className="flex-1 min-w-0">
           {portalActiveTab === 'overview' && (
-            <ClientDashboard
-              onNavigateTab={setPortalActiveTab}
-              onOpenDeployModal={() => setIsDeployModalOpen(true)}
-              theme={theme}
-            />
+            <ClientDashboard onNavigateTab={setPortalActiveTab} theme={theme} />
           )}
 
           {portalActiveTab === 'seo' && <PortalSeoHealth theme={theme} />}
 
           {portalActiveTab === 'subscriptions' && <PortalSubscriptions theme={theme} />}
 
-          {portalActiveTab === 'products' && (
-            <PortalProducts
-              isDeployModalOpen={isDeployModalOpen}
-              onCloseDeployModal={() => setIsDeployModalOpen(false)}
-              onOpenDeployModal={() => setIsDeployModalOpen(true)}
-              theme={theme}
-            />
-          )}
+          {portalActiveTab === 'products' && <PortalProducts theme={theme} />}
 
           {portalActiveTab === 'invoices' && <PortalInvoices theme={theme} />}
 

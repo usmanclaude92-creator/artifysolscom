@@ -3,7 +3,7 @@ import { ClientDashboard } from './ClientDashboard';
 
 interface PortalOverviewProps {
   onNavigateTab: (tab: string) => void;
-  onOpenDeployModal: () => void;
+  theme?: 'dark' | 'light';
 }
 
 export const PortalOverview: React.FC<PortalOverviewProps> = (props) => {

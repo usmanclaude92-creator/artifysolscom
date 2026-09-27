@@ -93,7 +93,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
 }) => {
   const { user } = useAuth();
   const isAuthorizedEditor = Boolean(
-    user && (user.role === 'editor' || user.role === 'super_admin' || user.role === 'admin' || user.role === 'support_agent')
+    user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
   );
 
   const isLight = theme === 'light';
@@ -140,7 +140,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   const [newCommentText, setNewCommentText] = useState('');
   const [newCommentName, setNewCommentName] = useState(user?.name || '');
   const [newCommentRole, setNewCommentRole] = useState(
-    user?.company ? `${user.role} @ ${user.company}` : 'Enterprise AI Leader'
+    user?.company ? `${user.roleName} @ ${user.company}` : 'Enterprise AI Leader'
   );
   const [commentSubmitted, setCommentSubmitted] = useState(false);
 

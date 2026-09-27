@@ -69,7 +69,7 @@ export const ArticleReaderModal: React.FC<ArticleReaderModalProps> = ({
 }) => {
   const { user } = useAuth();
   const isAuthorizedEditor = Boolean(
-    user && (user.role === 'editor' || user.role === 'super_admin' || user.role === 'admin' || user.role === 'support_agent')
+    user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
   );
 
   const [copied, setCopied] = useState(false);

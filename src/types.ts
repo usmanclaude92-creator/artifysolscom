@@ -277,313 +277,33 @@ export interface ArtifyService {
   status: 'active' | 'limited_slots';
 }
 
-export interface OrderItem {
+/**
+ * Client Portal identity + real data types. Replaces the old fabricated
+ * commerce/billing block (OrderItem/CustomerOrder/CustomerPayment/
+ * CustomerInvoice/SupportTicket/SecuritySession/SecurityEvent/
+ * UserSubscription/PurchasedProduct/InvoiceRecord/ApiKeyRecord/
+ * ActiveAIProject/UserProfile) that AuthContext.tsx used to generate
+ * client-side with Math.random() IDs. AuthUser mirrors exactly what the
+ * Platform API's /auth/login, /auth/register and /auth/me return (see
+ * Artify-Backend's server/types/domain.ts SanitizedUser) — real
+ * subscription/contract/invoice/payment data now comes from
+ * src/lib/portalApi.ts's own types, fetched live, never attached here.
+ */
+export interface AuthUser {
   id: string;
-  productId?: string;
-  serviceId?: string;
-  planId?: string;
-  name: string;
-  category: string;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-  billingCycle?: 'monthly' | 'annual' | 'one_time';
-}
-
-export interface CustomerOrder {
-  id: string;
-  orderNumber: string;
-  userId: string;
-  date: string;
-  items: OrderItem[];
-  subtotal: number;
-  discount: number;
-  discountCode?: string;
-  tax: number;
-  total: number;
-  currency: string;
-  status: 'completed' | 'processing' | 'pending' | 'cancelled' | 'refunded' | 'failed';
-  paymentStatus: 'paid' | 'pending' | 'failed' | 'refunded';
-  paymentMethod: string;
-  receiptUrl?: string;
-}
-
-export interface CustomerPayment {
-  id: string;
-  transactionId: string;
-  orderId: string;
-  subscriptionId?: string;
-  date: string;
-  amount: number;
-  currency: string;
-  paymentMethod: {
-    type: 'card' | 'paypal' | 'bank_transfer' | 'invoice';
-    brand?: 'visa' | 'mastercard' | 'amex';
-    last4?: string;
-    email?: string;
-  };
-  status: 'paid' | 'pending' | 'failed' | 'refunded';
-  description: string;
-  receiptNumber: string;
-}
-
-export interface CustomerInvoice {
-  id: string;
-  invoiceNumber: string;
-  userId: string;
-  orderId?: string;
-  issueDate: string;
-  dueDate: string;
-  paidDate?: string;
-  date?: string;
-  period?: string;
-  downloadUrl?: string;
-  amount: number;
-  subtotal: number;
-  tax: number;
-  discount: number;
-  currency: string;
-  status: 'paid' | 'open' | 'overdue' | 'void';
-  paymentMethod: string;
-  description: string;
-  billingTo: {
-    name: string;
-    company: string;
-    email: string;
-    address: string;
-    taxNumber?: string;
-  };
-  items: {
-    description: string;
-    quantity: number;
-    unitPrice: number;
-    amount: number;
-  }[];
-}
-
-export interface TicketMessage {
-  id: string;
-  sender: 'customer' | 'support_agent' | 'ai_assistant';
-  senderName: string;
-  senderAvatar?: string;
-  message: string;
-  timestamp: string;
-  attachments?: { name: string; url: string; size: string }[];
-}
-
-export interface SupportTicket {
-  id: string;
-  ticketNumber: string;
-  userId: string;
-  subject: string;
-  category: 'technical' | 'billing' | 'agent_orchestration' | 'feature_request' | 'security' | 'general';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
-  createdAt: string;
-  updatedAt: string;
-  assignedAgent?: string;
-  messages: TicketMessage[];
-}
-
-export interface CustomerNotification {
-  id: string;
-  userId: string;
-  type: 'purchase' | 'subscription' | 'renewal' | 'payment' | 'security' | 'announcement';
-  title: string;
-  message: string;
-  read: boolean;
-  createdAt: string;
-  actionUrl?: string;
-  actionLabel?: string;
-}
-
-export interface SecuritySession {
-  id: string;
-  device: string;
-  browser: string;
-  ip: string;
-  location: string;
-  lastActive: string;
-  isCurrent: boolean;
-}
-
-export interface SecurityEvent {
-  id: string;
-  type: 'login' | 'password_change' | 'mfa_enabled' | 'api_key_created' | 'email_updated' | 'session_revoked';
-  description: string;
-  timestamp: string;
-  ip: string;
-  location: string;
-  status: 'success' | 'warning' | 'alert';
-}
-
-export interface UserSubscription {
-  planId: 'starter' | 'growth' | 'enterprise' | 'custom';
-  planName: string;
-  status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'paused';
-  billingCycle: 'monthly' | 'annual';
-  price: number;
-  startDate: string;
-  renewsOn: string;
-  trialEndsOn?: string;
-  autoRenew: boolean;
-  agentConcurrencyLimit: number;
-  monthlyTokenQuota: number;
-  monthlyTokensUsed: number;
-  activeAgentsCount: number;
-  dedicatedArchitectName?: string;
-  addOns: {
-    id: string;
-    name: string;
-    price: number;
-    enabled: boolean;
-  }[];
-}
-
-export interface PurchasedProduct {
-  id: string;
-  name: string;
-  code: string;
-  category: 'autonomous_agent' | 'orchestration_layer' | 'bi_dashboard' | 'custom_solution' | 'integration_hub' | 'ai_software' | 'accounting_software';
-  version: string;
-  description: string;
-  purchaseDate: string;
-  purchaseType: 'subscription_included' | 'one_time_license' | 'custom_build';
-  licenseKey: string;
-  status: 'deployed_active' | 'updating' | 'standby' | 'provisioning';
-  environment: 'AWS us-east-1' | 'GCP europe-west2' | 'Azure On-Premise' | 'Cloud Run Ingress';
-  endpointUrl: string;
-  connectedSystems: string[];
-  uptime: string;
-  requestsThisMonth: number;
-  monthlyHoursSaved: number;
-  assignedAgents: string[];
-  docsUrl?: string;
-  telemetry: {
-    health: '100% Operational' | 'Degraded' | 'Maintenance';
-    latencyMs: number;
-    errorRate: string;
-    lastSynced: string;
-  };
-}
-
-export interface InvoiceRecord {
-  id: string;
-  invoiceNumber: string;
-  date: string;
-  period: string;
-  amount: number;
-  status: 'paid' | 'pending' | 'failed';
-  paymentMethod: string;
-  description: string;
-  downloadUrl?: string;
-  items: {
-    description: string;
-    qty: number;
-    amount: number;
-  }[];
-}
-
-export interface ApiKeyRecord {
-  id: string;
-  name: string;
-  keyPrefix: string;
-  maskedKey: string;
-  environment: 'production' | 'sandbox';
-  createdAt: string;
-  lastUsed: string;
-  permissions: 'full_orchestration' | 'read_telemetry' | 'agent_dispatch_only';
-}
-
-export interface ProjectMilestone {
-  title: string;
-  status: 'completed' | 'in_progress' | 'upcoming';
-  completionDate?: string;
-}
-
-export interface ActiveAIProject {
-  id: string;
-  name: string;
-  category: 'Enterprise Integration' | 'Autonomous Agent Fleet' | 'Custom LLM Fine-Tuning' | 'Real-Time Analytics' | 'Predictive Logistics';
-  status: 'in_production' | 'in_development' | 'validation_phase' | 'architectural_scoping';
-  stageProgress: number;
-  startDate: string;
-  targetLaunchDate: string;
-  leadArchitect: string;
-  description: string;
-  techStack: string[];
-  assignedAgents: string[];
-  milestones: ProjectMilestone[];
-  kpis: { label: string; value: string; trend?: string }[];
-  liveEndpoint?: string;
-  recentLogs?: { timestamp: string; event: string; status: 'ok' | 'info' | 'warning' }[];
-}
-
-export interface UserProfile {
-  id: string;
+  organizationId: string;
   firstName: string;
   lastName: string;
   name: string;
   email: string;
-  avatarUrl?: string;
-  phone?: string;
-  country: string;
-  timezone: string;
-  role: 'customer' | 'editor' | 'admin' | 'super_admin' | 'finance_manager' | 'support_agent' | string;
-  emailVerified: boolean;
-  mfaEnabled: boolean;
-  memberSince: string;
-  
-  // Business Information
+  /** The organization's display name (from /auth/me's `organizations` list) — not necessarily set immediately after login/register. */
   company: string;
-  jobTitle?: string;
-  industry?: string;
-  companySize?: string;
-  website?: string;
-  businessAddress?: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    country: string;
-  };
-  taxNumber?: string;
-  
-  // Legacy / Direct helpers
-  billingAddress: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    country: string;
-    taxId?: string;
-  };
-  paymentMethod: {
-    brand: 'visa' | 'mastercard' | 'amex';
-    last4: string;
-    expiry: string;
-  };
-  
-  subscription: UserSubscription;
-  purchasedProducts: PurchasedProduct[];
-  activeProjects?: ActiveAIProject[];
-  orders: CustomerOrder[];
-  payments: CustomerPayment[];
-  invoices: (CustomerInvoice | InvoiceRecord)[];
-  tickets: SupportTicket[];
-  notifications: CustomerNotification[];
-  sessions: SecuritySession[];
-  securitySessions?: SecuritySession[];
-  securityEvents: SecurityEvent[];
-  apiKeys: ApiKeyRecord[];
-  
-  // Preferences
-  notificationPreferences?: {
-    productUpdates: boolean;
-    billingAlerts: boolean;
-    securityAlerts: boolean;
-    marketingEmails: boolean;
-  };
+  /** Real role key from the backend, e.g. "ADMIN", "SUPER_ADMIN", "MANAGER", "USER", "VIEWER" — never a client-fabricated value. */
+  role: string;
+  roleName: string;
+  permissions: string[];
+  jobTitle: string | null;
+  phone: string | null;
 }
 
 export type BlogCategory =

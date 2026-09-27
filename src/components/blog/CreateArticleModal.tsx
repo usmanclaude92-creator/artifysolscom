@@ -78,7 +78,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
 
   // An authorized editor can be an editor, super_admin, admin, or support_agent
   const isAuthorizedEditor = Boolean(
-    user && (user.role === 'editor' || user.role === 'super_admin' || user.role === 'admin' || user.role === 'support_agent')
+    user && (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN')
   );
 
   const [activeTab, setActiveTab] = useState<'content' | 'seo' | 'preview'>('content');
@@ -188,7 +188,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
   useEffect(() => {
     if (user && !initialPost) {
       setAuthorName(user.name || `${user.firstName} ${user.lastName}`);
-      setAuthorRole(user.jobTitle || (user.role === 'editor' ? 'Lead AI Research Editor' : 'AI Systems Architect'));
+      setAuthorRole(user.jobTitle || 'AI Systems Architect');
     }
   }, [user, initialPost]);
 
@@ -266,7 +266,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
       author: {
         name: authorName.trim() || user?.name || 'Verified Research Editor',
         role: authorRole.trim() || user?.jobTitle || 'AI Systems Architect',
-        avatar: user?.avatarUrl || initials,
+        avatar: initials,
         bio: `${user?.company ? `${user?.company} • ` : ''}Verified contributor to Artify Solutions Intelligence & Research.`,
       },
       publishDate: status === 'draft' ? `Draft (Saved ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })})` : nowFormatted,
@@ -502,7 +502,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
                 </div>
                 <div>
                   <div className="text-xs font-bold">
-                    Signed In as {user.name} ({user.role})
+                    Signed In as {user.name} ({user.roleName})
                   </div>
                   <p className={`text-[11px] mt-0.5 ${isLight ? 'text-rose-700' : 'text-zinc-400'}`}>
                     Your client account does not have registered Editor privileges to publish live. Switch to an Editor profile or save as Draft.
@@ -527,7 +527,7 @@ export const CreateArticleModal: React.FC<CreateArticleModalProps> = ({
                     <span>Verified Registered Editor:</span>
                     <span className="text-violet-400 font-semibold">{user.name}</span>
                     <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 uppercase font-mono-code font-bold">
-                      {user.role}
+                      {user.roleName}
                     </span>
                   </div>
                   <div className={`text-[10px] truncate ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>

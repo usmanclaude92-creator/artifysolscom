@@ -1,96 +1,145 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { UserProfile, PurchasedProduct, ApiKeyRecord, InvoiceRecord } from '../types';
-import { SUBSCRIPTION_PLANS, CATALOG_PRODUCTS } from '../data/portalData';
+import { AuthUser } from '../types';
 import { safeGetLocalStorage, safeSetLocalStorage, safeRemoveLocalStorage } from '../utils/storage';
-import { apiClient, ApiClientError } from '../lib/apiClient';
+import { apiClient, setAuthTokenGetter } from '../lib/apiClient';
+
+interface BackendUser {
+  id: string;
+  organizationId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  title: string | null;
+  phone: string | null;
+  role: { key: string; name: string; permissions: string[] };
+}
+
+interface MembershipSummary {
+  organizationId: string;
+  organizationName: string;
+  isCurrent: boolean;
+}
+
+function mapBackendUser(user: BackendUser, organizations: MembershipSummary[]): AuthUser {
+  const currentOrg = organizations.find((o) => o.isCurrent) ?? organizations.find((o) => o.organizationId === user.organizationId);
+  return {
+    id: user.id,
+    organizationId: user.organizationId,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    name: `${user.firstName} ${user.lastName}`.trim(),
+    email: user.email,
+    company: currentOrg?.organizationName ?? '',
+    role: user.role.key,
+    roleName: user.role.name,
+    permissions: user.role.permissions,
+    jobTitle: user.title,
+    phone: user.phone,
+  };
+}
 
 interface AuthContextType {
-  user: UserProfile | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
+  /** True only while rehydrating a persisted session on initial page load. */
+  isAuthLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (data: {
     name: string;
     email: string;
     password: string;
     company: string;
-    role: string;
-    planId?: 'starter' | 'growth' | 'enterprise';
+    role?: string;
   }) => Promise<boolean>;
   logout: () => void;
-  
+  /** Updates the caller's own profile fields via the Platform API (PATCH /users/:id) and refreshes the local session. Never touches role/permissions. */
+  updateProfile: (updates: { firstName?: string; lastName?: string; title?: string; phone?: string }) => Promise<void>;
+
   // Portal & Modal UI States
   isAuthModalOpen: boolean;
   authModalMode: 'login' | 'signup';
   openAuthModal: (mode?: 'login' | 'signup') => void;
   closeAuthModal: () => void;
-  
+
   isPortalOpen: boolean;
   portalActiveTab: string;
   openPortal: (tab?: string) => void;
   closePortal: () => void;
   setPortalActiveTab: (tab: string) => void;
-
-  // Subscription Management
-  updateSubscriptionPlan: (planId: 'starter' | 'growth' | 'enterprise', cycle: 'monthly' | 'annual') => void;
-  toggleAddon: (addonId: string) => void;
-  toggleAutoRenew: () => void;
-  cancelSubscription: () => void;
-  
-  // Products Management
-  purchaseCatalogProduct: (productCode: string) => void;
-  restartProductDeployment: (productId: string) => void;
-  updateProductSettings: (productId: string, updates: Partial<PurchasedProduct>) => void;
-  
-  // API Keys
-  createApiKey: (name: string, env: 'production' | 'sandbox', perms: 'full_orchestration' | 'read_telemetry' | 'agent_dispatch_only') => ApiKeyRecord;
-  revokeApiKey: (keyId: string) => void;
-  
-  // Profile & Payment
-  updateUserProfile: (updates: Partial<UserProfile>) => void;
-  updatePaymentMethod: (card: { brand: 'visa' | 'mastercard' | 'amex'; last4: string; expiry: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_USER_KEY = 'artify_auth_user_session';
-const STORAGE_PORTAL_OPEN_KEY = 'artify_portal_view_state';
-const STORAGE_INTENTIONAL_LOGIN_KEY = 'artify_auth_user_intentionally_logged_in';
+const STORAGE_SESSION_KEY = 'artify_auth_session';
+
+interface StoredSession {
+  token: string;
+  expiresAt: string;
+}
+
+function loadStoredSession(): StoredSession | null {
+  try {
+    const raw = safeGetLocalStorage(STORAGE_SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredSession;
+    if (!parsed.token || !parsed.expiresAt) return null;
+    if (new Date(parsed.expiresAt).getTime() <= Date.now()) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+// A single module-level slot backing apiClient.ts's token getter — set once
+// here so every request always reads the current token synchronously,
+// regardless of render timing. Updated by the provider whenever the
+// session changes (see the `currentToken` assignments below).
+let currentToken: string | null = null;
+setAuthTokenGetter(() => currentToken);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(() => {
-    try {
-      // By default keep user signed out until intentionally logged into account
-      const isIntentional = safeGetLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY);
-      if (!isIntentional || isIntentional !== 'true') {
-        // Purge any stale legacy auto-saved demo session
-        safeRemoveLocalStorage(STORAGE_USER_KEY);
-        return null;
-      }
-      const saved = safeGetLocalStorage(STORAGE_USER_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (err) {
-      console.error('Failed to parse saved user from localStorage', err);
-    }
-    return null;
-  });
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
   const [isPortalOpen, setIsPortalOpen] = useState(false);
   const [portalActiveTab, setPortalActiveTab] = useState<string>('overview');
 
-  // Sync to localStorage
-  useEffect(() => {
-    if (user) {
-      safeSetLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY, 'true');
-      safeSetLocalStorage(STORAGE_USER_KEY, JSON.stringify(user));
+  const applySession = (session: StoredSession | null) => {
+    currentToken = session?.token ?? null;
+    if (session) {
+      safeSetLocalStorage(STORAGE_SESSION_KEY, JSON.stringify(session));
     } else {
-      safeRemoveLocalStorage(STORAGE_USER_KEY);
-      safeRemoveLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY);
+      safeRemoveLocalStorage(STORAGE_SESSION_KEY);
     }
-  }, [user]);
+  };
+
+  const refreshUser = async (): Promise<AuthUser> => {
+    const { user: backendUser, organizations } = await apiClient.get<{ user: BackendUser; organizations: MembershipSummary[] }>('/auth/me');
+    const mapped = mapBackendUser(backendUser, organizations);
+    setUser(mapped);
+    return mapped;
+  };
+
+  // Rehydrate a persisted session on first load — never trust the stored
+  // identity fields themselves (there aren't any anymore); always re-verify
+  // against the real backend before treating the visitor as signed in.
+  useEffect(() => {
+    const stored = loadStoredSession();
+    if (!stored) {
+      setIsAuthLoading(false);
+      return;
+    }
+    applySession(stored);
+    refreshUser()
+      .catch(() => {
+        applySession(null);
+        setUser(null);
+      })
+      .finally(() => setIsAuthLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const openAuthModal = (mode: 'login' | 'signup' = 'login') => {
     setAuthModalMode(mode);
@@ -104,7 +153,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const openPortal = (tab: string = 'overview') => {
     setPortalActiveTab(tab);
     setIsPortalOpen(true);
-    // Scroll to top when opening portal
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -115,620 +163,79 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   /**
-   * Real authentication (Phase 4 §4/§9) — verifies the credential against
-   * the Artify Platform API (Artify-Backend's Phase 3 /auth/login). No
-   * password is accepted without a real bcrypt-verified match; there is no
-   * demo-account shortcut, email-based auto-login, or arbitrary-credential
-   * acceptance left in this function (the Phase 0 finding S1 this closes).
-   * A failed call throws, matching AuthModal.tsx's existing try/catch.
-   *
-   * The rich subscription/product/invoice/API-key data attached to the
-   * resulting profile below is still local placeholder shape, NOT fetched
-   * from a real backend — the Platform API's CRM/Billing/Products domains
-   * are schema-only as of Phase 2 (docs/DATABASE_SCHEMA.md) and have no
-   * service/route layer yet (that's Phase 5+, explicitly out of Phase 4's
-   * scope). Only the identity fields (name/email/role) below come from the
-   * real verified account; the business data is clearly out-of-scope
-   * placeholder content, not a security boundary.
+   * Verifies the credential against the Artify Platform API
+   * (Artify-Backend's /auth/login) and establishes a real session — the
+   * returned session token is captured and attached to every subsequent
+   * apiClient request via setAuthTokenGetter. Nothing about the resulting
+   * user is fabricated: every field on AuthUser comes from the backend's
+   * own /auth/me response.
    */
   const login = async (email: string, password: string): Promise<boolean> => {
-    const verified = await apiClient.post<{
-      user: { firstName: string; lastName: string; email: string; role: { name: string } };
-    }>('/auth/login', { email, password });
-
-    const firstName = verified.user.firstName;
-    const lastName = verified.user.lastName;
-    const fullName = `${firstName} ${lastName}`;
-
-    const newUser: UserProfile = {
-      id: `usr_${Math.random().toString(36).substring(2, 9)}`,
-      firstName,
-      lastName,
-      name: fullName,
-      email: verified.user.email,
-      company: 'Enterprise Client Org',
-      role: 'customer',
-      jobTitle: verified.user.role.name,
-      emailVerified: true,
-      mfaEnabled: true,
-      country: 'United States',
-      memberSince: 'August 2026',
-      timezone: 'UTC (GMT)',
-      billingAddress: {
-        street: '100 Innovation Way',
-        city: 'San Francisco',
-        state: 'CA',
-        zip: '94107',
-        country: 'United States',
-      },
-      paymentMethod: {
-        brand: 'visa',
-        last4: '8841',
-        expiry: '12/28',
-      },
-      subscription: {
-        planId: 'growth',
-        planName: 'Growth Agent Fleet',
-        status: 'active',
-        billingCycle: 'monthly',
-        price: 3450,
-        startDate: new Date().toISOString().split('T')[0],
-        renewsOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        autoRenew: true,
-        agentConcurrencyLimit: 8,
-        monthlyTokenQuota: 60_000_000,
-        monthlyTokensUsed: 12_400_000,
-        activeAgentsCount: 5,
-        dedicatedArchitectName: 'Liam Harrison (Solutions Architect)',
-        addOns: [
-          { id: 'addon-1', name: 'Dedicated VPC Hosting in us-east-1', price: 800, enabled: true },
-        ],
-      },
-      purchasedProducts: [
-        {
-          id: `prod_${Math.random().toString(36).substring(2, 7)}`,
-          name: 'Autonomous Invoice & PO Reconciliation Engine',
-          code: 'ART-REC-01',
-          category: 'autonomous_agent',
-          version: 'v3.4.1',
-          description: 'Autonomous financial ledger comparing transactions across banking, ERP, and supplier portals with 99.4% automated zero-exception matching.',
-          purchaseDate: new Date().toISOString().split('T')[0],
-          purchaseType: 'subscription_included',
-          licenseKey: `ART-LIC-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-XPRO-2026`,
-          status: 'deployed_active',
-          environment: 'AWS us-east-1',
-          endpointUrl: 'https://api.artifysols.com/v1/finance/reconciliation',
-          connectedSystems: ['NetSuite ERP', 'Stripe Billing'],
-          uptime: '99.98%',
-          requestsThisMonth: 18450,
-          monthlyHoursSaved: 120,
-          assignedAgents: ['Ledger Reconciliation Sentinel', 'Invoice OCR Parser'],
-          telemetry: {
-            health: '100% Operational',
-            latencyMs: 110,
-            errorRate: '0.001%',
-            lastSynced: 'Just now',
-          },
-        },
-        {
-          id: `prod_${Math.random().toString(36).substring(2, 7)}`,
-          name: 'Conversational BI & Executive Command Center',
-          code: 'ART-CMD-02',
-          category: 'bi_dashboard',
-          version: 'v2.8.0',
-          description: 'Natural language analytical interface querying live PostgreSQL, Snowflake, and Salesforce databases in sub-second SQL synthesis.',
-          purchaseDate: new Date().toISOString().split('T')[0],
-          purchaseType: 'subscription_included',
-          licenseKey: `ART-LIC-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-XCMD-2026`,
-          status: 'deployed_active',
-          environment: 'GCP europe-west2',
-          endpointUrl: 'https://api.artifysols.com/v1/analytics/command-center',
-          connectedSystems: ['PostgreSQL Cluster', 'Salesforce CRM'],
-          uptime: '99.99%',
-          requestsThisMonth: 12300,
-          monthlyHoursSaved: 75,
-          assignedAgents: ['SQL Synthesizer Agent', 'Chart Renderer Bot'],
-          telemetry: {
-            health: '100% Operational',
-            latencyMs: 92,
-            errorRate: '0.000%',
-            lastSynced: 'Just now',
-          },
-        },
-      ],
-      orders: [],
-      payments: [],
-      tickets: [],
-      notifications: [],
-      sessions: [
-        {
-          id: 'sess_1',
-          device: 'MacBook Pro (Apple Silicon)',
-          browser: 'Chrome 126.0 (macOS)',
-          ip: '198.51.100.44',
-          location: 'San Francisco, CA, US',
-          lastActive: 'Active Now',
-          isCurrent: true,
-        },
-      ],
-      securityEvents: [
-        {
-          id: 'sec_1',
-          type: 'login',
-          description: 'Successful corporate session authentication via Email OTP',
-          timestamp: new Date().toISOString(),
-          ip: '198.51.100.44',
-          location: 'San Francisco, CA, US',
-          status: 'success',
-        },
-      ],
-      invoices: [
-        {
-          id: `inv_${Math.random().toString(36).substring(2, 7)}`,
-          invoiceNumber: `INV-ART-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-          userId: `usr_demo`,
-          issueDate: new Date().toISOString().split('T')[0],
-          dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
-          date: new Date().toISOString().split('T')[0],
-          period: 'Aug 01, 2026 - Aug 31, 2026',
-          amount: 3450,
-          subtotal: 3450,
-          tax: 0,
-          discount: 0,
-          currency: 'USD',
-          status: 'paid',
-          paymentMethod: 'Visa ending in 8841',
-          description: 'Growth Agent Fleet Subscription (Monthly)',
-          billingTo: {
-            name: fullName,
-            company: 'Enterprise Client Org',
-            email: email,
-            address: '100 Innovation Way, San Francisco, CA 94107',
-          },
-          items: [{ description: 'Growth Agent Fleet Monthly Tier', quantity: 1, unitPrice: 3450, amount: 3450 }],
-        },
-      ],
-      apiKeys: [
-        {
-          id: 'key-init-01',
-          name: 'Primary-Production-API-Key',
-          keyPrefix: 'art_live_usr_882',
-          maskedKey: 'art_live_usr_882••••••••••••••••••••••••38f9',
-          environment: 'production',
-          createdAt: new Date().toISOString().split('T')[0],
-          lastUsed: 'Just now',
-          permissions: 'full_orchestration',
-        },
-      ],
-    };
-
-    setUser(newUser);
+    const result = await apiClient.post<{ session: { token: string; expiresAt: string } }>('/auth/login', { email, password });
+    applySession({ token: result.session.token, expiresAt: result.session.expiresAt });
+    try {
+      await refreshUser();
+    } catch (err) {
+      applySession(null);
+      throw err;
+    }
     setIsAuthModalOpen(false);
     openPortal('overview');
     return true;
   };
 
   /**
-   * Real registration (Phase 4 §4) — creates the account via the Platform
-   * API's Phase 3 /auth/register (real bcrypt hash, real organization +
-   * ADMIN-role membership row; never a client-fabricated account). See
-   * login()'s doc comment above for why the subscription/product data
-   * below stays local placeholder shape pending the Billing/Products
-   * phases.
+   * Creates the account via the Platform API's /auth/register (real bcrypt
+   * hash, real organization + ADMIN-role membership). A self-registered
+   * account has its own brand-new organization — it is not automatically
+   * linked to any CRM Client workspace, so its portal screens will
+   * correctly show a "no workspace linked" state until an Artify agency
+   * operator provisions one from the Control Center.
    */
   const register = async (data: {
     name: string;
     email: string;
     password: string;
     company: string;
-    role: string;
-    planId?: 'starter' | 'growth' | 'enterprise';
+    role?: string;
   }): Promise<boolean> => {
-    const selectedPlanId = data.planId || 'growth';
-    const planDef = SUBSCRIPTION_PLANS.find((p) => p.id === selectedPlanId) || SUBSCRIPTION_PLANS[1];
     const nameParts = data.name.trim().split(' ');
-    const regFirstName = nameParts[0] || 'User';
-    const regLastName = nameParts.slice(1).join(' ') || 'Member';
+    const firstName = nameParts[0] || 'User';
+    const lastName = nameParts.slice(1).join(' ') || 'Member';
 
-    const verified = await apiClient.post<{
-      user: { firstName: string; lastName: string; email: string };
-    }>('/auth/register', {
+    const result = await apiClient.post<{ session: { token: string; expiresAt: string } }>('/auth/register', {
       email: data.email,
       password: data.password,
-      firstName: regFirstName,
-      lastName: regLastName,
+      firstName,
+      lastName,
       organizationName: data.company,
+      title: data.role || undefined,
     });
-
-    const newUser: UserProfile = {
-      id: `usr_${Math.random().toString(36).substring(2, 9)}`,
-      firstName: verified.user.firstName,
-      lastName: verified.user.lastName,
-      name: data.name,
-      email: verified.user.email,
-      company: data.company,
-      role: 'customer',
-      jobTitle: data.role || 'Enterprise Lead',
-      emailVerified: true,
-      mfaEnabled: false,
-      country: 'United States',
-      memberSince: 'August 2026',
-      timezone: 'America/New_York (EST)',
-      billingAddress: {
-        street: '1 Enterprise Blvd',
-        city: 'New York',
-        state: 'NY',
-        zip: '10001',
-        country: 'United States',
-      },
-      paymentMethod: {
-        brand: 'visa',
-        last4: '4242',
-        expiry: '10/29',
-      },
-      subscription: {
-        planId: selectedPlanId,
-        planName: planDef.name,
-        status: 'active',
-        billingCycle: 'monthly',
-        price: planDef.priceMonthly,
-        startDate: new Date().toISOString().split('T')[0],
-        renewsOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        autoRenew: true,
-        agentConcurrencyLimit: planDef.agentConcurrencyLimit,
-        monthlyTokenQuota: planDef.monthlyTokenQuota,
-        monthlyTokensUsed: 520_000,
-        activeAgentsCount: Math.min(2, planDef.agentConcurrencyLimit),
-        dedicatedArchitectName: 'Liam Harrison (Senior Solutions Architect)',
-        addOns: [
-          { id: 'addon-1', name: 'Private Dedicated VPC Hosting', price: 800, enabled: false },
-          { id: 'addon-2', name: '24/7 Priority Incident Hotline', price: 600, enabled: false },
-        ],
-      },
-      purchasedProducts: [
-        {
-          id: `prod_${Math.random().toString(36).substring(2, 7)}`,
-          name: 'Autonomous Invoice & PO Reconciliation Engine',
-          code: 'ART-REC-01',
-          category: 'autonomous_agent',
-          version: 'v3.4.1',
-          description: 'Autonomous financial ledger comparing transactions across banking, ERP, and supplier portals with 99.4% automated zero-exception matching.',
-          purchaseDate: new Date().toISOString().split('T')[0],
-          purchaseType: 'subscription_included',
-          licenseKey: `ART-LIC-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-XPRO-2026`,
-          status: 'deployed_active',
-          environment: 'AWS us-east-1',
-          endpointUrl: 'https://api.artifysols.com/v1/finance/reconciliation',
-          connectedSystems: ['QuickBooks Online', 'Stripe Billing'],
-          uptime: '100%',
-          requestsThisMonth: 1200,
-          monthlyHoursSaved: 45,
-          assignedAgents: ['Ledger Reconciliation Sentinel', 'Invoice OCR Parser'],
-          telemetry: {
-            health: '100% Operational',
-            latencyMs: 98,
-            errorRate: '0.000%',
-            lastSynced: 'Just now',
-          },
-        },
-      ],
-      orders: [],
-      payments: [],
-      tickets: [],
-      notifications: [],
-      sessions: [
-        {
-          id: 'sess_reg_1',
-          device: 'MacBook Air (M3)',
-          browser: 'Chrome 126.0 (macOS)',
-          ip: '198.51.100.89',
-          location: 'New York, NY, US',
-          lastActive: 'Active Now',
-          isCurrent: true,
-        },
-      ],
-      securityEvents: [
-        {
-          id: 'sec_reg_1',
-          type: 'login',
-          description: 'Initial account registration and verified email sign-in',
-          timestamp: new Date().toISOString(),
-          ip: '198.51.100.89',
-          location: 'New York, NY, US',
-          status: 'success',
-        },
-      ],
-      invoices: [
-        {
-          id: `inv_${Math.random().toString(36).substring(2, 7)}`,
-          invoiceNumber: `INV-ART-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-          userId: `usr_reg`,
-          issueDate: new Date().toISOString().split('T')[0],
-          dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
-          date: new Date().toISOString().split('T')[0],
-          period: 'Initial Billing Period',
-          amount: planDef.priceMonthly,
-          subtotal: planDef.priceMonthly,
-          tax: 0,
-          discount: 0,
-          currency: 'USD',
-          status: 'paid',
-          paymentMethod: 'Visa ending in 4242',
-          description: `${planDef.name} Subscription`,
-          billingTo: {
-            name: data.name,
-            company: data.company,
-            email: data.email,
-            address: '1 Enterprise Blvd, New York, NY 10001',
-          },
-          items: [{ description: `${planDef.name} Initial Setup`, quantity: 1, unitPrice: planDef.priceMonthly, amount: planDef.priceMonthly }],
-        },
-      ],
-      apiKeys: [
-        {
-          id: `key_${Math.random().toString(36).substring(2, 7)}`,
-          name: 'Default-Production-Key',
-          keyPrefix: 'art_live_usr_991',
-          maskedKey: 'art_live_usr_991••••••••••••••••••••••••55a1',
-          environment: 'production',
-          createdAt: new Date().toISOString().split('T')[0],
-          lastUsed: 'Just now',
-          permissions: 'full_orchestration',
-        },
-      ],
-    };
-
-    setUser(newUser);
+    applySession({ token: result.session.token, expiresAt: result.session.expiresAt });
+    try {
+      await refreshUser();
+    } catch (err) {
+      applySession(null);
+      throw err;
+    }
     setIsAuthModalOpen(false);
     openPortal('overview');
     return true;
   };
 
+  const updateProfile = async (updates: { firstName?: string; lastName?: string; title?: string; phone?: string }): Promise<void> => {
+    if (!user) throw new Error('Not signed in.');
+    await apiClient.patch(`/users/${user.id}`, updates);
+    await refreshUser();
+  };
+
   const logout = () => {
-    safeRemoveLocalStorage(STORAGE_USER_KEY);
-    safeRemoveLocalStorage(STORAGE_INTENTIONAL_LOGIN_KEY);
+    // Best-effort — revoke the session server-side too, but never block
+    // signing the visitor out locally on a network hiccup.
+    apiClient.post('/auth/logout').catch(() => {});
+    applySession(null);
     setUser(null);
     setIsPortalOpen(false);
-  };
-
-  const updateSubscriptionPlan = (planId: 'starter' | 'growth' | 'enterprise', cycle: 'monthly' | 'annual') => {
-    if (!user) return;
-    const planDef = SUBSCRIPTION_PLANS.find((p) => p.id === planId) || SUBSCRIPTION_PLANS[1];
-    const newPrice = cycle === 'annual' ? planDef.priceAnnual : planDef.priceMonthly;
-
-    const newInvoice: InvoiceRecord = {
-      id: `inv_${Math.random().toString(36).substring(2, 7)}`,
-      invoiceNumber: `INV-ART-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      date: new Date().toISOString().split('T')[0],
-      period: cycle === 'annual' ? '12-Month Prepaid Cycle' : 'Monthly Cycle',
-      amount: newPrice,
-      status: 'paid',
-      paymentMethod: `${user.paymentMethod.brand.toUpperCase()} ending in ${user.paymentMethod.last4}`,
-      description: `Subscription Plan Switch: ${planDef.name} (${cycle})`,
-      items: [
-        {
-          description: `${planDef.name} (${cycle === 'annual' ? 'Annual Prepaid Rate' : 'Monthly'})`,
-          qty: 1,
-          amount: newPrice,
-        },
-      ],
-    };
-
-    setUser({
-      ...user,
-      subscription: {
-        ...user.subscription,
-        planId,
-        planName: planDef.name,
-        price: newPrice,
-        billingCycle: cycle,
-        agentConcurrencyLimit: planDef.agentConcurrencyLimit,
-        monthlyTokenQuota: planDef.monthlyTokenQuota,
-      },
-      invoices: [newInvoice, ...user.invoices],
-    });
-  };
-
-  const toggleAddon = (addonId: string) => {
-    if (!user) return;
-    const updatedAddOns = user.subscription.addOns.map((a) =>
-      a.id === addonId ? { ...a, enabled: !a.enabled } : a
-    );
-    setUser({
-      ...user,
-      subscription: {
-        ...user.subscription,
-        addOns: updatedAddOns,
-      },
-    });
-  };
-
-  const toggleAutoRenew = () => {
-    if (!user) return;
-    setUser({
-      ...user,
-      subscription: {
-        ...user.subscription,
-        autoRenew: !user.subscription.autoRenew,
-      },
-    });
-  };
-
-  const cancelSubscription = () => {
-    if (!user) return;
-    setUser({
-      ...user,
-      subscription: {
-        ...user.subscription,
-        status: 'canceled',
-        autoRenew: false,
-      },
-    });
-  };
-
-  const purchaseCatalogProduct = (productCode: string) => {
-    if (!user) return;
-    const catalogItem = CATALOG_PRODUCTS.find((p) => p.code === productCode);
-    if (!catalogItem) return;
-
-    // Check if already purchased
-    const exists = user.purchasedProducts.find((p) => p.code === productCode);
-    if (exists) return;
-
-    const newProduct: PurchasedProduct = {
-      ...catalogItem,
-      id: `prod_${Math.random().toString(36).substring(2, 8)}`,
-      purchaseDate: new Date().toISOString().split('T')[0],
-      licenseKey: `ART-LIC-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}-${productCode.replace('ART-', '')}-2026`,
-      status: 'deployed_active',
-      requestsThisMonth: 120,
-      monthlyHoursSaved: 18,
-      telemetry: {
-        health: '100% Operational',
-        latencyMs: Math.floor(70 + Math.random() * 60),
-        errorRate: '0.000%',
-        lastSynced: 'Just now',
-      },
-    };
-
-    const newInvoice: InvoiceRecord = {
-      id: `inv_${Math.random().toString(36).substring(2, 7)}`,
-      invoiceNumber: `INV-ART-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      date: new Date().toISOString().split('T')[0],
-      period: 'One-Time Provisioning',
-      amount: catalogItem.purchaseType === 'one_time_license' ? 4800 : 0,
-      status: 'paid',
-      paymentMethod: `${user.paymentMethod.brand.toUpperCase()} ending in ${user.paymentMethod.last4}`,
-      description: `Deployment: ${catalogItem.name}`,
-      items: [
-        {
-          description: `${catalogItem.name} (${catalogItem.version}) Setup & Deployment`,
-          qty: 1,
-          amount: catalogItem.purchaseType === 'one_time_license' ? 4800 : 0,
-        },
-      ],
-    };
-
-    setUser({
-      ...user,
-      subscription: {
-        ...user.subscription,
-        activeAgentsCount: user.subscription.activeAgentsCount + catalogItem.assignedAgents.length,
-      },
-      purchasedProducts: [newProduct, ...user.purchasedProducts],
-      invoices: [newInvoice, ...user.invoices],
-    });
-  };
-
-  const restartProductDeployment = (productId: string) => {
-    if (!user) return;
-    setUser({
-      ...user,
-      purchasedProducts: user.purchasedProducts.map((p) => {
-        if (p.id === productId) {
-          return {
-            ...p,
-            status: 'updating',
-            telemetry: {
-              ...p.telemetry,
-              lastSynced: 'Restarting container...',
-            },
-          };
-        }
-        return p;
-      }),
-    });
-
-    setTimeout(() => {
-      setUser((current) => {
-        if (!current) return null;
-        return {
-          ...current,
-          purchasedProducts: current.purchasedProducts.map((p) => {
-            if (p.id === productId) {
-              return {
-                ...p,
-                status: 'deployed_active',
-                telemetry: {
-                  ...p.telemetry,
-                  health: '100% Operational',
-                  lastSynced: 'Just now (Cold-start OK)',
-                },
-              };
-            }
-            return p;
-          }),
-        };
-      });
-    }, 2000);
-  };
-
-  const updateProductSettings = (productId: string, updates: Partial<PurchasedProduct>) => {
-    if (!user) return;
-    setUser({
-      ...user,
-      purchasedProducts: user.purchasedProducts.map((p) =>
-        p.id === productId ? { ...p, ...updates } : p
-      ),
-    });
-  };
-
-  const createApiKey = (
-    name: string,
-    env: 'production' | 'sandbox',
-    perms: 'full_orchestration' | 'read_telemetry' | 'agent_dispatch_only'
-  ): ApiKeyRecord => {
-    const prefix = env === 'production' ? 'art_live_' : 'art_test_';
-    const rand = Math.random().toString(36).substring(2, 6);
-    const suffix = Math.random().toString(36).substring(2, 6);
-    const fullPrefix = `${prefix}${name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5)}_${rand}`;
-    const newKey: ApiKeyRecord = {
-      id: `key_${Math.random().toString(36).substring(2, 8)}`,
-      name,
-      keyPrefix: fullPrefix,
-      maskedKey: `${fullPrefix}••••••••••••••••••••••••${suffix}`,
-      environment: env,
-      createdAt: new Date().toISOString().split('T')[0],
-      lastUsed: 'Never',
-      permissions: perms,
-    };
-
-    if (user) {
-      setUser({
-        ...user,
-        apiKeys: [newKey, ...user.apiKeys],
-      });
-    }
-
-    return newKey;
-  };
-
-  const revokeApiKey = (keyId: string) => {
-    if (!user) return;
-    setUser({
-      ...user,
-      apiKeys: user.apiKeys.filter((k) => k.id !== keyId),
-    });
-  };
-
-  const updateUserProfile = (updates: Partial<UserProfile>) => {
-    if (!user) return;
-    setUser({
-      ...user,
-      ...updates,
-    });
-  };
-
-  const updatePaymentMethod = (card: {
-    brand: 'visa' | 'mastercard' | 'amex';
-    last4: string;
-    expiry: string;
-  }) => {
-    if (!user) return;
-    setUser({
-      ...user,
-      paymentMethod: card,
-    });
   };
 
   return (
@@ -736,9 +243,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       value={{
         user,
         isAuthenticated: !!user,
+        isAuthLoading,
         login,
         register,
         logout,
+        updateProfile,
         isAuthModalOpen,
         authModalMode,
         openAuthModal,
@@ -748,17 +257,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         openPortal,
         closePortal,
         setPortalActiveTab,
-        updateSubscriptionPlan,
-        toggleAddon,
-        toggleAutoRenew,
-        cancelSubscription,
-        purchaseCatalogProduct,
-        restartProductDeployment,
-        updateProductSettings,
-        createApiKey,
-        revokeApiKey,
-        updateUserProfile,
-        updatePaymentMethod,
       }}
     >
       {children}
