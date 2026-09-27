@@ -8,7 +8,7 @@
  * nothing here fabricates a field the backend didn't send.
  */
 import { apiClient } from './apiClient';
-import type { BlogPost, BlogCategory } from '../types';
+import type { BlogPost, BlogCategory, ArticleSeoMetadata } from '../types';
 
 export interface PublicMedia {
   url: string;
@@ -181,7 +181,14 @@ export function mapPostToBlogPost(post: PublicPost): BlogPost {
   const wordCount = plainText ? plainText.split(' ').length : 0;
   const readTime = `${Math.max(1, Math.round(wordCount / 200))} min read`;
   const excerpt = plainText.length > 220 ? `${plainText.slice(0, 217)}...` : plainText;
-  const seo = post.seo as { ogImage?: string; seoScore?: number } | undefined;
+  const rawSeo = post.seo as Partial<ArticleSeoMetadata> | undefined;
+  const seo: ArticleSeoMetadata | undefined = rawSeo
+    ? {
+        metaTitle: rawSeo.metaTitle,
+        metaDescription: rawSeo.metaDescription,
+        ogImage: rawSeo.ogImage,
+      }
+    : undefined;
 
   return {
     id: post.slug,
@@ -212,6 +219,6 @@ export function mapPostToBlogPost(post: PublicPost): BlogPost {
     likes: 0,
     status: 'published',
     lastModified: post.updatedAt,
-    seo: seo ? { ogImage: seo.ogImage, seoScore: seo.seoScore } : undefined,
+    seo,
   };
 }
