@@ -77,6 +77,9 @@ const LegalPage = lazy(() =>
 const BlogPage = lazy(() =>
   import('./components/blog/BlogPage').then((m) => ({ default: m.BlogPage }))
 );
+const CmsPageRoute = lazy(() =>
+  import('./components/pages/CmsPageRoute').then((m) => ({ default: m.CmsPageRoute }))
+);
 const ClientPortal = lazy(() =>
   import('./components/portal/ClientPortal').then((m) => ({ default: m.ClientPortal }))
 );
@@ -118,6 +121,19 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
   if (path === '/privacy') return { route: 'privacy' };
   if (path === '/terms') return { route: 'terms' };
   if (path === '/blog' || path.startsWith('/blog/')) return { route: 'blog' };
+  if (path === '/') return { route: 'home' };
+
+  // Catch-all: any other single-segment path is a candidate CMS Page slug
+  // (Phase 4). The component itself resolves this against the real
+  // publicApi.getPageBySlug and falls back to a genuine not-found state
+  // (with a redirect-table lookup first) rather than this router ever
+  // silently rendering the homepage for an unrecognized single-segment
+  // path. A path with more than one segment (no CMS Page route owns
+  // those) falls through to the pre-existing behavior below — the
+  // homepage at a 200 — unchanged by this phase.
+  if (/^\/[^/]+$/.test(path)) {
+    return { route: 'cms-page', slug: decodeURIComponent(path.slice(1)) };
+  }
 
   return { route: 'home' };
 }
@@ -142,6 +158,14 @@ function MainAppContent() {
     if (typeof window !== 'undefined') {
       const { route, slug } = getRouteFromPath(window.location.pathname);
       if (route === 'product-detail' && slug) return slug;
+    }
+    return '';
+  });
+
+  const [activePageSlug, setActivePageSlug] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const { route, slug } = getRouteFromPath(window.location.pathname);
+      if (route === 'cms-page' && slug) return slug;
     }
     return '';
   });
@@ -186,6 +210,9 @@ function MainAppContent() {
       if (route === 'product-detail' && slug) {
         setActiveProductSlug(slug);
         setActiveRoute('product-detail');
+      } else if (route === 'cms-page' && slug) {
+        setActivePageSlug(slug);
+        setActiveRoute('cms-page');
       } else {
         setActiveRoute(route);
         applySeoForRoute(route);
@@ -559,6 +586,14 @@ function MainAppContent() {
             onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
             onOpenConsultant={() => setIsConsultantOpen(true)}
             onToggleTheme={handleToggleTheme}
+          />
+        )}
+
+        {activeRoute === 'cms-page' && (
+          <CmsPageRoute
+            slug={activePageSlug}
+            theme={theme}
+            onNavigateHome={() => navigateToRoute('home', '/')}
           />
         )}
 

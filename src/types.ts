@@ -106,7 +106,8 @@ export type AppRoute =
   | 'contact'
   | 'privacy'
   | 'privacy-policy'
-  | 'terms';
+  | 'terms'
+  | 'cms-page';
 
 export interface AgentProfile {
   id: string;
