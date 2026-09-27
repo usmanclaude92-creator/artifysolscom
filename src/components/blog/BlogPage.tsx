@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { BlogPost } from '../../types';
 import { publicApi, mapPostToBlogPost } from '../../lib/publicApi';
+import { ApiClientError } from '../../lib/apiClient';
 import { BlogPostPage } from './BlogPostPage';
 import { updatePageSeo, generateCategoryKeywords, generateDynamicKeywords } from '../../utils/seo';
 
@@ -54,6 +55,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   const [selectedType, setSelectedType] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activePost, setActivePost] = useState<BlogPost | null>(null);
+  const [postNotFound, setPostNotFound] = useState(false);
 
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState('');
@@ -118,25 +120,66 @@ export const BlogPage: React.FC<BlogPageProps> = ({
 
   // Deep-link individual articles via a real path (/blog/<slug>) so each
   // post has its own crawlable, indexable URL instead of a hash fragment.
+  // Resolves the slug against the real single-post endpoint rather than
+  // searching the in-memory `posts` list (which is capped to the first
+  // page loaded above) — otherwise any post beyond that page, or a direct
+  // load/refresh/bookmark of an article URL, would silently show the blog
+  // hub instead of the article. A 404 is checked against the redirect
+  // table (Phase 5 — SEO Control Center) before giving up, so a renamed
+  // slug still resolves instead of hard-404ing.
   useEffect(() => {
+    let cancelled = false;
+
+    const resolveSlug = async (slug: string) => {
+      try {
+        const post = await publicApi.getPostBySlug(slug);
+        if (!cancelled) {
+          setActivePost(mapPostToBlogPost(post));
+          setPostNotFound(false);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof ApiClientError && err.status === 404) {
+          try {
+            const redirect = await publicApi.getRedirectForPath(`/blog/${slug}`);
+            if (cancelled) return;
+            if (redirect && redirect.toPath.startsWith('/blog/')) {
+              const newSlug = redirect.toPath.replace('/blog/', '');
+              window.history.replaceState({}, '', redirect.toPath);
+              await resolveSlug(newSlug);
+              return;
+            }
+          } catch {
+            // Redirect lookup itself failing is not fatal — fall through to a real not-found state.
+          }
+          if (!cancelled) {
+            setActivePost(null);
+            setPostNotFound(true);
+          }
+        }
+      }
+    };
+
     const handlePath = () => {
       if (typeof window === 'undefined') return;
       const path = window.location.pathname.replace(/\/+$/, '') || '/';
       if (path.startsWith('/blog/')) {
         const slug = decodeURIComponent(path.replace('/blog/', ''));
-        const found = posts.find((p) => p.slug === slug || p.id === slug);
-        if (found) {
-          setActivePost(found);
-        }
-      } else if (path === '/blog' && activePost) {
+        setPostNotFound(false);
+        void resolveSlug(slug);
+      } else if (path === '/blog') {
         setActivePost(null);
+        setPostNotFound(false);
       }
     };
 
     handlePath();
     window.addEventListener('popstate', handlePath);
-    return () => window.removeEventListener('popstate', handlePath);
-  }, [posts]);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('popstate', handlePath);
+    };
+  }, []);
 
   // Update SEO metadata for the Blog Hub Feed when no individual post is active
   useEffect(() => {
@@ -219,6 +262,38 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           onOpenConsultant={onOpenConsultant}
           onToggleTheme={onToggleTheme}
         />
+      </div>
+    );
+  }
+
+  // A /blog/:slug that resolved to neither a real post nor a redirect —
+  // a genuine 404, shown honestly rather than silently falling back to
+  // the blog hub grid at HTTP 200.
+  if (postNotFound) {
+    return (
+      <div
+        className={`min-h-screen pt-32 pb-24 flex items-center justify-center px-6 ${
+          isLight ? 'bg-[#F8FAFC] text-slate-900' : 'bg-[#050505] text-zinc-100'
+        }`}
+      >
+        <div className="max-w-md text-center space-y-4">
+          <BookOpen className={`w-10 h-10 mx-auto ${isLight ? 'text-slate-300' : 'text-zinc-700'}`} />
+          <h1 className="text-2xl font-bold font-display">Article not found</h1>
+          <p className={`text-sm ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+            This article may have been moved, renamed, or unpublished.
+          </p>
+          <button
+            onClick={() => {
+              setPostNotFound(false);
+              if (typeof window !== 'undefined' && window.location.pathname !== '/blog') {
+                window.history.pushState({}, '', '/blog');
+              }
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to the blog
+          </button>
+        </div>
       </div>
     );
   }

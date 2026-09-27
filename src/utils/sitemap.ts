@@ -82,6 +82,30 @@ function resolveApiBaseUrl(explicit?: string): string | null {
   return null;
 }
 
+/**
+ * The public list endpoints cap `limit` at 50 per page server-side
+ * (server/schemas/publicSchemas.ts in Artify-Backend) — a single
+ * `?limit=50` request used to silently truncate the sitemap to the first
+ * 50 posts/products, omitting everything published after that from
+ * search engines entirely. This follows `meta.pagination.totalPages` and
+ * fetches every page instead. `maxPages` is a hard ceiling so a runaway
+ * total can't turn a build into an unbounded fetch loop.
+ */
+async function fetchAllPages<T>(base: string, path: string, itemsKey: string, maxPages = 40): Promise<T[]> {
+  const items: T[] = [];
+  let page = 1;
+  let totalPages = 1;
+  do {
+    const res = await fetch(`${base}${path}${path.includes('?') ? '&' : '?'}page=${page}&limit=50`);
+    const body = await res.json();
+    if (!res.ok || !body.success) break;
+    items.push(...(body.data[itemsKey] ?? []));
+    totalPages = body.meta?.pagination?.totalPages ?? 1;
+    page += 1;
+  } while (page <= totalPages && page <= maxPages);
+  return items;
+}
+
 async function fetchPublicData(apiBaseUrl?: string): Promise<{
   posts: RemotePost[];
   products: RemoteProduct[];
@@ -91,19 +115,15 @@ async function fetchPublicData(apiBaseUrl?: string): Promise<{
   if (!base) return { posts: [], products: [], categories: [] };
 
   try {
-    const [postsRes, productsRes, categoriesRes] = await Promise.all([
-      fetch(`${base}/public/posts?limit=50`),
-      fetch(`${base}/public/products?limit=50`),
+    const [posts, products, categoriesRes] = await Promise.all([
+      fetchAllPages<RemotePost>(base, '/public/posts', 'posts'),
+      fetchAllPages<RemoteProduct>(base, '/public/products', 'products'),
       fetch(`${base}/public/categories`),
     ]);
-    const [postsBody, productsBody, categoriesBody] = await Promise.all([
-      postsRes.json(),
-      productsRes.json(),
-      categoriesRes.json(),
-    ]);
+    const categoriesBody = await categoriesRes.json();
     return {
-      posts: postsRes.ok && postsBody.success ? postsBody.data.posts : [],
-      products: productsRes.ok && productsBody.success ? productsBody.data.products : [],
+      posts,
+      products,
       categories: categoriesRes.ok && categoriesBody.success ? categoriesBody.data.categories : [],
     };
   } catch {

@@ -125,6 +125,14 @@ export const publicApi = {
     return post;
   },
 
+  /** Phase 5 (SEO Control Center) — checked when a path 404s, before showing a hard not-found page. */
+  async getRedirectForPath(path: string): Promise<{ toPath: string; statusCode: number } | null> {
+    const { redirect } = await apiClient.get<{ redirect: { toPath: string; statusCode: number } | null }>(
+      `/public/redirects?path=${encodeURIComponent(path)}`
+    );
+    return redirect;
+  },
+
   async listCategories(): Promise<PublicCategory[]> {
     const { categories } = await apiClient.get<{ categories: PublicCategory[] }>('/public/categories');
     return categories;
