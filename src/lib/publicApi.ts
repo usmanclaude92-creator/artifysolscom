@@ -181,14 +181,13 @@ export function mapPostToBlogPost(post: PublicPost): BlogPost {
   const wordCount = plainText ? plainText.split(' ').length : 0;
   const readTime = `${Math.max(1, Math.round(wordCount / 200))} min read`;
   const excerpt = plainText.length > 220 ? `${plainText.slice(0, 217)}...` : plainText;
-  const rawSeo = post.seo as Partial<ArticleSeoMetadata> | undefined;
-  const seo: ArticleSeoMetadata | undefined = rawSeo
-    ? {
-        metaTitle: rawSeo.metaTitle,
-        metaDescription: rawSeo.metaDescription,
-        ogImage: rawSeo.ogImage,
-      }
-    : undefined;
+  // The backend validates this against a strict, named-field schema
+  // (server/schemas/contentSchemas.ts's seoMetadataSchema) that mirrors
+  // ArticleSeoMetadata field-for-field, so it's safe to pass through
+  // whole — previously only 3 of its ~12 fields survived this mapper,
+  // silently dropping canonicalUrl/robotsDirective/ogTitle/schemaType/etc.
+  // before they ever reached generateBlogPostSeo().
+  const seo: ArticleSeoMetadata | undefined = post.seo && Object.keys(post.seo).length > 0 ? { ...(post.seo as ArticleSeoMetadata) } : undefined;
 
   return {
     id: post.slug,
