@@ -20,11 +20,10 @@ import {
   Workflow,
   LayoutDashboard,
 } from 'lucide-react';
-import { AI_PRODUCTS } from '../data/aiProductsData';
 import { ENTERPRISE_SOLUTIONS } from '../data/solutionsCatalogData';
 import { INDUSTRIES_DATA } from '../data/solutionsData';
-import { INITIAL_BLOG_POSTS } from '../data/blogData';
-import { AiProductItem } from '../types';
+import { publicApi, mapPostToBlogPost, PublicProduct } from '../lib/publicApi';
+import { BlogPost } from '../types';
 import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage';
 
 export type SearchCategoryFilter = 'all' | 'products' | 'solutions' | 'industries' | 'blog' | 'actions';
@@ -40,13 +39,13 @@ export interface SearchResultItem {
   route?: string;
   hash?: string;
   action?: () => void;
-  product?: AiProductItem;
+  product?: PublicProduct;
 }
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectProduct?: (product: AiProductItem) => void;
+  onSelectProduct?: (product: { slug: string }) => void;
   onNavigateToRoute: (route: any, path: string) => void;
   onOpenConsultant: () => void;
   onOpenSolutionBuilder: () => void;
@@ -82,6 +81,15 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     }
   });
 
+  // Products and blog posts are real, CMS/catalog-backed records fetched
+  // from the public API. They are loaded once, the first time the palette
+  // is opened, and cached here for the rest of the session — never backed
+  // by a local mock dataset, and never fabricated on failure.
+  const [products, setProducts] = useState<PublicProduct[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [isCatalogLoading, setIsCatalogLoading] = useState(false);
+  const [hasLoadedCatalog, setHasLoadedCatalog] = useState(false);
+
   // Focus input automatically on open
   useEffect(() => {
     if (isOpen) {
@@ -92,6 +100,35 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       setCategoryFilter('all');
     }
   }, [isOpen]);
+
+  // Fetch the searchable products + blog posts from the real API the first
+  // time the palette is opened. A failure is caught and logged so it never
+  // crashes the modal — the affected category simply shows no results
+  // rather than falling back to fabricated data.
+  useEffect(() => {
+    if (!isOpen || hasLoadedCatalog) return;
+    let cancelled = false;
+    setIsCatalogLoading(true);
+    Promise.all([
+      publicApi.listProducts({ limit: 100 }).catch((err: unknown) => {
+        console.error('GlobalSearchModal: failed to load products', err);
+        return { products: [], total: 0 };
+      }),
+      publicApi.listPosts({ limit: 100 }).catch((err: unknown) => {
+        console.error('GlobalSearchModal: failed to load blog posts', err);
+        return { posts: [], total: 0 };
+      }),
+    ]).then(([productsResult, postsResult]) => {
+      if (cancelled) return;
+      setProducts(productsResult.products);
+      setBlogPosts(postsResult.posts.map(mapPostToBlogPost));
+      setHasLoadedCatalog(true);
+      setIsCatalogLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, hasLoadedCatalog]);
 
   // Master index of searchable records
   const masterDataset = useMemo<SearchResultItem[]>(() => {
@@ -170,22 +207,22 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       }
     );
 
-    // 2. AI Products
-    AI_PRODUCTS.forEach((prod) => {
+    // 2. AI Products & Services (real catalog, fetched from the public API)
+    products.forEach((prod) => {
       items.push({
-        id: `prod-${prod.id}`,
+        id: `prod-${prod.slug}`,
         title: prod.name,
-        subtitle: prod.tagline || prod.longDescription || '',
+        subtitle: prod.shortDescription || prod.description || '',
         category: 'product',
-        categoryLabel: 'AI Product & Agent',
+        categoryLabel: prod.type === 'SERVICE' ? 'Enterprise Service' : 'AI Product & Agent',
         icon: Cpu,
-        badge: prod.category ? prod.category.toUpperCase() : 'AI AGENT',
+        badge: prod.type,
         route: `/ai-solutions/${prod.slug}`,
         product: prod,
         action: () => {
           onClose();
           if (onSelectProduct) {
-            onSelectProduct(prod);
+            onSelectProduct({ slug: prod.slug });
           } else {
             onNavigateToRoute('product-detail', `/ai-solutions/${prod.slug}`);
           }
@@ -229,8 +266,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       });
     });
 
-    // 5. Research & Insights Articles
-    INITIAL_BLOG_POSTS.forEach((post) => {
+    // 5. Research & Insights Articles (real, published CMS posts)
+    blogPosts.forEach((post) => {
       items.push({
         id: `blog-${post.id}`,
         title: post.title,
@@ -256,6 +293,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     onOpenClientPortal,
     onOpenAuditSpec,
     onSelectProduct,
+    products,
+    blogPosts,
   ]);
 
   // Filter items by query and active category
@@ -444,6 +483,13 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                 {term}
               </button>
             ))}
+          </div>
+        )}
+
+        {/* Loading indicator while products/blog posts are still being fetched */}
+        {isCatalogLoading && (
+          <div className={`px-4 py-2 text-[11px] font-medium border-b ${isLight ? 'text-slate-500 border-slate-100' : 'text-zinc-400 border-white/[0.06]'}`}>
+            Loading products & articles…
           </div>
         )}
 

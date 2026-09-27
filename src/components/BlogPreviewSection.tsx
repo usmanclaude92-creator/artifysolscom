@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowRight, Calendar, Clock, User, ArrowUpRight, BookOpen, Layers } from 'lucide-react';
-import { getStoredBlogPosts } from '../data/blogData';
+import { Sparkles, ArrowRight, Calendar, Clock, ArrowUpRight, BookOpen } from 'lucide-react';
+import { publicApi, mapPostToBlogPost } from '../lib/publicApi';
 import { BlogPost } from '../types';
 
 interface BlogPreviewSectionProps {
@@ -10,13 +10,57 @@ interface BlogPreviewSectionProps {
 
 export const BlogPreviewSection: React.FC<BlogPreviewSectionProps> = ({
   onNavigateToBlog,
+  onSelectPost,
 }) => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
+  // Load the latest published posts from the real Platform API. There is no
+  // local/fallback dataset here — an unconfigured or unreachable public API
+  // honestly hides this section (or shows an error) rather than fabricating
+  // preview articles.
   useEffect(() => {
-    const loaded = getStoredBlogPosts();
-    setPosts(loaded.slice(0, 3));
+    let cancelled = false;
+    setIsLoading(true);
+    setLoadError(null);
+    publicApi
+      .listPosts({ limit: 3 })
+      .then(({ posts: rows }) => {
+        if (cancelled) return;
+        setPosts(rows.map(mapPostToBlogPost));
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setLoadError(err instanceof Error ? err.message : 'Unable to load articles right now.');
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  const handleOpenPost = (post: BlogPost) => {
+    if (onSelectPost) {
+      onSelectPost(post);
+    } else {
+      onNavigateToBlog();
+    }
+    if (typeof window !== 'undefined') {
+      const path = `/blog/${post.slug}`;
+      if (window.location.pathname !== path) {
+        window.history.pushState({}, '', path);
+      }
+    }
+  };
+
+  // Honest empty state: no published posts yet, and no loading/error to show.
+  // Rather than fabricate preview cards, we simply omit the section.
+  if (!isLoading && !loadError && posts.length === 0) {
+    return null;
+  }
 
   return (
     <section id="blog-preview" className="py-24 relative overflow-hidden bg-transparent border-t border-white/[0.06]">
@@ -50,72 +94,93 @@ export const BlogPreviewSection: React.FC<BlogPreviewSectionProps> = ({
           </button>
         </div>
 
+        {/* Loading state */}
+        {isLoading && (
+          <div className="p-10 text-center rounded-2xl border border-white/[0.08] bg-[#0c0c14] text-xs text-zinc-400">
+            Loading articles…
+          </div>
+        )}
+
+        {/* Honest error state — never a fabricated fallback article list */}
+        {!isLoading && loadError && (
+          <div className="p-10 text-center rounded-2xl border border-amber-500/30 bg-[#0c0c14] text-xs text-amber-300">
+            We couldn't load articles right now. Please try again shortly.
+          </div>
+        )}
+
         {/* 3-Column Featured Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
-            <article
-              key={post.id}
-              onClick={onNavigateToBlog}
-              className="group cursor-pointer rounded-2xl bg-[#0c0c14] border border-white/[0.08] hover:border-violet-500/40 p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_12px_30px_rgba(139,92,246,0.15)] hover:-translate-y-1 relative overflow-hidden"
-            >
-              {/* Post Cover Image */}
-              <div className="w-full h-48 rounded-xl overflow-hidden mb-4 relative bg-zinc-900">
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-violet-300 border border-white/10">
-                  {post.category}
-                </span>
-              </div>
-
-              {/* Content */}
-              <div className="flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-3 text-xs text-zinc-400 mb-2 font-mono-code">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {post.publishDate}
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      {post.readTime}
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-violet-300 transition-colors leading-snug line-clamp-2 font-display mb-2">
-                    {post.title}
-                  </h3>
-
-                  <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed mb-4">
-                    {post.excerpt}
-                  </p>
-                </div>
-
-                {/* Footer */}
-                <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-[10px] font-bold text-violet-300">
-                      {post.author.name.slice(0, 1)}
-                    </div>
-                    <span className="text-xs text-zinc-300 font-medium">
-                      {post.author.name}
-                    </span>
-                  </div>
-
-                  <span className="text-xs font-semibold text-violet-400 group-hover:text-violet-300 flex items-center gap-1">
-                    <span>Read Article</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        {!isLoading && !loadError && posts.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
+              <article
+                key={post.id}
+                onClick={() => handleOpenPost(post)}
+                className="group cursor-pointer rounded-2xl bg-[#0c0c14] border border-white/[0.08] hover:border-violet-500/40 p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_12px_30px_rgba(139,92,246,0.15)] hover:-translate-y-1 relative overflow-hidden"
+              >
+                {/* Post Cover Image */}
+                <div className="w-full h-48 rounded-xl overflow-hidden mb-4 relative bg-zinc-900 flex items-center justify-center">
+                  {post.coverImage ? (
+                    <img
+                      src={post.coverImage}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <Sparkles className="w-8 h-8 text-violet-400 opacity-50" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-violet-300 border border-white/10">
+                    {post.category}
                   </span>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-3 text-xs text-zinc-400 mb-2 font-mono-code">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {post.publishDate}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5" />
+                        {post.readTime}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg sm:text-xl font-bold text-white group-hover:text-violet-300 transition-colors leading-snug line-clamp-2 font-display mb-2">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-sm text-zinc-400 line-clamp-3 leading-relaxed mb-4">
+                      {post.excerpt}
+                    </p>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-[10px] font-bold text-violet-300">
+                        {post.author.name.slice(0, 1)}
+                      </div>
+                      <span className="text-xs text-zinc-300 font-medium">
+                        {post.author.name}
+                      </span>
+                    </div>
+
+                    <span className="text-xs font-semibold text-violet-400 group-hover:text-violet-300 flex items-center gap-1">
+                      <span>Read Article</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                    </span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
