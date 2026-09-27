@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import DOMPurify from 'dompurify';
 import {
   ArrowLeft,
   Calendar,
@@ -65,6 +66,24 @@ const WhatsAppIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' 
     <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19.02L7.55 18.84L4.44 19.66L5.27 16.62L5.07 16.31C4.27 15.03 3.81 13.5 3.81 11.91C3.81 7.37 7.5 3.67 12.05 3.67M9.1 7.42C8.94 7.42 8.68 7.48 8.46 7.72C8.24 7.96 7.62 8.55 7.62 9.75C7.62 10.95 8.5 12.11 8.62 12.27C8.74 12.43 10.3 14.83 12.69 15.86C14.67 16.72 15.08 16.55 15.52 16.51C15.96 16.47 16.94 15.93 17.14 15.37C17.34 14.81 17.34 14.33 17.28 14.23C17.22 14.13 17.06 14.07 16.82 13.95C16.58 13.83 15.4 13.25 15.18 13.17C14.96 13.09 14.8 13.05 14.64 13.29C14.48 13.53 14.02 14.07 13.88 14.23C13.74 14.39 13.6 14.41 13.36 14.29C13.12 14.17 12.35 13.92 11.43 13.1C10.72 12.46 10.24 11.68 10.1 11.44C9.96 11.2 10.08 11.08 10.2 10.96C10.31 10.85 10.45 10.67 10.57 10.53C10.69 10.39 10.73 10.29 10.81 10.13C10.89 9.97 10.85 9.83 10.79 9.71C10.73 9.59 10.27 8.45 10.07 7.97C9.88 7.5 9.68 7.56 9.54 7.56C9.4 7.56 9.24 7.54 9.1 7.42Z" />
   </svg>
 );
+
+// Mirrors server/utils/sanitizeHtml.ts in Artify-Backend exactly, so the
+// client-side re-sanitization pass never strips anything the server
+// already considered safe to store.
+const CONTENT_ALLOWED_TAGS = [
+  'p', 'br', 'hr', 'strong', 'b', 'em', 'i', 'u', 's', 'strike', 'sub', 'sup', 'a',
+  'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'img', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'span',
+];
+const CONTENT_ALLOWED_ATTR = [
+  'href', 'title', 'target', 'rel', 'src', 'alt', 'width', 'height', 'class', 'colspan', 'rowspan',
+];
+
+interface TocItem {
+  id: string;
+  title: string;
+  level: number;
+}
 
 interface BlogPostPageProps {
   post: BlogPost;
@@ -148,8 +167,9 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   const [showSeoInspector, setShowSeoInspector] = useState(false);
   const [copiedSchema, setCopiedSchema] = useState(false);
 
-  // Copy code snippet helper
-  const [copiedCodeIdx, setCopiedCodeIdx] = useState<number | null>(null);
+  // Article body: the ref lets us enhance rendered code blocks (copy
+  // button) imperatively after dangerouslySetInnerHTML mounts them.
+  const articleBodyRef = useRef<HTMLDivElement>(null);
 
   // Scroll to top when post changes
   useEffect(() => {
@@ -185,7 +205,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
       }
 
       // Check which section is in view
-      const headings = document.querySelectorAll('h2[id], h3[id]');
+      const headings = document.querySelectorAll('h2[id], h3[id], h4[id]');
       let currentId = '';
       headings.forEach((heading) => {
         const rect = heading.getBoundingClientRect();
@@ -326,211 +346,121 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
       .slice(0, 3);
   }, [allPosts, post]);
 
-  // Extract table of contents items from content
-  const tableOfContents = useMemo(() => {
-    const lines = post.content.split('\n');
-    const items: { id: string; title: string; level: number }[] = [];
-    lines.forEach((line) => {
-      if (line.startsWith('### ')) {
-        const title = line.replace('### ', '').trim();
-        const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        items.push({ id, title, level: 3 });
-      } else if (line.startsWith('#### ')) {
-        const title = line.replace('#### ', '').trim();
-        const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        items.push({ id, title, level: 4 });
+  // Post body is real, server-sanitized HTML (server/utils/sanitizeHtml.ts
+  // in Artify-Backend runs the same allowlist on every save). We sanitize
+  // again client-side as defense-in-depth before dangerouslySetInnerHTML —
+  // never trust a single layer for content that reaches every visitor's
+  // browser — then assign heading ids (for the TOC + scroll-spy + deep
+  // links) and force safe attributes on any off-site link.
+  const { contentHtml, tableOfContents } = useMemo(() => {
+    const clean = DOMPurify.sanitize(post.content || '', {
+      ALLOWED_TAGS: CONTENT_ALLOWED_TAGS,
+      ALLOWED_ATTR: CONTENT_ALLOWED_ATTR,
+      ALLOW_DATA_ATTR: false,
+    });
+
+    if (typeof DOMParser === 'undefined') {
+      return { contentHtml: clean, tableOfContents: [] as TocItem[] };
+    }
+
+    const doc = new DOMParser().parseFromString(clean, 'text/html');
+    const usedIds = new Set<string>();
+    const items: TocItem[] = [];
+
+    doc.body.querySelectorAll('h2, h3, h4').forEach((heading) => {
+      const title = (heading.textContent || '').trim();
+      if (!title) return;
+      const baseId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'section';
+      let id = baseId;
+      let suffix = 1;
+      while (usedIds.has(id)) {
+        id = `${baseId}-${suffix++}`;
+      }
+      usedIds.add(id);
+      heading.id = id;
+      items.push({ id, title, level: Number(heading.tagName.charAt(1)) });
+    });
+
+    doc.body.querySelectorAll('a[href]').forEach((anchor) => {
+      const href = anchor.getAttribute('href') || '';
+      if (/^https?:\/\//i.test(href)) {
+        anchor.setAttribute('target', '_blank');
+        anchor.setAttribute('rel', 'noopener noreferrer');
       }
     });
-    return items;
+
+    return { contentHtml: doc.body.innerHTML, tableOfContents: items };
   }, [post.content]);
 
-  // Word count & estimate calculations
+  // Word count & estimate calculations (strip tags first — same approach
+  // as mapPostToBlogPost's readTime estimate in lib/publicApi.ts)
   const wordCount = useMemo(() => {
-    return post.content.trim().split(/\s+/).length;
+    const text = (post.content || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    return text ? text.split(' ').length : 0;
   }, [post.content]);
 
-  // Render markdown-like text lines with rich syntax highlighting & anchors
-  const renderFormattedContent = (content: string) => {
-    const lines = content.trim().split('\n');
-    let insideCodeBlock = false;
-    let codeBuffer: string[] = [];
-    let codeIdxCounter = 0;
+  // Enhance rendered code blocks with a copy-to-clipboard control. The
+  // body is injected via dangerouslySetInnerHTML, so React never sees
+  // these nodes — we attach real DOM listeners once per render and clean
+  // them up, rather than trying to route this through React state.
+  useEffect(() => {
+    const container = articleBodyRef.current;
+    if (!container) return;
 
-    const elements: React.ReactNode[] = [];
+    const cleanups: Array<() => void> = [];
+    const codeBlocks = Array.from(container.querySelectorAll('pre'));
 
-    lines.forEach((line, idx) => {
-      if (line.startsWith('```')) {
-        if (insideCodeBlock) {
-          const currentCode = codeBuffer.join('\n');
-          const snippetIdx = codeIdxCounter++;
-          elements.push(
-            <div
-              key={`code-${idx}`}
-              className={`relative group rounded-xl my-6 border overflow-hidden font-mono-code text-xs leading-relaxed ${
-                isLight
-                  ? 'bg-slate-900 text-slate-100 border-slate-800 shadow-md'
-                  : 'bg-[#08080d] text-violet-200 border-violet-500/20 shadow-xl'
-              }`}
-            >
-              <div className="flex items-center justify-between px-4 py-2 bg-black/40 border-b border-white/[0.06] text-[11px] text-zinc-400">
-                <span className="flex items-center gap-1.5">
-                  <Code2 className="w-3.5 h-3.5 text-violet-400" />
-                  <span>Architecture Specification / Pseudocode</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(currentCode);
-                    setCopiedCodeIdx(snippetIdx);
-                    setTimeout(() => setCopiedCodeIdx(null), 2000);
-                  }}
-                  className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 text-zinc-200 transition-colors"
-                >
-                  {copiedCodeIdx === snippetIdx ? (
-                    <>
-                      <Check className="w-3 h-3 text-emerald-400" />
-                      <span className="text-emerald-300">Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3 h-3 text-zinc-400" />
-                      <span>Copy</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              <pre className="p-4 overflow-x-auto">
-                <code>{currentCode}</code>
-              </pre>
-            </div>
-          );
-          codeBuffer = [];
-          insideCodeBlock = false;
-        } else {
-          insideCodeBlock = true;
-        }
-        return;
-      }
+    codeBlocks.forEach((pre) => {
+      pre.classList.add('artify-code-block');
 
-      if (insideCodeBlock) {
-        codeBuffer.push(line);
-        return;
-      }
+      const toolbar = document.createElement('div');
+      toolbar.className = 'artify-code-toolbar';
 
-      if (line.startsWith('### ')) {
-        const title = line.replace('### ', '');
-        const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        elements.push(
-          <h2
-            key={`h2-${idx}`}
-            id={id}
-            className={`text-2xl sm:text-3xl font-bold font-display mt-10 mb-4 tracking-tight scroll-mt-24 flex items-center gap-2.5 ${
-              isLight ? 'text-slate-900' : 'text-white'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600" />
-            <span>{title}</span>
-          </h2>
-        );
-        return;
-      }
+      const label = document.createElement('span');
+      label.className = 'artify-code-label';
+      label.textContent = 'Code';
 
-      if (line.startsWith('#### ')) {
-        const title = line.replace('#### ', '');
-        const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        elements.push(
-          <h3
-            key={`h3-${idx}`}
-            id={id}
-            className={`text-lg sm:text-xl font-bold font-display mt-7 mb-3 scroll-mt-24 flex items-center gap-2 ${
-              isLight ? 'text-violet-950' : 'text-violet-300'
-            }`}
-          >
-            <ChevronRight className="w-4 h-4 text-violet-500 flex-shrink-0" />
-            <span>{title}</span>
-          </h3>
-        );
-        return;
-      }
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'artify-code-copy-btn';
+      button.setAttribute('aria-label', 'Copy code to clipboard');
+      const buttonLabel = document.createElement('span');
+      buttonLabel.textContent = 'Copy';
+      button.appendChild(buttonLabel);
 
-      if (line.startsWith('---')) {
-        elements.push(
-          <hr
-            key={`hr-${idx}`}
-            className={`my-5 border-t ${isLight ? 'border-slate-200' : 'border-white/[0.08]'}`}
-          />
-        );
-        return;
-      }
+      toolbar.appendChild(label);
+      toolbar.appendChild(button);
+      pre.parentElement?.insertBefore(toolbar, pre);
 
-      if (line.startsWith('> ')) {
-        elements.push(
-          <blockquote
-            key={`quote-${idx}`}
-            className={`p-5 my-6 rounded-r-2xl border-l-4 italic text-base leading-relaxed ${
-              isLight
-                ? 'bg-violet-50/70 border-violet-600 text-slate-800 shadow-sm'
-                : 'bg-violet-950/20 border-violet-500 text-violet-200 shadow-inner'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" />
-              <div>{line.replace('> ', '')}</div>
-            </div>
-          </blockquote>
-        );
-        return;
-      }
+      let resetTimer: ReturnType<typeof setTimeout> | undefined;
+      const handleClick = () => {
+        const code = pre.textContent || '';
+        navigator.clipboard
+          .writeText(code)
+          .then(() => {
+            buttonLabel.textContent = 'Copied';
+            button.classList.add('artify-code-copy-btn-done');
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(() => {
+              buttonLabel.textContent = 'Copy';
+              button.classList.remove('artify-code-copy-btn-done');
+            }, 2000);
+          })
+          .catch(() => {
+            /* clipboard permission denied — nothing to recover here */
+          });
+      };
+      button.addEventListener('click', handleClick);
 
-      if (line.startsWith('- ') || line.startsWith('* ')) {
-        elements.push(
-          <li
-            key={`li-${idx}`}
-            className={`ml-6 list-disc my-2 text-base leading-relaxed ${
-              isLight ? 'text-slate-700' : 'text-zinc-300'
-            }`}
-          >
-            {line.substring(2)}
-          </li>
-        );
-        return;
-      }
-
-      // Render Markdown Tables
-      if (line.startsWith('|') && line.endsWith('|')) {
-        elements.push(
-          <div
-            key={`tbl-line-${idx}`}
-            className={`font-mono-code text-xs sm:text-sm py-1.5 px-3 border-x border-b first:border-t first:rounded-t-lg last:rounded-b-lg overflow-x-auto ${
-              isLight
-                ? 'bg-white border-slate-200 text-slate-800 first:bg-slate-100 first:font-bold'
-                : 'bg-zinc-950/40 border-white/[0.08] text-zinc-300 first:bg-white/[0.05] first:font-bold'
-            }`}
-          >
-            {line}
-          </div>
-        );
-        return;
-      }
-
-      if (line.trim() === '') {
-        return;
-      }
-
-      elements.push(
-        <p
-          key={`p-${idx}`}
-          className={`text-base sm:text-lg leading-relaxed my-4 ${
-            isLight ? 'text-slate-700' : 'text-zinc-300'
-          }`}
-        >
-          {line}
-        </p>
-      );
+      cleanups.push(() => {
+        clearTimeout(resetTimer);
+        button.removeEventListener('click', handleClick);
+        toolbar.remove();
+      });
     });
 
-    return elements;
-  };
+    return () => cleanups.forEach((fn) => fn());
+  }, [contentHtml]);
 
   return (
     <article
@@ -1127,10 +1057,14 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
               </div>
             )}
 
-            {/* Formatted Article Body */}
-            <div className="prose prose-invert max-w-none">
-              {renderFormattedContent(post.content)}
-            </div>
+            {/* Formatted Article Body — real, sanitized HTML from the CMS */}
+            <div
+              ref={articleBodyRef}
+              className={`artify-post-body max-w-none ${
+                isLight ? 'artify-post-body-light' : 'artify-post-body-dark'
+              }`}
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
 
             {/* Interactive Rating & Reader Feedback Widget */}
             <section
@@ -1453,7 +1387,9 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                           : isLight
                           ? 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                           : 'text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200'
-                      } ${item.level === 4 ? 'ml-3 text-[11px]' : ''}`}
+                      } ${
+                        item.level === 4 ? 'ml-5 text-[11px]' : item.level === 3 ? 'ml-2.5 text-[11.5px]' : ''
+                      }`}
                     >
                       {item.title}
                     </a>

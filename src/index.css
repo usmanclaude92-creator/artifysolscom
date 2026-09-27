@@ -1505,3 +1505,255 @@ main > section:nth-child(n + 4) {
   content-visibility: auto;
   contain-intrinsic-size: auto 1600px;
 }
+
+/* 19. Blog post body (CMS-authored HTML)
+   BlogPostPage renders the post body via dangerouslySetInnerHTML — the
+   markup comes from the composer (TipTap output, sanitized both on save
+   in Artify-Backend and again client-side before injection) rather than
+   from React elements, so it can't carry Tailwind classes per tag. This
+   scopes the same visual language the old per-line renderer used to
+   apply inline, keyed off the light/dark modifier class BlogPostPage
+   already puts on the wrapper. */
+.artify-post-body {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.artify-post-body h1,
+.artify-post-body h2,
+.artify-post-body h3,
+.artify-post-body h4,
+.artify-post-body h5,
+.artify-post-body h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  scroll-margin-top: 6rem;
+}
+
+.artify-post-body h2 {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 2.5rem 0 1rem;
+  padding-left: 0.875rem;
+  border-left: 3px solid transparent;
+  border-image: linear-gradient(180deg, #7c3aed, #4f46e5) 1;
+}
+
+@media (min-width: 640px) {
+  .artify-post-body h2 {
+    font-size: 1.875rem;
+  }
+}
+
+.artify-post-body h3 {
+  font-size: 1.125rem;
+  line-height: 1.35;
+  margin: 1.75rem 0 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .artify-post-body h3 {
+    font-size: 1.25rem;
+  }
+}
+
+.artify-post-body h4 {
+  font-size: 1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.artify-post-body p {
+  margin: 1rem 0;
+}
+
+@media (min-width: 640px) {
+  .artify-post-body p {
+    font-size: 1.125rem;
+  }
+}
+
+.artify-post-body ul,
+.artify-post-body ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.artify-post-body ul {
+  list-style: disc;
+}
+
+.artify-post-body ol {
+  list-style: decimal;
+}
+
+.artify-post-body li {
+  margin: 0.4rem 0;
+}
+
+.artify-post-body hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.artify-post-body blockquote {
+  margin: 1.5rem 0;
+  padding: 1.1rem 1.25rem;
+  border-left: 4px solid #7c3aed;
+  border-radius: 0 1rem 1rem 0;
+  font-style: italic;
+}
+
+.artify-post-body a {
+  color: #8b5cf6;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.artify-post-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin: 1.5rem 0;
+}
+
+.artify-post-body figure {
+  margin: 1.75rem 0;
+}
+
+.artify-post-body figcaption {
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+.artify-post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.875rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.artify-post-body th,
+.artify-post-body td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.artify-post-body th {
+  font-weight: 700;
+}
+
+.artify-post-body code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  border-radius: 0.375rem;
+}
+
+.artify-post-body pre {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border-radius: 0 0 0.75rem 0.75rem;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.artify-post-body pre code {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.artify-post-body-light p,
+.artify-post-body-light li {
+  color: var(--color-foreground-muted, #334155);
+}
+
+.artify-post-body-light h2,
+.artify-post-body-light h3,
+.artify-post-body-light h4 {
+  color: #0f172a;
+}
+
+.artify-post-body-light blockquote {
+  background: rgba(124, 58, 237, 0.06);
+  color: #1e293b;
+}
+
+.artify-post-body-light code {
+  background: rgba(15, 23, 42, 0.06);
+  color: #7c3aed;
+}
+
+.artify-post-body-dark p,
+.artify-post-body-dark li {
+  color: #d4d4d8;
+}
+
+.artify-post-body-dark h2,
+.artify-post-body-dark h3,
+.artify-post-body-dark h4 {
+  color: #ffffff;
+}
+
+.artify-post-body-dark blockquote {
+  background: rgba(139, 92, 246, 0.1);
+  color: #ddd6fe;
+}
+
+.artify-post-body-dark code {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c4b5fd;
+}
+
+/* Code blocks always render on a dark surface regardless of site theme —
+   matches the original renderer, which never adapted the code block to
+   light mode. The toolbar is injected by BlogPostPage's useEffect. */
+.artify-post-body pre {
+  background: #08080d;
+  color: #ddd6fe;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.artify-code-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem 0.75rem 0 0;
+  font-size: 0.7rem;
+  color: #a1a1aa;
+}
+
+.artify-code-copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.artify-code-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.artify-code-copy-btn-done {
+  color: #6ee7b7;
+}
