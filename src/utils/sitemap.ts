@@ -67,7 +67,7 @@ function escapeXml(unsafe: string): string {
 
 /** Resolves the Platform API base URL in whatever environment this runs in
  * (browser via Vite's `import.meta.env`, or Node via `process.env` when
- * called from server.ts) without importing apiClient.ts, which assumes a
+ * called from api/index.ts) without importing apiClient.ts, which assumes a
  * browser/Vite context. */
 function resolveApiBaseUrl(explicit?: string): string | null {
   if (explicit) return explicit;
