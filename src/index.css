@@ -301,6 +301,318 @@ body.theme-dark {
 }
 
 /* ==========================================================================
+   PREMIUM ENTERPRISE BESPOKE THEMES
+   ========================================================================== */
+
+/* 1. Obsidian & 24k Champagne Gold (Sovereign Executive & Family Office) */
+.theme-obsidian-gold,
+html.theme-obsidian-gold,
+body.theme-obsidian-gold {
+  --color-background: #08080a;
+  --color-background-subtle: #0d0d12;
+  --color-background-deep: #040406;
+
+  --color-surface: #101016;
+  --color-surface-elevated: #161620;
+  --color-surface-subtle: rgba(212, 175, 55, 0.04);
+  --color-surface-hover: rgba(212, 175, 55, 0.08);
+  --color-surface-muted: rgba(212, 175, 55, 0.02);
+
+  --color-foreground: #F5F3ED;
+  --color-foreground-secondary: #E6E2D8;
+  --color-foreground-muted: #C8C2B3;
+  --color-foreground-subtle: #9E9786;
+
+  --color-primary: #D4AF37;
+  --color-primary-hover: #E6B349;
+  --color-primary-foreground: #08080A;
+  --color-primary-subtle: rgba(212, 175, 55, 0.15);
+  --color-primary-subtle-text: #F3E5AB;
+  --color-primary-border: rgba(212, 175, 55, 0.35);
+
+  --color-secondary: rgba(255, 255, 255, 0.06);
+  --color-secondary-hover: rgba(212, 175, 55, 0.12);
+  --color-secondary-foreground: #F5F3ED;
+  --color-secondary-subtle: rgba(255, 255, 255, 0.03);
+
+  --color-border: rgba(212, 175, 55, 0.22);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(212, 175, 55, 0.45);
+
+  --color-card: #0e0e14;
+  --color-card-hover: #15151f;
+  --color-card-active: #1a1a27;
+  --color-card-subtle: #09090e;
+  --color-card-elevated: #13131c;
+  --color-card-border: rgba(212, 175, 55, 0.22);
+  --color-card-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-card-border-hover: rgba(212, 175, 55, 0.45);
+
+  --color-container-sunken: #050508;
+  --color-container-sunken-border: rgba(212, 175, 55, 0.12);
+  --color-container-interactive: #0e0e14;
+  --color-container-interactive-hover: #161622;
+  --color-container-accent: rgba(212, 175, 55, 0.12);
+  --color-container-accent-border: rgba(212, 175, 55, 0.35);
+
+  --color-input: #0e0e14;
+  --color-input-border: rgba(212, 175, 55, 0.25);
+  --color-input-focus: #D4AF37;
+  --color-input-text: #F5F3ED;
+  --color-input-placeholder: #8C8678;
+
+  --color-modal-bg: #0d0d13;
+  --color-modal-border: rgba(212, 175, 55, 0.28);
+  --color-overlay: rgba(4, 4, 6, 0.85);
+
+  --eco-icon-core: #10B981;
+  --eco-icon-core-bg: rgba(16, 185, 129, 0.14);
+  --eco-icon-core-border: rgba(52, 211, 153, 0.3);
+  --eco-icon-ops: #C5A059;
+  --eco-icon-ops-bg: rgba(212, 175, 55, 0.12);
+  --eco-icon-ops-border: rgba(212, 175, 55, 0.3);
+  --eco-icon-intel: #D4AF37;
+  --eco-icon-intel-bg: rgba(212, 175, 55, 0.15);
+  --eco-icon-intel-border: rgba(212, 175, 55, 0.4);
+  --eco-icon-exp: #E6B349;
+  --eco-icon-exp-bg: rgba(230, 179, 73, 0.14);
+  --eco-icon-exp-border: rgba(230, 179, 73, 0.35);
+  --eco-mesh-line: rgba(212, 175, 55, 0.35);
+  --eco-mesh-glow: rgba(212, 175, 55, 0.25);
+}
+
+/* 2. Cyber Matrix Emerald (Deep-Tech, Defense & BioInformatics) */
+.theme-cyber-emerald,
+html.theme-cyber-emerald,
+body.theme-cyber-emerald {
+  --color-background: #020805;
+  --color-background-subtle: #04100a;
+  --color-background-deep: #010403;
+
+  --color-surface: #06160e;
+  --color-surface-elevated: #0a1f15;
+  --color-surface-subtle: rgba(16, 185, 129, 0.05);
+  --color-surface-hover: rgba(16, 185, 129, 0.1);
+  --color-surface-muted: rgba(16, 185, 129, 0.03);
+
+  --color-foreground: #ECFDF5;
+  --color-foreground-secondary: #D1FAE5;
+  --color-foreground-muted: #A7F3D0;
+  --color-foreground-subtle: #6EE7B7;
+
+  --color-primary: #10B981;
+  --color-primary-hover: #059669;
+  --color-primary-foreground: #020805;
+  --color-primary-subtle: rgba(16, 185, 129, 0.16);
+  --color-primary-subtle-text: #6EE7B7;
+  --color-primary-border: rgba(16, 185, 129, 0.35);
+
+  --color-secondary: rgba(255, 255, 255, 0.06);
+  --color-secondary-hover: rgba(16, 185, 129, 0.14);
+  --color-secondary-foreground: #ECFDF5;
+  --color-secondary-subtle: rgba(255, 255, 255, 0.03);
+
+  --color-border: rgba(16, 185, 129, 0.22);
+  --color-border-subtle: rgba(16, 185, 129, 0.1);
+  --color-border-strong: rgba(16, 185, 129, 0.45);
+
+  --color-card: #05140d;
+  --color-card-hover: #091e14;
+  --color-card-active: #0d281b;
+  --color-card-subtle: #030d08;
+  --color-card-elevated: #081a11;
+  --color-card-border: rgba(16, 185, 129, 0.24);
+  --color-card-border-subtle: rgba(16, 185, 129, 0.1);
+  --color-card-border-hover: rgba(16, 185, 129, 0.5);
+
+  --color-container-sunken: #010604;
+  --color-container-sunken-border: rgba(16, 185, 129, 0.12);
+  --color-container-interactive: #05140d;
+  --color-container-interactive-hover: #0a2015;
+  --color-container-accent: rgba(16, 185, 129, 0.12);
+  --color-container-accent-border: rgba(16, 185, 129, 0.35);
+
+  --color-input: #05140d;
+  --color-input-border: rgba(16, 185, 129, 0.28);
+  --color-input-focus: #10B981;
+  --color-input-text: #ECFDF5;
+  --color-input-placeholder: #059669;
+
+  --color-modal-bg: #04120b;
+  --color-modal-border: rgba(16, 185, 129, 0.3);
+  --color-overlay: rgba(1, 4, 3, 0.85);
+
+  --eco-icon-core: #10B981;
+  --eco-icon-core-bg: rgba(16, 185, 129, 0.18);
+  --eco-icon-core-border: rgba(52, 211, 153, 0.4);
+  --eco-icon-ops: #34D399;
+  --eco-icon-ops-bg: rgba(52, 211, 153, 0.15);
+  --eco-icon-ops-border: rgba(52, 211, 153, 0.35);
+  --eco-icon-intel: #059669;
+  --eco-icon-intel-bg: rgba(5, 150, 105, 0.15);
+  --eco-icon-intel-border: rgba(16, 185, 129, 0.4);
+  --eco-icon-exp: #6EE7B7;
+  --eco-icon-exp-bg: rgba(110, 231, 183, 0.14);
+  --eco-icon-exp-border: rgba(110, 231, 183, 0.35);
+  --eco-mesh-line: rgba(16, 185, 129, 0.38);
+  --eco-mesh-glow: rgba(16, 185, 129, 0.25);
+}
+
+/* 3. Cobalt Titanium & Midnight Blue (Hyper-Scale Cloud & FinTech) */
+.theme-cobalt-titanium,
+html.theme-cobalt-titanium,
+body.theme-cobalt-titanium {
+  --color-background: #040814;
+  --color-background-subtle: #070d1e;
+  --color-background-deep: #02040a;
+
+  --color-surface: #0a1226;
+  --color-surface-elevated: #0e1935;
+  --color-surface-subtle: rgba(37, 99, 235, 0.05);
+  --color-surface-hover: rgba(37, 99, 235, 0.1);
+  --color-surface-muted: rgba(37, 99, 235, 0.03);
+
+  --color-foreground: #F0F6FF;
+  --color-foreground-secondary: #DBEAFE;
+  --color-foreground-muted: #BFDBFE;
+  --color-foreground-subtle: #93C5FD;
+
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-foreground: #FFFFFF;
+  --color-primary-subtle: rgba(37, 99, 235, 0.18);
+  --color-primary-subtle-text: #93C5FD;
+  --color-primary-border: rgba(56, 189, 248, 0.35);
+
+  --color-secondary: rgba(255, 255, 255, 0.06);
+  --color-secondary-hover: rgba(37, 99, 235, 0.14);
+  --color-secondary-foreground: #F0F6FF;
+  --color-secondary-subtle: rgba(255, 255, 255, 0.03);
+
+  --color-border: rgba(56, 189, 248, 0.22);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(56, 189, 248, 0.45);
+
+  --color-card: #081022;
+  --color-card-hover: #0e1936;
+  --color-card-active: #132249;
+  --color-card-subtle: #050b18;
+  --color-card-elevated: #0c1630;
+  --color-card-border: rgba(56, 189, 248, 0.22);
+  --color-card-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-card-border-hover: rgba(56, 189, 248, 0.45);
+
+  --color-container-sunken: #030610;
+  --color-container-sunken-border: rgba(56, 189, 248, 0.12);
+  --color-container-interactive: #081022;
+  --color-container-interactive-hover: #0f1c3a;
+  --color-container-accent: rgba(37, 99, 235, 0.12);
+  --color-container-accent-border: rgba(56, 189, 248, 0.35);
+
+  --color-input: #081022;
+  --color-input-border: rgba(56, 189, 248, 0.28);
+  --color-input-focus: #2563EB;
+  --color-input-text: #F0F6FF;
+  --color-input-placeholder: #60A5FA;
+
+  --color-modal-bg: #070e20;
+  --color-modal-border: rgba(56, 189, 248, 0.3);
+  --color-overlay: rgba(2, 4, 10, 0.85);
+
+  --eco-icon-core: #0284C7;
+  --eco-icon-core-bg: rgba(2, 132, 199, 0.14);
+  --eco-icon-core-border: rgba(56, 189, 248, 0.3);
+  --eco-icon-ops: #2563EB;
+  --eco-icon-ops-bg: rgba(37, 99, 235, 0.14);
+  --eco-icon-ops-border: rgba(96, 165, 250, 0.3);
+  --eco-icon-intel: #38BDF8;
+  --eco-icon-intel-bg: rgba(56, 189, 248, 0.15);
+  --eco-icon-intel-border: rgba(56, 189, 248, 0.4);
+  --eco-icon-exp: #60A5FA;
+  --eco-icon-exp-bg: rgba(96, 165, 250, 0.14);
+  --eco-icon-exp-border: rgba(96, 165, 250, 0.35);
+  --eco-mesh-line: rgba(56, 189, 248, 0.35);
+  --eco-mesh-glow: rgba(37, 99, 235, 0.25);
+}
+
+/* 4. Nordic Stark & Architectural Slate (Modernist Light) */
+.theme-nordic-stark,
+html.theme-nordic-stark,
+body.theme-nordic-stark {
+  --color-background: #F9F9FB;
+  --color-background-subtle: #F1F2F6;
+  --color-background-deep: #E4E5EB;
+
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #FFFFFF;
+  --color-surface-subtle: #F1F2F6;
+  --color-surface-hover: #E4E5EB;
+  --color-surface-muted: #F9F9FB;
+
+  --color-foreground: #09090B;
+  --color-foreground-secondary: #18181B;
+  --color-foreground-muted: #3F3F46;
+  --color-foreground-subtle: #52525B;
+
+  --color-primary: #18181B;
+  --color-primary-hover: #09090B;
+  --color-primary-foreground: #FFFFFF;
+  --color-primary-subtle: #F4F4F5;
+  --color-primary-subtle-text: #18181B;
+  --color-primary-border: #D4D4D8;
+
+  --color-secondary: #FFFFFF;
+  --color-secondary-hover: #F4F4F5;
+  --color-secondary-foreground: #18181B;
+  --color-secondary-subtle: #FAFAFA;
+
+  --color-border: #D4D4D8;
+  --color-border-subtle: #E4E4E7;
+  --color-border-strong: #A1A1AA;
+
+  --color-card: #FFFFFF;
+  --color-card-hover: #FAFAFA;
+  --color-card-active: #F4F4F5;
+  --color-card-subtle: #F9F9FB;
+  --color-card-elevated: #FFFFFF;
+  --color-card-border: #E4E4E7;
+  --color-card-border-subtle: #F4F4F5;
+  --color-card-border-hover: #D4D4D8;
+
+  --color-container-sunken: #F4F4F5;
+  --color-container-sunken-border: #E4E4E7;
+  --color-container-interactive: #FFFFFF;
+  --color-container-interactive-hover: #FAFAFA;
+  --color-container-accent: rgba(24, 24, 27, 0.05);
+  --color-container-accent-border: rgba(24, 24, 27, 0.2);
+
+  --color-input: #FFFFFF;
+  --color-input-border: #D4D4D8;
+  --color-input-focus: #18181B;
+  --color-input-text: #09090B;
+  --color-input-placeholder: #71717A;
+
+  --color-modal-bg: #FFFFFF;
+  --color-modal-border: #E4E4E7;
+  --color-overlay: rgba(9, 9, 11, 0.5);
+
+  --eco-icon-core: #18181B;
+  --eco-icon-core-bg: #F4F4F5;
+  --eco-icon-core-border: #D4D4D8;
+  --eco-icon-ops: #27272A;
+  --eco-icon-ops-bg: #F4F4F5;
+  --eco-icon-ops-border: #D4D4D8;
+  --eco-icon-intel: #09090B;
+  --eco-icon-intel-bg: #E4E4E7;
+  --eco-icon-intel-border: #A1A1AA;
+  --eco-icon-exp: #3F3F46;
+  --eco-icon-exp-bg: #F4F4F5;
+  --eco-icon-exp-border: #D4D4D8;
+  --eco-mesh-line: rgba(24, 24, 27, 0.2);
+  --eco-mesh-glow: rgba(24, 24, 27, 0.08);
+}
+
+/* ==========================================================================
    SMOOTH ATOMIC THEME TRANSITION SYSTEM
    ========================================================================== */
 ::view-transition-group(root) {

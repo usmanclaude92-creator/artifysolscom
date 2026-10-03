@@ -31,6 +31,10 @@ import { Footer } from './components/Footer';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AuthModal } from './components/portal/AuthModal';
 import { BlogPreviewSection } from './components/BlogPreviewSection';
+import { BusinessMap } from './components/BusinessMap';
+import { PremiumThemesSection } from './components/PremiumThemesSection';
+import { PremiumThemesModal } from './components/PremiumThemesModal';
+import { PREMIUM_THEMES } from './data/premiumThemesData';
 import { Bot, Sparkles, ArrowRight, MessageSquare, Zap, Cpu, Layers } from 'lucide-react';
 import { playHoverSound } from './utils/soundEffects';
 import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
@@ -243,6 +247,57 @@ function MainAppContent() {
       safeSetLocalStorage('artify_theme', 'dark');
     }
   };
+
+  // Premium Enterprise Theme State & Custom Variables Injection
+  const [currentPremiumTheme, setCurrentPremiumTheme] = useState<string>(() => {
+    return safeGetLocalStorage('artify_premium_theme') || '';
+  });
+  const [isThemesModalOpen, setIsThemesModalOpen] = useState(false);
+
+  const handleApplyPremiumTheme = (themeId: string) => {
+    if (typeof document === 'undefined') return;
+    const root = document.documentElement;
+    const body = document.body;
+
+    // Clear previous theme classes
+    PREMIUM_THEMES.forEach((t) => {
+      root.classList.remove(`theme-${t.id}`);
+      body.classList.remove(`theme-${t.id}`);
+    });
+
+    const target = PREMIUM_THEMES.find((t) => t.id === themeId);
+    if (target) {
+      root.classList.add(`theme-${themeId}`);
+      body.classList.add(`theme-${themeId}`);
+      Object.entries(target.cssVariables).forEach(([k, v]) => {
+        root.style.setProperty(k, v);
+      });
+      if (target.isLightMode) {
+        setTheme('light');
+      } else {
+        setTheme('dark');
+      }
+      setCurrentPremiumTheme(themeId);
+      safeSetLocalStorage('artify_premium_theme', themeId);
+    } else {
+      // Clear custom properties
+      PREMIUM_THEMES.forEach((t) => {
+        Object.keys(t.cssVariables).forEach((key) => {
+          root.style.removeProperty(key);
+        });
+      });
+      setCurrentPremiumTheme('');
+      safeSetLocalStorage('artify_premium_theme', '');
+      applyThemeToDOM(theme);
+    }
+  };
+
+  useEffect(() => {
+    const saved = safeGetLocalStorage('artify_premium_theme');
+    if (saved) {
+      handleApplyPremiumTheme(saved);
+    }
+  }, []);
 
   useEffect(() => {
     applyThemeToDOM(theme);
@@ -491,6 +546,7 @@ function MainAppContent() {
         onSelectProduct={handleSelectProduct}
         onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
         onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
+        onOpenThemesModal={() => setIsThemesModalOpen(true)}
         activeRoute={activeRoute}
         theme={theme}
         onToggleTheme={handleToggleTheme}
@@ -623,6 +679,25 @@ function MainAppContent() {
             {/* 2. Core Philosophy: Technology Adapts to Business */}
             <AnimatedSection variant="fade-up">
               <TrustStatement />
+            </AnimatedSection>
+
+            {/* Signature Architecture Flow: The Business Map */}
+            <BusinessMap
+              onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+              onOpenConsultant={() => setIsConsultantOpen(true)}
+              onNavigateToContact={handleNavigateToContact}
+              theme={theme}
+            />
+
+            {/* Bespoke Enterprise Design Systems & Themes Studio Showcase */}
+            <AnimatedSection variant="fade-up">
+              <PremiumThemesSection
+                onOpenThemesModal={() => setIsThemesModalOpen(true)}
+                onApplyTheme={handleApplyPremiumTheme}
+                currentThemeId={currentPremiumTheme}
+                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+                theme={theme}
+              />
             </AnimatedSection>
 
             {/* 3. The Adaptive Enterprise Ecosystem (16 Integrated Nodes) */}
@@ -809,6 +884,18 @@ function MainAppContent() {
             initialIndustryId={builderInitialIndustry}
             onCompleteBrief={handleCompleteBrief}
             theme={theme}
+          />
+        )}
+
+        {/* Premium Enterprise Themes Studio Modal */}
+        {isThemesModalOpen && (
+          <PremiumThemesModal
+            isOpen={isThemesModalOpen}
+            onClose={() => setIsThemesModalOpen(false)}
+            currentThemeId={currentPremiumTheme}
+            onApplyTheme={handleApplyPremiumTheme}
+            onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
+            onNavigateToContact={handleNavigateToContact}
           />
         )}
       </Suspense>

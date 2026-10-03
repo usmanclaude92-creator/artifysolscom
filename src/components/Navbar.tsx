@@ -17,6 +17,7 @@ import {
   Building2,
   Bot,
   Search,
+  Palette,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -38,6 +39,7 @@ interface NavbarProps {
   onSelectProduct?: (product: { slug: string }) => void;
   onOpenGlobalSearch?: () => void;
   onOpenAuditSpec?: () => void;
+  onOpenThemesModal?: () => void;
   activeRoute?: string;
   theme: 'dark' | 'light';
   onToggleTheme: (event?: React.MouseEvent) => void;
@@ -61,6 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectProduct,
   onOpenGlobalSearch,
   onOpenAuditSpec,
+  onOpenThemesModal,
   activeRoute = 'home',
   theme,
   onToggleTheme,
@@ -301,6 +304,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Search className="w-4 h-4 text-violet-400" />
           </button>
+
+          {/* Premium Themes & Studio Trigger */}
+          {onOpenThemesModal && (
+            <button
+              onClick={onOpenThemesModal}
+              id="nav-premium-themes-btn"
+              className={`flex items-center justify-center p-2 rounded-lg border transition-all duration-200 shadow-sm focus:outline-none ${
+                isLight
+                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
+                  : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-300 hover:text-white'
+              }`}
+              title="Preview Premium Themes & Templates"
+              aria-label="Preview Premium Themes"
+            >
+              <Palette className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+            </button>
+          )}
 
           {/* Theme Toggle */}
           <button
@@ -760,6 +780,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                 )}
               </div>
+
+              {/* Theme Studio Trigger */}
+              {onOpenThemesModal && (
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      setSideMenuOpen(false);
+                      onOpenThemesModal();
+                    }}
+                    id="drawer-premium-themes-btn"
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors duration-300 ${
+                      isLight
+                        ? 'border-slate-200 bg-slate-100 text-slate-800'
+                        : 'border-white/[0.08] bg-[#12121a] text-zinc-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Palette className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                      <span>Preview Premium Themes</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 opacity-50" />
+                  </button>
+                </div>
+              )}
 
               {/* Theme Toggle */}
               <div className="pt-2">
