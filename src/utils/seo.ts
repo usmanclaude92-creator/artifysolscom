@@ -57,10 +57,37 @@ export interface SeoConfig {
 }
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
-const DEFAULT_SITE_NAME = 'Artify Solutions';
+// Phase 3 (Site Identity, Artify-Backend repo) — `let`, not `const`:
+// configureSiteDefaults() below reassigns these once published Site
+// Identity settings are fetched, so every reference to them throughout
+// this file (title fallback, og:site_name, JSON-LD publisher name, the
+// default share image, ...) picks up the real values without each call
+// site needing its own override. Until that fetch resolves (or if no
+// public organization is configured), these stay exactly what they were
+// before Phase 3 — the literal, hardcoded artifysols.com defaults.
+let DEFAULT_SITE_NAME = 'Artify Solutions';
 const DEFAULT_TWITTER_HANDLE = '@artifysols';
-const DEFAULT_OG_IMAGE = `${DEFAULT_BASE_URL}/og-banner.jpg`;
+let DEFAULT_OG_IMAGE = `${DEFAULT_BASE_URL}/og-banner.jpg`;
 const DEFAULT_ROBOTS = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+
+/**
+ * Called once at app startup (src/App.tsx) after the published Site
+ * Identity is fetched — never during render, and never with partial data
+ * (the backend's own zod defaults guarantee every field is present). A
+ * missing/undefined argument leaves the current value (the hardcoded
+ * default, or whatever was configured last) untouched rather than
+ * clearing it.
+ */
+let DEFAULT_META_TITLE = 'Artify Solutions | AI-Native Software & Intelligent Automation';
+let DEFAULT_META_DESCRIPTION =
+  "Artify Solutions builds AI-native software, autonomous agent swarms, business automation and fully customized digital solutions designed around your organization's unique workflows.";
+
+export function configureSiteDefaults(input: { siteName?: string; ogImage?: string; metaTitle?: string; metaDescription?: string }): void {
+  if (input.siteName) DEFAULT_SITE_NAME = input.siteName;
+  if (input.ogImage) DEFAULT_OG_IMAGE = input.ogImage;
+  if (input.metaTitle) DEFAULT_META_TITLE = input.metaTitle;
+  if (input.metaDescription) DEFAULT_META_DESCRIPTION = input.metaDescription;
+}
 
 // Category-to-search-intent keyword mapping dictionaries for enterprise discovery
 const CATEGORY_SEARCH_INTENT_MAP: Record<string, string[]> = {
@@ -833,8 +860,8 @@ export function generateProductSeo(
  */
 export function generateDefaultPlatformSeo(): SeoConfig {
   return {
-    title: 'Artify Solutions | AI-Native Software & Intelligent Automation',
-    description: "Artify Solutions builds AI-native software, autonomous agent swarms, business automation and fully customized digital solutions designed around your organization's unique workflows.",
+    title: DEFAULT_META_TITLE,
+    description: DEFAULT_META_DESCRIPTION,
     keywords: [
       'AI software development',
       'AI solutions company',

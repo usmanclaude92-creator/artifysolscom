@@ -40,6 +40,7 @@ import { playHoverSound } from './utils/soundEffects';
 import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
 import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
+import { applyPublishedSiteSettings } from './utils/applySiteSettings';
 import {
   AnimatedSection,
   StaggerContainer,
@@ -302,6 +303,13 @@ function MainAppContent() {
   useEffect(() => {
     applyThemeToDOM(theme);
   }, [theme]);
+
+  // Phase 3 (Site Identity + Global Styles) — fetches once on initial mount
+  // and applies published Control Center settings on top of this site's
+  // existing defaults; a no-op until something is actually published.
+  useEffect(() => {
+    void applyPublishedSiteSettings().catch(() => undefined);
+  }, []);
 
   const handleToggleTheme = (event?: React.MouseEvent | MouseEvent) => {
     const nextTheme: 'light' | 'dark' = theme === 'dark' ? 'light' : 'dark';
