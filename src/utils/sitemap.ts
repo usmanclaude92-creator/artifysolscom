@@ -69,7 +69,7 @@ function escapeXml(unsafe: string): string {
  * (browser via Vite's `import.meta.env`, or Node via `process.env` when
  * called from api/index.ts) without importing apiClient.ts, which assumes a
  * browser/Vite context. */
-function resolveApiBaseUrl(explicit?: string): string | null {
+export function resolveApiBaseUrl(explicit?: string): string | null {
   if (explicit) return explicit;
   if (typeof window !== 'undefined') {
     const configured = (import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env

@@ -23,6 +23,7 @@ const REAL_PAGE = {
   slug: 'about-our-mission',
   title: 'About Our Mission',
   body: '<p>Real CMS page content.</p>',
+  excerpt: null,
   seo: {},
   featuredMedia: null,
   publishedAt: '2026-01-01T00:00:00.000Z',
@@ -78,6 +79,23 @@ describe('CmsPageRoute', () => {
     vi.mocked(publicApi.getRedirectForPath).mockResolvedValue(null);
 
     render(<CmsPageRoute slug="never-existed" theme="dark" onNavigateHome={noop} />);
+
+    expect(await screen.findByText('Page not found')).toBeInTheDocument();
+  });
+
+  // Phase 8 (Advanced SEO Control Center) — resolveSlug previously had no
+  // depth/visited guard at all: a redirect cycle (A -> B -> A, however it
+  // was created) recursed forever. This must terminate in a real
+  // not-found state instead of hanging the page in its loading state.
+  it('terminates on a redirect cycle (A -> B -> A) instead of recursing forever', async () => {
+    vi.mocked(publicApi.getPageBySlug).mockRejectedValue(new ApiClientError('Not found', { code: 'NOT_FOUND', status: 404 }));
+    vi.mocked(publicApi.getRedirectForPath).mockImplementation(async (path: string) => {
+      if (path === '/page-a') return { toPath: '/page-b', statusCode: 301 };
+      if (path === '/page-b') return { toPath: '/page-a', statusCode: 301 };
+      return null;
+    });
+
+    render(<CmsPageRoute slug="page-a" theme="dark" onNavigateHome={noop} />);
 
     expect(await screen.findByText('Page not found')).toBeInTheDocument();
   });

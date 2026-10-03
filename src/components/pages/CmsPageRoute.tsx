@@ -52,7 +52,24 @@ export const CmsPageRoute: React.FC<CmsPageRouteProps> = ({ slug, theme, onNavig
   useEffect(() => {
     let cancelled = false;
 
+    // Phase 8 (Advanced SEO Control Center) — a visited-slug set guards
+    // against a redirect cycle (A -> B -> A, however it was created)
+    // recursing forever: without it, this function had no depth/visited
+    // check at all. See ssrMeta.ts's resolveRedirectChain in api/index.ts
+    // for the matching server-side guard.
+    const visited = new Set<string>();
+
     const resolveSlug = async (currentSlug: string) => {
+      if (visited.has(currentSlug)) {
+        if (!cancelled) {
+          setPage(null);
+          setNotFound(true);
+          setIsLoading(false);
+        }
+        return;
+      }
+      visited.add(currentSlug);
+
       try {
         const resolved = await publicApi.getPageBySlug(currentSlug);
         if (!cancelled) {
@@ -69,7 +86,7 @@ export const CmsPageRoute: React.FC<CmsPageRouteProps> = ({ slug, theme, onNavig
             // Only follow a redirect that lands on another root-level page
             // path — never one aimed at /blog/, a product, or an external
             // path, which this route has no business rendering.
-            if (redirect && /^\/[^/]+$/.test(redirect.toPath)) {
+            if (redirect && /^\/[^/]+$/.test(redirect.toPath) && !visited.has(redirect.toPath.slice(1))) {
               const newSlug = redirect.toPath.slice(1);
               window.history.replaceState({}, '', redirect.toPath);
               await resolveSlug(newSlug);

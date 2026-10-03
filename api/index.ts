@@ -1,6 +1,7 @@
 import express from "express";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
+import { renderSeoForPath, injectMetaIntoHtml } from "../src/utils/ssrMeta.js";
 
 const app = express();
 app.use(express.json());
@@ -142,6 +143,83 @@ Keep your response punchy, precise, and professional. Avoid buzzwords and clich�
   } catch (err: any) {
     console.error("AI Consultant endpoint error:", err);
     return res.status(500).json({ error: "Internal AI processing error" });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Phase 8 (Advanced SEO Control Center) — server-rendered, crawler-visible
+// metadata for the SPA. Before this existed every route's title/
+// description/canonical/OG/Twitter/JSON-LD was set by client-side
+// `document.head` mutation only (see src/utils/seo.ts's updatePageSeo),
+// which a crawler that doesn't execute JavaScript (or budgets it away)
+// never sees — vercel.json's catch-all rewrite now points every
+// non-static-file request at this function instead of straight at
+// /index.html, and this handler injects the real, per-route metadata
+// into the actual built HTML (self-fetched from this same deployment, so
+// the asset script/link tags are always the real production bundle, never
+// a stale copy) before responding. A route this module doesn't have
+// specific metadata for (ssrMeta.ts's `resolveSsrRoute` returns `other`)
+// falls through with the static document completely unchanged — the
+// exact previous behavior.
+// ---------------------------------------------------------------------------
+
+let cachedIndexHtml: string | null = null;
+
+async function getIndexHtmlTemplate(baseUrl: string): Promise<string> {
+  if (cachedIndexHtml) return cachedIndexHtml;
+  const res = await fetch(`${baseUrl}/index.html`);
+  const html = await res.text();
+  // A fresh function instance only ever serves one deployment's assets,
+  // so caching for the lifetime of the instance is safe (a new deploy
+  // always gets a new instance).
+  cachedIndexHtml = html;
+  return html;
+}
+
+app.get("*", async (req, res, next) => {
+  // Defensive: a real static asset request should never reach this
+  // handler (Vercel resolves a matching file before applying rewrites),
+  // but if one somehow does, don't try to HTML-render it.
+  if (/\.[a-z0-9]{1,8}$/i.test(req.path) && req.path !== "/index.html") return next();
+
+  const baseUrl = getBaseUrl(req);
+
+  // Technical SEO — trailing-slash consistency / duplicate URL
+  // prevention: every path except the root resolves to exactly one
+  // canonical form.
+  if (req.path !== "/" && req.path.endsWith("/")) {
+    const qs = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
+    return res.redirect(301, req.path.replace(/\/+$/, "") + qs);
+  }
+
+  // Metadata computation hits the Platform API and is the only part of
+  // this handler with real failure modes (network blip, API down) — a
+  // failure here must never take the whole site down, so it degrades to
+  // "no override" (the exact previous behavior) rather than erroring.
+  let result: Awaited<ReturnType<typeof renderSeoForPath>> = { meta: null, status: 200, redirect: null };
+  try {
+    result = await renderSeoForPath(req.path, baseUrl, process.env.PLATFORM_API_BASE_URL);
+  } catch (err) {
+    console.error("SSR meta computation failed, serving the static document unchanged:", err);
+  }
+
+  if (result.redirect) {
+    return res.redirect(result.redirect.statusCode, result.redirect.toPath);
+  }
+
+  try {
+    const html = await getIndexHtmlTemplate(baseUrl);
+    const finalHtml = result.meta ? injectMetaIntoHtml(html, result.meta, { statusIsError: result.status >= 400 }) : html;
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
+    res.status(result.status).send(finalHtml);
+  } catch (err) {
+    // Fetching the deployment's own static index.html failed — a genuine
+    // infrastructure problem, not something this handler can route
+    // around. Let Express's own error handling take over rather than
+    // returning a broken document.
+    next(err);
   }
 });
 

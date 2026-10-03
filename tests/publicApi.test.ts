@@ -6,6 +6,7 @@ describe('mapPostToBlogPost', () => {
     slug: 'my-first-post',
     title: 'My First Post',
     body: '<p>Hello world. This is the body of the post.</p>',
+    excerpt: null,
     seo: {},
     category: { slug: 'ai-research', name: 'AI Research & Insights' },
     tags: [{ slug: 'ai', name: 'AI' }],
@@ -41,6 +42,18 @@ describe('mapPostToBlogPost', () => {
     const mapped = mapPostToBlogPost({ ...basePost, body: longBody });
     expect(mapped.readTime).toMatch(/^\d+ min read$/);
     expect(parseInt(mapped.readTime, 10)).toBeGreaterThan(1);
+  });
+
+  // Phase 8 (Advanced SEO Control Center) — a real, author-written excerpt
+  // (Artify-Backend Phase 7) takes priority over the auto-truncated body.
+  it('prefers a real author-written excerpt over the auto-derived one', () => {
+    const mapped = mapPostToBlogPost({ ...basePost, excerpt: 'A hand-written summary.' });
+    expect(mapped.excerpt).toBe('A hand-written summary.');
+  });
+
+  it('falls back to deriving an excerpt from the body when none was set', () => {
+    const mapped = mapPostToBlogPost({ ...basePost, excerpt: null });
+    expect(mapped.excerpt).toBe('Hello world. This is the body of the post.');
   });
 
   it('returns an unpublished-friendly empty date when publishedAt is null', () => {

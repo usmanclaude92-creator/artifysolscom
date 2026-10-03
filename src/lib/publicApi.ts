@@ -39,6 +39,7 @@ export interface PublicPost {
   slug: string;
   title: string;
   body: string;
+  excerpt: string | null;
   seo: Record<string, unknown>;
   category: { slug: string; name: string } | null;
   tags: { slug: string; name: string }[];
@@ -52,6 +53,7 @@ export interface PublicPage {
   slug: string;
   title: string;
   body: string;
+  excerpt: string | null;
   seo: Record<string, unknown>;
   featuredMedia: PublicMedia | null;
   publishedAt: string | null;
@@ -308,7 +310,10 @@ export function mapPostToBlogPost(post: PublicPost): BlogPost {
   const plainText = post.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const wordCount = plainText ? plainText.split(' ').length : 0;
   const readTime = `${Math.max(1, Math.round(wordCount / 200))} min read`;
-  const excerpt = plainText.length > 220 ? `${plainText.slice(0, 217)}...` : plainText;
+  // Phase 7 (Artify-Backend) added a real, author-written excerpt field —
+  // prefer it over the auto-truncated body when the author actually set one.
+  const derivedExcerpt = plainText.length > 220 ? `${plainText.slice(0, 217)}...` : plainText;
+  const excerpt = post.excerpt?.trim() || derivedExcerpt;
   // The backend validates this against a strict, named-field schema
   // (server/schemas/contentSchemas.ts's seoMetadataSchema) that mirrors
   // ArticleSeoMetadata field-for-field, so it's safe to pass through
