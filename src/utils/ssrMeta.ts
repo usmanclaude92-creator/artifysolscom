@@ -306,7 +306,14 @@ export function injectMetaIntoHtml(html: string, meta: SeoConfig, opts: { status
     const graph = typeof meta.jsonLd === 'object' && !Array.isArray(meta.jsonLd) && (meta.jsonLd as Record<string, unknown>)['@graph']
       ? (meta.jsonLd as { '@graph': unknown[] })['@graph']
       : [meta.jsonLd];
-    const script = `<script type="application/ld+json" id="ssr-page-jsonld">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>\n  </head>`;
+    // Escaping every `<` (not just a literal "</script>") is the standard
+    // safe way to embed arbitrary JSON inside a <script> block: it also
+    // blocks "<!--" and any other HTML-significant sequence a post
+    // title/excerpt could contain, without needing to parse the JSON to
+    // find them. < is valid inside a JSON string and parses back to
+    // the same "<" character, so the structured data itself is unchanged.
+    const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
+    const script = `<script type="application/ld+json" id="ssr-page-jsonld">${json}</script>\n  </head>`;
     if (out.includes('</head>')) out = out.replace(/<\/head>/, script);
   }
 

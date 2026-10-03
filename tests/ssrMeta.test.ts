@@ -176,6 +176,21 @@ describe('injectMetaIntoHtml', () => {
     expect(html).toContain('id="ssr-page-jsonld"');
     expect(html).toContain('"headline":"Real headline"');
   });
+
+  it('escapes "<" in JSON-LD content so a post title/excerpt containing "</script>" cannot break out of the script tag', () => {
+    const html = injectMetaIntoHtml(STATIC_HTML, {
+      title: 'x',
+      description: 'y',
+      jsonLd: { '@type': 'Article', headline: '</script><script>alert(1)</script>' },
+    });
+    // The raw closing sequence must never appear literally inside the script's content.
+    expect(html).not.toContain('</script><script>alert(1)');
+    expect(html).toContain('\\u003c/script>\\u003cscript>alert(1)\\u003c/script>');
+    // Exactly one script tag actually closes the ld+json block — the escaped
+    // content inside it doesn't introduce a second one.
+    const scriptCloses = html.match(/<\/script>/g) ?? [];
+    expect(scriptCloses.length).toBe(1);
+  });
 });
 
 describe('renderSeoForPath (orchestrator, mocked network)', () => {
