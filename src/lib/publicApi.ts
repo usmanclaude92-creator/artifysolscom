@@ -58,6 +58,24 @@ export interface PublicPage {
   updatedAt: string;
 }
 
+// Phase 5 (Navigation + Pages + Homepage, Artify-Backend repo) — mirrors
+// publicSiteService.ts's getNavigationMenu() projection: every item's link
+// target already resolved to a real URL, with unresolvable items silently
+// dropped server-side — never a broken link to render here.
+export interface PublicMenuItem {
+  label: string;
+  url: string;
+  openInNewTab: boolean;
+  children: PublicMenuItem[];
+}
+
+export interface PublicNavigationMenu {
+  type: 'PRIMARY' | 'HEADER' | 'FOOTER' | 'MOBILE' | 'CUSTOM';
+  slug: string;
+  name: string;
+  items: PublicMenuItem[];
+}
+
 export interface PublicProduct {
   slug: string;
   code: string;
@@ -187,6 +205,21 @@ export const publicApi = {
   async getPageBySlug(slug: string): Promise<PublicPage> {
     const { page } = await apiClient.get<{ page: PublicPage }>(`/public/pages/${encodeURIComponent(slug)}`);
     return page;
+  },
+
+  // Phase 5 (Navigation + Pages + Homepage, Artify-Backend repo) — `null` whenever
+  // the Control Center hasn't designated a homepage/menu yet (every existing
+  // production org today), mirroring getSiteSettings()'s safe-fallback contract.
+  async getHomepage(): Promise<PublicPage | null> {
+    const { page } = await apiClient.get<{ page: PublicPage | null }>('/public/homepage');
+    return page;
+  },
+
+  async getNavigationMenu(type: PublicNavigationMenu['type']): Promise<PublicNavigationMenu | null> {
+    const { menu } = await apiClient.get<{ menu: PublicNavigationMenu | null }>(
+      `/public/navigation-menus/${encodeURIComponent(type)}`
+    );
+    return menu;
   },
 
   async listPosts(params: {

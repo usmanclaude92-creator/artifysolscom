@@ -41,6 +41,7 @@ import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
 import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
 import { applyPublishedSiteSettings } from './utils/applySiteSettings';
+import { publicApi, PublicPage } from './lib/publicApi';
 import {
   AnimatedSection,
   StaggerContainer,
@@ -84,6 +85,9 @@ const BlogPage = lazy(() =>
 );
 const CmsPageRoute = lazy(() =>
   import('./components/pages/CmsPageRoute').then((m) => ({ default: m.CmsPageRoute }))
+);
+const DynamicHomeRoute = lazy(() =>
+  import('./components/pages/DynamicHomeRoute').then((m) => ({ default: m.DynamicHomeRoute }))
 );
 const ClientPortal = lazy(() =>
   import('./components/portal/ClientPortal').then((m) => ({ default: m.ClientPortal }))
@@ -174,6 +178,27 @@ function MainAppContent() {
     }
     return '';
   });
+
+  // Phase 5 (Navigation + Pages + Homepage, Artify-Backend repo) — opt-in
+  // dynamic homepage override. `null` (the default, and the only outcome
+  // for every existing production org today, since none has designated a
+  // homepage yet) means the hardcoded home branch below renders completely
+  // unchanged; this only ever swaps in once a real published Page is
+  // actually returned by the Control Center.
+  const [dynamicHomepage, setDynamicHomepage] = useState<PublicPage | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    publicApi
+      .getHomepage()
+      .then((page) => {
+        if (!cancelled) setDynamicHomepage(page);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const { isPortalOpen, isAuthModalOpen, user, openPortal, openAuthModal } = useAuth();
 
@@ -661,7 +686,11 @@ function MainAppContent() {
           />
         )}
 
-        {activeRoute === 'home' && (
+        {activeRoute === 'home' && dynamicHomepage && (
+          <DynamicHomeRoute page={dynamicHomepage} theme={theme} />
+        )}
+
+        {activeRoute === 'home' && !dynamicHomepage && (
           <>
             {/* 1. Hero: Adaptive Software & Intelligent Ecosystems */}
             <AnimatedSection variant="fade" duration={0.8}>
