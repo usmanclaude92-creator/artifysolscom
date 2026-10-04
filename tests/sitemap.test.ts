@@ -39,6 +39,9 @@ describe('getSitemapUrlList pagination', () => {
       if (url.includes('/public/categories')) {
         return { ok: true, json: async () => ({ success: true, data: { categories: [] } }) };
       }
+      if (url.includes('/public/case-studies')) {
+        return { ok: true, json: async () => ({ success: true, data: { caseStudies: [] }, meta: { pagination: { page: 1, limit: 50, total: 0, totalPages: 1 } } }) };
+      }
       throw new Error(`Unexpected fetch: ${url}`);
     });
     vi.stubGlobal('fetch', fetchMock);

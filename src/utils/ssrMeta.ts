@@ -19,7 +19,7 @@
  */
 import { generateBlogPostSeo, type SeoConfig } from './seo';
 import { resolveApiBaseUrl } from './sitemap';
-import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct } from '../lib/publicApi';
+import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi';
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
 const SITE_NAME = 'Artify Solutions';
@@ -92,6 +92,34 @@ export function buildProductMeta(product: PublicProduct, baseUrl: string): SeoCo
   };
 }
 
+/** Mirrors CaseStudyDetailPage.tsx's inline SEO block (Phase 11). */
+export function buildCaseStudyMeta(caseStudy: PublicCaseStudy, baseUrl: string): SeoConfig {
+  const seo = caseStudy.seo as { metaTitle?: string; metaDescription?: string; ogImage?: string };
+  const canonicalUrl = `${baseUrl}/case-studies/${caseStudy.slug}`;
+  const description = seo.metaDescription || caseStudy.excerpt || plainTextExcerpt(caseStudy.body || '') || caseStudy.title;
+  return {
+    title: seo.metaTitle || `${caseStudy.title} | ${SITE_NAME} Case Studies`,
+    description,
+    canonicalUrl,
+    ogType: 'article',
+    ogTitle: seo.metaTitle || caseStudy.title,
+    ogDescription: description,
+    ogImage: seo.ogImage || caseStudy.featuredMedia?.url,
+    twitterCard: 'summary_large_image',
+    publishedTime: caseStudy.publishedAt ?? undefined,
+    modifiedTime: caseStudy.updatedAt,
+    jsonLd: {
+      '@type': 'Article',
+      '@id': `${canonicalUrl}#article`,
+      headline: caseStudy.title,
+      description,
+      datePublished: caseStudy.publishedAt ?? undefined,
+      dateModified: caseStudy.updatedAt,
+      image: caseStudy.featuredMedia?.url ?? seo.ogImage,
+    },
+  };
+}
+
 /** Mirrors BlogPage.tsx's unfiltered (archive) SEO block. */
 export function buildBlogArchiveMeta(baseUrl: string): SeoConfig {
   const canonicalUrl = `${baseUrl}/blog`;
@@ -113,6 +141,7 @@ export type SsrRoute =
   | { kind: 'blog-archive' }
   | { kind: 'blog-post'; slug: string }
   | { kind: 'product-detail'; slug: string }
+  | { kind: 'case-study-detail'; slug: string }
   | { kind: 'cms-page'; slug: string }
   | { kind: 'other' };
 
@@ -130,6 +159,8 @@ export function resolveSsrRoute(pathname: string): SsrRoute {
   if (blogPost) return { kind: 'blog-post', slug: decodeURIComponent(blogPost[1]!) };
   const product = path.match(/^\/ai-solutions\/([^/]+)$/);
   if (product) return { kind: 'product-detail', slug: decodeURIComponent(product[1]!) };
+  const caseStudy = path.match(/^\/case-studies\/([^/]+)$/);
+  if (caseStudy) return { kind: 'case-study-detail', slug: decodeURIComponent(caseStudy[1]!) };
   const RESERVED = new Set(['solutions', 'solutions-catalog', 'ai-solutions', 'services', 'industries', 'case-studies', 'about', 'contact', 'privacy', 'terms']);
   const singleSegment = path.match(/^\/([^/]+)$/);
   if (singleSegment && !RESERVED.has(singleSegment[1]!)) return { kind: 'cms-page', slug: decodeURIComponent(singleSegment[1]!) };
@@ -209,6 +240,16 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
     );
     if (product) return { meta: buildProductMeta(product, baseUrl), status: 200, redirect: null };
     return { meta: { title: '404 — Not Found', description: 'This solution could not be found.', robots: 'noindex, nofollow' }, status: 404, redirect: null };
+  }
+
+  if (route.kind === 'case-study-detail') {
+    const caseStudy = await fetchPublicJson<{ caseStudy: PublicCaseStudy }>(apiBase, `/public/case-studies/${encodeURIComponent(route.slug)}`).then(
+      (d) => d?.caseStudy ?? null
+    );
+    if (caseStudy) return { meta: buildCaseStudyMeta(caseStudy, baseUrl), status: 200, redirect: null };
+    const redirect = await resolveRedirectChain(apiBase, `/case-studies/${route.slug}`);
+    if (redirect) return { meta: null, status: 200, redirect };
+    return { meta: { title: '404 — Not Found', description: 'This case study could not be found.', robots: 'noindex, nofollow' }, status: 404, redirect: null };
   }
 
   // cms-page

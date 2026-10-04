@@ -246,6 +246,54 @@ export interface PublicSiteSettings {
   globalStyles: PublicGlobalStyles;
 }
 
+// Phase 11 (Case Studies + Content Relationships, Artify-Backend repo) —
+// mirrors publicSiteService.ts's projectCaseStudy() exactly. Only an
+// ACTIVE/PUBLISHED related Product/Page/Post is ever included — the
+// backend silently omits anything unpublished/archived, never a broken
+// reference.
+export interface PublicCaseStudyTestimonial {
+  quote: string;
+  authorName: string | null;
+  authorTitle: string | null;
+}
+
+export interface PublicCaseStudyRelatedProduct {
+  slug: string;
+  name: string;
+  type: 'PRODUCT' | 'SERVICE' | 'SOLUTION';
+  shortDescription: string | null;
+}
+
+export interface PublicCaseStudyRelatedContent {
+  slug: string;
+  title: string;
+}
+
+export interface PublicCaseStudy {
+  slug: string;
+  title: string;
+  clientName: string | null;
+  industry: PublicIndustry | null;
+  body: string;
+  excerpt: string | null;
+  editorBlocks: PublicEditorDocument | null;
+  challenge: string | null;
+  solutionApproach: string | null;
+  implementation: string | null;
+  results: string | null;
+  testimonial: PublicCaseStudyTestimonial | null;
+  technologies: string[];
+  gallery: PublicMedia[];
+  seo: Record<string, unknown>;
+  featuredMedia: PublicMedia | null;
+  ctaForm: PublicProductCtaForm | null;
+  relatedProducts: PublicCaseStudyRelatedProduct[];
+  relatedPages: PublicCaseStudyRelatedContent[];
+  relatedPosts: PublicCaseStudyRelatedContent[];
+  publishedAt: string | null;
+  updatedAt: string;
+}
+
 export interface PublicLeadSubmission {
   name: string;
   company?: string;
@@ -423,6 +471,25 @@ export const publicApi = {
       `/public/products/${encodeURIComponent(slug)}/modules`
     );
     return modules;
+  },
+
+  async listCaseStudies(
+    params: { page?: number; limit?: number; search?: string; industrySlug?: string; productSlug?: string } = {}
+  ): Promise<{ caseStudies: PublicCaseStudy[]; total: number }> {
+    const query = new URLSearchParams();
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    if (params.search) query.set('search', params.search);
+    if (params.industrySlug) query.set('industrySlug', params.industrySlug);
+    if (params.productSlug) query.set('productSlug', params.productSlug);
+    const qs = query.toString();
+    const { caseStudies } = await apiClient.get<{ caseStudies: PublicCaseStudy[] }>(`/public/case-studies${qs ? `?${qs}` : ''}`);
+    return { caseStudies, total: caseStudies.length };
+  },
+
+  async getCaseStudyBySlug(slug: string): Promise<PublicCaseStudy> {
+    const { caseStudy } = await apiClient.get<{ caseStudy: PublicCaseStudy }>(`/public/case-studies/${encodeURIComponent(slug)}`);
+    return caseStudy;
   },
 
   async submitLead(input: PublicLeadSubmission): Promise<{ message: string }> {

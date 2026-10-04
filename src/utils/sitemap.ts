@@ -35,6 +35,16 @@ interface RemoteCategory {
   name: string;
 }
 
+// Phase 11 (Case Studies + Content Relationships) — mirrors RemotePost's
+// own shape for the same sitemap entry pattern.
+interface RemoteCaseStudy {
+  slug: string;
+  title: string;
+  featuredMedia: { url: string } | null;
+  publishedAt: string | null;
+  updatedAt: string;
+}
+
 /**
  * Normalizes an ISO date string to YYYY-MM-DD for standard sitemap compliance.
  */
@@ -110,26 +120,29 @@ async function fetchPublicData(apiBaseUrl?: string): Promise<{
   posts: RemotePost[];
   products: RemoteProduct[];
   categories: RemoteCategory[];
+  caseStudies: RemoteCaseStudy[];
 }> {
   const base = resolveApiBaseUrl(apiBaseUrl);
-  if (!base) return { posts: [], products: [], categories: [] };
+  if (!base) return { posts: [], products: [], categories: [], caseStudies: [] };
 
   try {
-    const [posts, products, categoriesRes] = await Promise.all([
+    const [posts, products, categoriesRes, caseStudies] = await Promise.all([
       fetchAllPages<RemotePost>(base, '/public/posts', 'posts'),
       fetchAllPages<RemoteProduct>(base, '/public/products', 'products'),
       fetch(`${base}/public/categories`),
+      fetchAllPages<RemoteCaseStudy>(base, '/public/case-studies', 'caseStudies'),
     ]);
     const categoriesBody = await categoriesRes.json();
     return {
       posts,
       products,
       categories: categoriesRes.ok && categoriesBody.success ? categoriesBody.data.categories : [],
+      caseStudies,
     };
   } catch {
     // Honest degrade — sitemap just omits dynamic entries rather than
     // fabricating URLs for content that may not exist.
-    return { posts: [], products: [], categories: [] };
+    return { posts: [], products: [], categories: [], caseStudies: [] };
   }
 }
 
@@ -141,7 +154,7 @@ async function fetchPublicData(apiBaseUrl?: string): Promise<{
  */
 export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: string): Promise<SitemapUrlEntry[]> {
   const baseUrl = (customBaseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL)).replace(/\/+$/, '');
-  const { posts, products, categories } = await fetchPublicData(apiBaseUrl);
+  const { posts, products, categories, caseStudies } = await fetchPublicData(apiBaseUrl);
   const currentDate = formatSitemapDate();
 
   const entries: SitemapUrlEntry[] = [];
@@ -181,6 +194,19 @@ export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: str
       title: post.title,
       category: post.category?.name,
       image: post.featuredMedia ? { loc: post.featuredMedia.url, title: post.title } : undefined,
+    });
+  });
+
+  // 3b. Dynamic Case Study Detail Routes — published only, straight from the API
+  caseStudies.forEach((cs) => {
+    entries.push({
+      loc: `${baseUrl}/case-studies/${cs.slug}`,
+      lastmod: formatSitemapDate(cs.updatedAt || cs.publishedAt || undefined),
+      changefreq: 'weekly',
+      priority: 0.8,
+      type: 'article',
+      title: cs.title,
+      image: cs.featuredMedia ? { loc: cs.featuredMedia.url, title: cs.title } : undefined,
     });
   });
 

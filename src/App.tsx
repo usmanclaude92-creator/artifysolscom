@@ -71,6 +71,9 @@ const IndustriesPage = lazy(() =>
 const CaseStudiesPage = lazy(() =>
   import('./components/pages/CaseStudiesPage').then((m) => ({ default: m.CaseStudiesPage }))
 );
+const CaseStudyDetailPage = lazy(() =>
+  import('./components/pages/CaseStudyDetailPage').then((m) => ({ default: m.CaseStudyDetailPage }))
+);
 const AboutPage = lazy(() =>
   import('./components/pages/AboutPage').then((m) => ({ default: m.AboutPage }))
 );
@@ -124,6 +127,9 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
   if (path === '/ai-solutions') return { route: 'ai-solutions' };
   if (path === '/services') return { route: 'services' };
   if (path === '/industries') return { route: 'industries' };
+  if (path.startsWith('/case-studies/')) {
+    return { route: 'case-study-detail', slug: decodeURIComponent(path.replace('/case-studies/', '')) };
+  }
   if (path === '/case-studies') return { route: 'case-studies' };
   if (path === '/about') return { route: 'about' };
   if (path === '/contact') return { route: 'contact' };
@@ -175,6 +181,14 @@ function MainAppContent() {
     if (typeof window !== 'undefined') {
       const { route, slug } = getRouteFromPath(window.location.pathname);
       if (route === 'cms-page' && slug) return slug;
+    }
+    return '';
+  });
+
+  const [activeCaseStudySlug, setActiveCaseStudySlug] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const { route, slug } = getRouteFromPath(window.location.pathname);
+      if (route === 'case-study-detail' && slug) return slug;
     }
     return '';
   });
@@ -243,6 +257,9 @@ function MainAppContent() {
       } else if (route === 'cms-page' && slug) {
         setActivePageSlug(slug);
         setActiveRoute('cms-page');
+      } else if (route === 'case-study-detail' && slug) {
+        setActiveCaseStudySlug(slug);
+        setActiveRoute('case-study-detail');
       } else {
         setActiveRoute(route);
         applySeoForRoute(route);
@@ -517,6 +534,16 @@ function MainAppContent() {
     handleSelectProduct({ slug });
   };
 
+  const handleSelectCaseStudy = (slug: string) => {
+    setActiveCaseStudySlug(slug);
+    setActiveRoute('case-study-detail');
+    const path = `/case-studies/${slug}`;
+    if (typeof window !== 'undefined' && window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleNavigateToContact = (customBrief?: any) => {
     if (customBrief) {
       setPrefilledBrief(customBrief);
@@ -644,7 +671,17 @@ function MainAppContent() {
           <CaseStudiesPage
             onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
             onNavigateToContact={handleNavigateToContact}
+            onSelectCaseStudy={handleSelectCaseStudy}
             theme={theme}
+          />
+        )}
+
+        {activeRoute === 'case-study-detail' && (
+          <CaseStudyDetailPage
+            slug={activeCaseStudySlug}
+            theme={theme}
+            onNavigateHome={() => navigateToRoute('home', '/')}
+            onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
           />
         )}
 

@@ -100,6 +100,7 @@ export type AppRoute =
   | 'services'
   | 'industries'
   | 'case-studies'
+  | 'case-study-detail'
   | 'about'
   | 'blog'
   | 'blog-post'
