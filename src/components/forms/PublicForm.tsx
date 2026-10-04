@@ -19,6 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { publicApi, type PublicForm as PublicFormDef, type PublicFormField } from '../../lib/publicApi';
 import { ApiClientError } from '../../lib/apiClient';
+import { readUtmParams, getLandingPagePath } from '../../lib/utm';
 
 type FieldValue = string | string[];
 type FormValues = Record<string, FieldValue>;
@@ -31,32 +32,6 @@ function isFieldVisible(field: PublicFormField, values: FormValues): boolean {
 function isEmpty(value: FieldValue | undefined): boolean {
   if (value === undefined) return true;
   return Array.isArray(value) ? value.length === 0 : !value.trim();
-}
-
-interface UtmParams {
-  utmSource?: string;
-  utmMedium?: string;
-  utmCampaign?: string;
-  utmTerm?: string;
-  utmContent?: string;
-}
-
-function readUtmParams(): UtmParams {
-  if (typeof window === 'undefined') return {};
-  const params = new URLSearchParams(window.location.search);
-  const out: UtmParams = {};
-  const mapping: Record<string, keyof UtmParams> = {
-    utm_source: 'utmSource',
-    utm_medium: 'utmMedium',
-    utm_campaign: 'utmCampaign',
-    utm_term: 'utmTerm',
-    utm_content: 'utmContent',
-  };
-  for (const [queryKey, payloadKey] of Object.entries(mapping)) {
-    const value = params.get(queryKey);
-    if (value) out[payloadKey] = value;
-  }
-  return out;
 }
 
 const FieldInput: React.FC<{ field: PublicFormField; value: FieldValue | undefined; onChange: (v: FieldValue) => void }> = ({
@@ -218,7 +193,7 @@ export const PublicForm: React.FC<{ slug?: string; formId?: string; className?: 
       const res = await publicApi.submitForm(form.slug, {
         data: values,
         ...readUtmParams(),
-        landingPagePath: typeof window !== 'undefined' ? window.location.pathname : undefined,
+        landingPagePath: getLandingPagePath(),
         website,
       });
       setSuccessMessage(res.message);

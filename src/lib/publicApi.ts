@@ -304,6 +304,13 @@ export interface PublicLeadSubmission {
   productInterest?: string;
   source?: 'contact_form' | 'product_inquiry' | 'project_brief' | 'other';
   consent: true;
+  // Phase 12 — website attribution, mirrors PublicFormSubmitInput below.
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+  landingPagePath?: string;
   /** Honeypot — must stay empty; never render this field visibly to a real visitor. */
   website?: string;
 }

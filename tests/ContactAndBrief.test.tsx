@@ -55,6 +55,24 @@ describe('ContactAndBrief', () => {
     expect(await screen.findByText('Thanks — we received your brief.')).toBeInTheDocument();
   });
 
+  it('captures UTM params and the landing page path from the real URL, not fabricated values', async () => {
+    window.history.pushState({}, '', '/solutions/ai-automation?utm_source=linkedin&utm_medium=social&utm_campaign=q4');
+    vi.mocked(publicApi.submitLead).mockResolvedValue({ message: 'Thanks — we received your brief.' });
+    render(<ContactAndBrief />);
+    fillRequiredFields();
+
+    fireEvent.click(screen.getByText('Request an AI Architecture Session'));
+
+    await waitFor(() => expect(publicApi.submitLead).toHaveBeenCalledTimes(1));
+    const payload = vi.mocked(publicApi.submitLead).mock.calls[0][0];
+    expect(payload.utmSource).toBe('linkedin');
+    expect(payload.utmMedium).toBe('social');
+    expect(payload.utmCampaign).toBe('q4');
+    expect(payload.landingPagePath).toBe('/solutions/ai-automation');
+
+    window.history.pushState({}, '', '/');
+  });
+
   it('shows an honest failure state instead of a fabricated success when the API call fails', async () => {
     vi.mocked(publicApi.submitLead).mockRejectedValue(
       new ApiClientError('Network error contacting the Artify Platform API.', { code: 'NETWORK_ERROR', status: 0 })

@@ -19,6 +19,7 @@ import { INDUSTRIES_DATA } from '../data/solutionsData';
 import { ProjectBriefSubmission } from '../types';
 import { publicApi } from '../lib/publicApi';
 import { ApiClientError } from '../lib/apiClient';
+import { readUtmParams, getLandingPagePath } from '../lib/utm';
 
 interface ContactAndBriefProps {
   prefilledBrief?: any;
@@ -100,6 +101,8 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
         productInterest: formData.industry,
         source: 'project_brief',
         consent: true,
+        ...readUtmParams(),
+        landingPagePath: getLandingPagePath(),
         website,
       });
       setSubmissionSuccess(true);
