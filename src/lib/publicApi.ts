@@ -49,6 +49,27 @@ export interface PublicPost {
   updatedAt: string;
 }
 
+// Phase 9 (Forms + Landing Pages + Conversion, Artify-Backend repo) —
+// mirrors server/schemas/editorSchemas.ts's block shape exactly. Kept
+// loose (`props: Record<string, unknown>`) rather than a full
+// discriminated union here: this client only needs to walk/render the
+// tree, not author or validate it (that happens server-side and in the
+// Control Center). An `image`/`testimonial` block's media reference
+// arrives already resolved to a real public URL (`resolvedUrl`/
+// `resolvedAvatarUrl`) — publicSiteService.ts resolves every mediaId
+// server-side since this site has no authenticated media-read path of
+// its own.
+export interface PublicEditorBlock {
+  id: string;
+  type: string;
+  props: Record<string, unknown>;
+  children?: PublicEditorBlock[];
+}
+export interface PublicEditorDocument {
+  version: 1;
+  blocks: PublicEditorBlock[];
+}
+
 export interface PublicPage {
   slug: string;
   title: string;
@@ -56,6 +77,8 @@ export interface PublicPage {
   excerpt: string | null;
   seo: Record<string, unknown>;
   featuredMedia: PublicMedia | null;
+  /** Non-null only once a page has a genuinely saved Site Editor composition (Phase 2) — `body` above is always the safe fallback otherwise. */
+  editorBlocks: PublicEditorDocument | null;
   publishedAt: string | null;
   updatedAt: string;
 }
@@ -194,6 +217,60 @@ export interface PublicLeadSubmission {
   website?: string;
 }
 
+// Phase 9 (Forms + Landing Pages + Conversion, Artify-Backend repo) —
+// mirrors server/schemas/formSchemas.ts exactly. "file" is not in this
+// union — the backend has no safe anonymous-upload path, so this
+// renderer never needs to draw a file input.
+export type PublicFormFieldType =
+  | 'text'
+  | 'email'
+  | 'tel'
+  | 'number'
+  | 'select'
+  | 'multiselect'
+  | 'checkbox'
+  | 'radio'
+  | 'date'
+  | 'textarea'
+  | 'hidden';
+
+export interface PublicFormFieldOption {
+  value: string;
+  label: string;
+}
+
+export interface PublicFormField {
+  key: string;
+  label: string;
+  type: PublicFormFieldType;
+  required: boolean;
+  placeholder?: string;
+  options?: PublicFormFieldOption[];
+  min?: number;
+  max?: number;
+  visibleWhen?: { fieldKey: string; equals: string };
+}
+
+export interface PublicForm {
+  id: string;
+  name: string;
+  slug: string;
+  fields: PublicFormField[];
+  successMessage: string;
+}
+
+export interface PublicFormSubmitInput {
+  data: Record<string, string | string[]>;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmTerm?: string;
+  utmContent?: string;
+  landingPagePath?: string;
+  /** Honeypot — must stay empty; never render this field visibly to a real visitor. */
+  website?: string;
+}
+
 export const publicApi = {
   async getSiteStatus(): Promise<{ configured: boolean }> {
     return apiClient.get<{ configured: boolean }>('/public/site');
@@ -293,6 +370,21 @@ export const publicApi = {
 
   async submitLead(input: PublicLeadSubmission): Promise<{ message: string }> {
     return apiClient.post<{ message: string }>('/public/leads', input);
+  },
+
+  /** Real field definitions for the public site's own form renderer (PublicForm.tsx) — 404s for an unknown slug or an ARCHIVED form, same contract as /submit. */
+  async getForm(slug: string): Promise<PublicForm> {
+    const { form } = await apiClient.get<{ form: PublicForm }>(`/public/forms/${encodeURIComponent(slug)}`);
+    return form;
+  },
+
+  async getFormById(id: string): Promise<PublicForm> {
+    const { form } = await apiClient.get<{ form: PublicForm }>(`/public/forms/by-id/${encodeURIComponent(id)}`);
+    return form;
+  },
+
+  async submitForm(slug: string, input: PublicFormSubmitInput): Promise<{ message: string }> {
+    return apiClient.post<{ message: string }>(`/public/forms/${encodeURIComponent(slug)}/submit`, input);
   },
 };
 

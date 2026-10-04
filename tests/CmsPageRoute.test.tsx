@@ -26,6 +26,7 @@ const REAL_PAGE = {
   excerpt: null,
   seo: {},
   featuredMedia: null,
+  editorBlocks: null,
   publishedAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
 };
@@ -48,6 +49,32 @@ describe('CmsPageRoute', () => {
 
     expect(publicApi.getPageBySlug).toHaveBeenCalledWith(REAL_PAGE.slug);
     expect(await screen.findByText('About Our Mission')).toBeInTheDocument();
+    expect(await screen.findByText('Real CMS page content.')).toBeInTheDocument();
+  });
+
+  // Phase 9 (Forms + Landing Pages + Conversion) — a page with a genuine
+  // Site Editor composition renders through the real block renderer
+  // instead of the flattened body-HTML fallback; a page with none (every
+  // page before this phase, and the overwhelming majority after it) is
+  // completely unaffected.
+  it('renders a page with a real editorBlocks composition via the block renderer, not the flattened body fallback', async () => {
+    vi.mocked(publicApi.getPageBySlug).mockResolvedValue({
+      ...REAL_PAGE,
+      body: '<p>Stale flattened fallback — must not render when editorBlocks is present.</p>',
+      editorBlocks: { version: 1, blocks: [{ id: 'h', type: 'heading', props: { text: 'Built with the Site Editor', level: 2 } }] },
+    });
+
+    render(<CmsPageRoute slug={REAL_PAGE.slug} theme="dark" onNavigateHome={noop} />);
+
+    expect(await screen.findByText('Built with the Site Editor')).toBeInTheDocument();
+    expect(screen.queryByText(/Stale flattened fallback/)).not.toBeInTheDocument();
+  });
+
+  it('falls back to the flattened body when editorBlocks is present but genuinely empty', async () => {
+    vi.mocked(publicApi.getPageBySlug).mockResolvedValue({ ...REAL_PAGE, editorBlocks: { version: 1, blocks: [] } });
+
+    render(<CmsPageRoute slug={REAL_PAGE.slug} theme="dark" onNavigateHome={noop} />);
+
     expect(await screen.findByText('Real CMS page content.')).toBeInTheDocument();
   });
 

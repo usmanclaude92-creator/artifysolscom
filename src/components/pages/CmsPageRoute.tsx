@@ -19,6 +19,7 @@ import { FileQuestion, ArrowLeft } from 'lucide-react';
 import { publicApi, PublicPage } from '../../lib/publicApi';
 import { ApiClientError } from '../../lib/apiClient';
 import { updatePageSeo } from '../../utils/seo';
+import { PublicBlockRenderer } from '../blocks/PublicBlockRenderer';
 
 // Mirrors server/utils/sanitizeHtml.ts in Artify-Backend exactly (same list
 // BlogPostPage.tsx uses) — a client-side re-sanitization pass never strips
@@ -190,10 +191,14 @@ export const CmsPageRoute: React.FC<CmsPageRouteProps> = ({ slug, theme, onNavig
             {page.title}
           </h1>
 
-          <div
-            className={`artify-post-body max-w-none ${isLight ? 'artify-post-body-light' : 'artify-post-body-dark'}`}
-            dangerouslySetInnerHTML={{ __html: contentHtml }}
-          />
+          {page.editorBlocks && page.editorBlocks.blocks.length > 0 ? (
+            <PublicBlockRenderer blocks={page.editorBlocks.blocks} />
+          ) : (
+            <div
+              className={`artify-post-body max-w-none ${isLight ? 'artify-post-body-light' : 'artify-post-body-dark'}`}
+              dangerouslySetInnerHTML={{ __html: contentHtml }}
+            />
+          )}
         </div>
       </div>
     </div>
