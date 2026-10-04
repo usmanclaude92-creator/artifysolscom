@@ -17,7 +17,6 @@ import {
   Building2,
   Bot,
   Search,
-  Palette,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -36,6 +35,7 @@ interface NavbarProps {
   onNavigateToPlatform?: () => void;
   onNavigateToIntelligence?: () => void;
   onNavigateToEcosystem?: () => void;
+  onNavigateToUpdates?: () => void;
   onSelectProduct?: (product: { slug: string }) => void;
   onOpenGlobalSearch?: () => void;
   onOpenAuditSpec?: () => void;
@@ -60,6 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateToPlatform,
   onNavigateToIntelligence,
   onNavigateToEcosystem,
+  onNavigateToUpdates,
   onSelectProduct,
   onOpenGlobalSearch,
   onOpenAuditSpec,
@@ -168,7 +169,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </picture>
         </a>
 
-        {/* Desktop Primary Navigation (Our Solutions | Industries | Ecosystem | Insights | About Artify) */}
+        {/* Desktop Primary Navigation (Core Belief | Our Ecosystem | Solutions | Industries | Insights | Updates) */}
         <nav
           aria-label="Main Navigation"
           className={`hidden md:flex items-center gap-1 lg:gap-1.5 xl:gap-2 border rounded-full px-2.5 sm:px-3 lg:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
@@ -177,7 +178,37 @@ export const Navbar: React.FC<NavbarProps> = ({
               : 'bg-[#0d0d14]/80 border-white/[0.08] text-zinc-300'
           }`}
         >
-          {/* 1. Our Solutions Link */}
+          {/* 1. Core Belief (About Artify page) */}
+          <a
+            href="/about"
+            onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
+            id="nav-link-core-belief"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              activeRoute === 'about'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            Core Belief
+          </a>
+
+          {/* 2. Our Ecosystem */}
+          <a
+            href="#ecosystem"
+            onClick={(e) => handleSectionClick(e, 'ecosystem', onNavigateToEcosystem)}
+            id="nav-link-ecosystem"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            Our Ecosystem
+          </a>
+
+          {/* 3. Solutions */}
           <a
             href="/solutions"
             onClick={(e) =>
@@ -194,10 +225,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Our Solutions
+            Solutions
           </a>
 
-          {/* 2. Industries Link */}
+          {/* 4. Industries */}
           <a
             href="/industries"
             onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
@@ -213,21 +244,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             Industries
           </a>
 
-          {/* 3. Ecosystem Link */}
-          <a
-            href="#ecosystem"
-            onClick={(e) => handleSectionClick(e, 'ecosystem')}
-            id="nav-link-ecosystem"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              isLight
-                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
-            }`}
-          >
-            Ecosystem
-          </a>
-
-          {/* 4. Insights Link (Blog & Whitepapers) */}
+          {/* 5. Insights */}
           <a
             href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
@@ -244,20 +261,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
           </a>
 
-          {/* 5. About Artify Link */}
+          {/* 6. Updates */}
           <a
-            href="/about"
-            onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
-            id="nav-link-about-artify"
+            href="/updates"
+            onClick={(e) => handleRouteClick(e, onNavigateToUpdates || onNavigateToBlog)}
+            id="nav-link-updates"
             className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'about'
+              activeRoute === 'updates'
                 ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
                 ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            About Artify
+            Updates
           </a>
         </nav>
 
@@ -304,23 +321,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <Search className="w-4 h-4 text-violet-400" />
           </button>
-
-          {/* Premium Themes & Studio Trigger */}
-          {onOpenThemesModal && (
-            <button
-              onClick={onOpenThemesModal}
-              id="nav-premium-themes-btn"
-              className={`flex items-center justify-center p-2 rounded-lg border transition-all duration-200 shadow-sm focus:outline-none ${
-                isLight
-                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
-                  : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-300 hover:text-white'
-              }`}
-              title="Preview Premium Themes & Templates"
-              aria-label="Preview Premium Themes"
-            >
-              <Palette className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-            </button>
-          )}
 
           {/* Theme Toggle */}
           <button
@@ -780,30 +780,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                 )}
               </div>
-
-              {/* Theme Studio Trigger */}
-              {onOpenThemesModal && (
-                <div className="pt-2">
-                  <button
-                    onClick={() => {
-                      setSideMenuOpen(false);
-                      onOpenThemesModal();
-                    }}
-                    id="drawer-premium-themes-btn"
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-semibold transition-colors duration-300 ${
-                      isLight
-                        ? 'border-slate-200 bg-slate-100 text-slate-800'
-                        : 'border-white/[0.08] bg-[#12121a] text-zinc-200'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Palette className="w-4 h-4 text-amber-500 dark:text-amber-400" />
-                      <span>Preview Premium Themes</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 opacity-50" />
-                  </button>
-                </div>
-              )}
 
               {/* Theme Toggle */}
               <div className="pt-2">
