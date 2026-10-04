@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Layers, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Layers, CheckCircle2, Sparkles, ArrowRight } from 'lucide-react';
 import { publicApi, PublicProduct, PublicProductModule } from '../../lib/publicApi';
 import { updatePageSeo } from '../../utils/seo';
+import { PublicForm } from '../forms/PublicForm';
+
+const TYPE_LABEL: Record<PublicProduct['type'], string> = { PRODUCT: 'Product', SERVICE: 'Service', SOLUTION: 'Solution' };
 
 interface AiProductDetailPageProps {
   productSlug: string;
@@ -16,6 +19,7 @@ interface AiProductDetailPageProps {
 export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
   productSlug,
   onBackToSolutions,
+  onSelectProduct,
   onNavigateToContact,
   theme = 'dark',
 }) => {
@@ -51,12 +55,13 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
   useEffect(() => {
     if (!product) return;
     const cleanup = updatePageSeo({
-      title: `${product.name} | Artify Solutions`,
-      description: product.shortDescription,
+      title: product.seo?.metaTitle || `${product.name} | Artify Solutions`,
+      description: product.seo?.metaDescription || product.shortDescription,
       canonicalUrl: typeof window !== 'undefined' ? `${window.location.origin}/ai-solutions/${product.slug}` : `https://artifysols.com/ai-solutions/${product.slug}`,
       ogType: 'website',
       ogTitle: product.name,
       ogDescription: product.shortDescription,
+      ogImage: product.seo?.ogImage || product.featuredMedia?.url,
       twitterCard: 'summary_large_image',
     });
     return () => cleanup();
@@ -105,15 +110,25 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
       {backButton}
 
       <div className="max-w-3xl space-y-4 mb-10">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
-            {product.type === 'PRODUCT' ? 'Product' : 'Service'}
+            {TYPE_LABEL[product.type]}
           </span>
           {product.isFeatured && (
             <span className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> Featured
             </span>
           )}
+          {product.category && (
+            <span className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+              {product.category.name}
+            </span>
+          )}
+          {product.industries?.map((ind) => (
+            <span key={ind.slug} className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              {ind.name}
+            </span>
+          ))}
         </div>
         <h1 className={`text-3xl sm:text-4xl font-bold font-display tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
           {product.name}
@@ -121,25 +136,92 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
         <p className={`text-base leading-relaxed ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>{product.shortDescription}</p>
       </div>
 
+      {product.featuredMedia && (
+        <div className="max-w-5xl mb-10 rounded-2xl overflow-hidden aspect-[21/9]">
+          <img src={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className="w-full h-full object-cover" />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-6">
+          {!!product.businessProblem && (
+            <div className={`p-5 rounded-2xl border ${isLight ? 'bg-amber-50 border-amber-200' : 'bg-amber-500/5 border-amber-500/20'}`}>
+              <h2 className={`text-xs font-bold uppercase tracking-wide mb-1.5 ${isLight ? 'text-amber-700' : 'text-amber-300'}`}>The problem</h2>
+              <p className={`text-sm leading-relaxed ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>{product.businessProblem}</p>
+            </div>
+          )}
+
           {product.description.split('\n\n').map((paragraph, idx) => (
             <p key={idx} className={`text-sm leading-relaxed whitespace-pre-line ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
               {paragraph}
             </p>
           ))}
+
+          {!!product.benefits?.length && (
+            <div>
+              <h2 className={`text-sm font-bold mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Benefits</h2>
+              <ul className="space-y-2">
+                {product.benefits.map((b, i) => (
+                  <li key={i} className={`flex items-start gap-2 text-sm ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!!product.features?.length && (
+            <div>
+              <h2 className={`text-sm font-bold mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Features</h2>
+              <ul className="space-y-2">
+                {product.features.map((f, i) => (
+                  <li key={i} className={`flex items-start gap-2 text-sm ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
+                    <CheckCircle2 className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!!product.relatedProducts?.length && (
+            <div>
+              <h2 className={`text-sm font-bold mb-3 ${isLight ? 'text-slate-900' : 'text-white'}`}>Related</h2>
+              <div className="flex flex-wrap gap-2">
+                {product.relatedProducts.map((r) => (
+                  <button
+                    key={r.slug}
+                    onClick={() => onSelectProduct({ slug: r.slug })}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+                      isLight ? 'bg-white border-slate-200 hover:border-violet-400 text-slate-700' : 'bg-[#0d0d14] border-white/[0.08] hover:border-violet-500/40 text-zinc-300'
+                    }`}
+                  >
+                    {r.name} <ArrowRight className="w-3 h-3" />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">
-          <div className={`p-6 rounded-2xl border ${isLight ? 'bg-white border-slate-200' : 'bg-[#0d0d14] border-white/[0.08]'}`}>
-            <h2 className={`text-sm font-bold mb-4 ${isLight ? 'text-slate-900' : 'text-white'}`}>Interested?</h2>
-            <button
-              onClick={() => onNavigateToContact()}
-              className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold shadow-md shadow-violet-600/30"
-            >
-              Request a Consultation
-            </button>
-          </div>
+          {product.ctaForm ? (
+            <div className={`p-6 rounded-2xl border ${isLight ? 'bg-white border-slate-200' : 'bg-[#0d0d14] border-white/[0.08]'}`}>
+              <h2 className={`text-sm font-bold mb-4 ${isLight ? 'text-slate-900' : 'text-white'}`}>{product.ctaForm.name}</h2>
+              <PublicForm formId={product.ctaForm.id} />
+            </div>
+          ) : (
+            <div className={`p-6 rounded-2xl border ${isLight ? 'bg-white border-slate-200' : 'bg-[#0d0d14] border-white/[0.08]'}`}>
+              <h2 className={`text-sm font-bold mb-4 ${isLight ? 'text-slate-900' : 'text-white'}`}>Interested?</h2>
+              <button
+                onClick={() => onNavigateToContact()}
+                className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold shadow-md shadow-violet-600/30"
+              >
+                Request a Consultation
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

@@ -11,7 +11,9 @@ interface AiSolutionsPageProps {
   theme?: 'dark' | 'light';
 }
 
-type TypeFilter = 'ALL' | 'PRODUCT' | 'SERVICE';
+// Phase 10 (Products + Services + Solutions, Artify-Backend repo) — SOLUTION
+// added to the same real catalog filter; still no second system.
+type TypeFilter = 'ALL' | 'PRODUCT' | 'SERVICE' | 'SOLUTION';
 
 export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
   onSelectProduct,
@@ -98,7 +100,7 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-2">
-          {(['ALL', 'PRODUCT', 'SERVICE'] as TypeFilter[]).map((t) => (
+          {(['ALL', 'PRODUCT', 'SERVICE', 'SOLUTION'] as TypeFilter[]).map((t) => (
             <button
               key={t}
               onClick={() => setTypeFilter(t)}
@@ -110,7 +112,7 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
                   : 'bg-[#12121a] border-white/[0.08] text-zinc-300 hover:bg-white/[0.05] hover:text-white'
               }`}
             >
-              {t === 'ALL' ? 'All' : t === 'PRODUCT' ? 'Products' : 'Services'}
+              {t === 'ALL' ? 'All' : t === 'PRODUCT' ? 'Products' : t === 'SERVICE' ? 'Services' : 'Solutions'}
             </button>
           ))}
         </div>
@@ -170,7 +172,7 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
-                    {product.type === 'PRODUCT' ? 'Product' : 'Service'}
+                    {product.type === 'PRODUCT' ? 'Product' : product.type === 'SERVICE' ? 'Service' : 'Solution'}
                   </span>
                   {product.isFeatured && (
                     <span className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1">

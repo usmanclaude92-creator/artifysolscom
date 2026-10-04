@@ -59,4 +59,30 @@ describe('AiSolutionsPage', () => {
 
     await waitFor(() => expect(screen.getByText('No products published yet')).toBeInTheDocument());
   });
+
+  // Phase 10 (Products + Services + Solutions, Artify-Backend repo) — a real
+  // SOLUTION-type catalog row renders with its own filter and badge, not
+  // folded into "Product"/"Service".
+  it('filters to real SOLUTION-type catalog rows and labels them "Solution"', async () => {
+    vi.mocked(publicApi.listProducts).mockResolvedValue({
+      products: [
+        { slug: 'real-solution', code: 'SOL-1', name: 'Zero-Touch Close', type: 'SOLUTION', shortDescription: 'Real solution copy.', description: 'Full.', isFeatured: false, displayOrder: 0 },
+        { slug: 'real-product', code: 'RP-1', name: 'Real Product Name', type: 'PRODUCT', shortDescription: 'A real description.', description: 'Full.', isFeatured: false, displayOrder: 1 },
+      ],
+      total: 2,
+    });
+
+    render(
+      <AiSolutionsPage onSelectProduct={noop} onOpenConsultant={noop} onOpenSolutionBuilder={noop} onNavigateToContact={noop} />
+    );
+
+    expect(await screen.findByText('Zero-Touch Close')).toBeInTheDocument();
+    expect(screen.getByText('Solution')).toBeInTheDocument();
+
+    screen.getByRole('button', { name: 'Solutions' }).click();
+    await waitFor(() => {
+      expect(screen.getByText('Zero-Touch Close')).toBeInTheDocument();
+      expect(screen.queryByText('Real Product Name')).not.toBeInTheDocument();
+    });
+  });
 });

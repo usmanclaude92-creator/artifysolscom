@@ -101,15 +101,58 @@ export interface PublicNavigationMenu {
   items: PublicMenuItem[];
 }
 
+// Phase 10 (Products + Services + Solutions, Artify-Backend repo) — a
+// Service/Solution is the exact same catalog row as a Product
+// (`type: 'SOLUTION'` added), never a second system. The richer fields
+// below (category/featuredMedia/benefits/features/businessProblem/seo/
+// ctaForm/relatedProducts/industries) are only ever present on the
+// single-product detail response (`getProductBySlug`) — the list
+// response (`listProducts`) stays the same flat shape it always was, so
+// every existing caller of `listProducts` is unaffected.
+export interface PublicProductCategory {
+  slug: string;
+  name: string;
+  description: string | null;
+}
+
+export interface PublicIndustry {
+  slug: string;
+  name: string;
+  description: string | null;
+}
+
+export interface PublicRelatedProduct {
+  slug: string;
+  name: string;
+  type: 'PRODUCT' | 'SERVICE' | 'SOLUTION';
+}
+
+export interface PublicProductCtaForm {
+  id: string;
+  name: string;
+  slug: string;
+  fields: PublicFormField[];
+  successMessage: string | null;
+}
+
 export interface PublicProduct {
   slug: string;
   code: string;
   name: string;
-  type: 'PRODUCT' | 'SERVICE';
+  type: 'PRODUCT' | 'SERVICE' | 'SOLUTION';
   shortDescription: string;
   description: string;
   isFeatured: boolean;
   displayOrder: number;
+  category?: PublicProductCategory | null;
+  featuredMedia?: PublicMedia | null;
+  benefits?: string[];
+  features?: string[];
+  businessProblem?: string | null;
+  seo?: { metaTitle?: string; metaDescription?: string; ogImage?: string; [key: string]: unknown };
+  ctaForm?: PublicProductCtaForm | null;
+  relatedProducts?: PublicRelatedProduct[];
+  industries?: PublicIndustry[];
 }
 
 export interface PublicProductModule {
@@ -342,7 +385,9 @@ export const publicApi = {
     return tags;
   },
 
-  async listProducts(params: { page?: number; limit?: number; search?: string; type?: 'PRODUCT' | 'SERVICE' } = {}): Promise<{
+  async listProducts(
+    params: { page?: number; limit?: number; search?: string; type?: 'PRODUCT' | 'SERVICE' | 'SOLUTION'; categorySlug?: string; industrySlug?: string } = {}
+  ): Promise<{
     products: PublicProduct[];
     total: number;
   }> {
@@ -351,6 +396,8 @@ export const publicApi = {
     if (params.limit) query.set('limit', String(params.limit));
     if (params.search) query.set('search', params.search);
     if (params.type) query.set('type', params.type);
+    if (params.categorySlug) query.set('categorySlug', params.categorySlug);
+    if (params.industrySlug) query.set('industrySlug', params.industrySlug);
     const qs = query.toString();
     const { products } = await apiClient.get<{ products: PublicProduct[] }>(`/public/products${qs ? `?${qs}` : ''}`);
     return { products, total: products.length };
@@ -359,6 +406,16 @@ export const publicApi = {
   async getProductBySlug(slug: string): Promise<PublicProduct> {
     const { product } = await apiClient.get<{ product: PublicProduct }>(`/public/products/${encodeURIComponent(slug)}`);
     return product;
+  },
+
+  async listProductCategories(): Promise<PublicProductCategory[]> {
+    const { categories } = await apiClient.get<{ categories: PublicProductCategory[] }>('/public/product-categories');
+    return categories;
+  },
+
+  async listIndustries(): Promise<PublicIndustry[]> {
+    const { industries } = await apiClient.get<{ industries: PublicIndustry[] }>('/public/industries');
+    return industries;
   },
 
   async getProductModules(slug: string): Promise<PublicProductModule[]> {
