@@ -101,7 +101,7 @@ describe('CaseStudyDetailPage', () => {
   });
 
   it('shows an honest not-found state for an unknown slug, never a blank page', async () => {
-    vi.mocked(publicApi.getCaseStudyBySlug).mockRejectedValue(new ApiClientError('Not found', 404));
+    vi.mocked(publicApi.getCaseStudyBySlug).mockRejectedValue(new ApiClientError('Not found', { code: 'not_found', status: 404 }));
     vi.mocked(publicApi.getRedirectForPath).mockResolvedValue(null);
 
     render(<CaseStudyDetailPage {...BASE_PROPS} slug="never-existed" />);
