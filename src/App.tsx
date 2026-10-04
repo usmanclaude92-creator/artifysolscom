@@ -42,6 +42,7 @@ import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
 import { applyPublishedSiteSettings } from './utils/applySiteSettings';
 import { publicApi, PublicPage } from './lib/publicApi';
+import { analytics } from './lib/analytics';
 import {
   AnimatedSection,
   StaggerContainer,
@@ -269,6 +270,19 @@ function MainAppContent() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  // Phase 15 (Analytics + Reporting, docs/ANALYTICS_ARCHITECTURE.md) — real
+  // first-party page-view beacon. Fires once on initial load and again on
+  // every client-side navigation: navigateToRoute() calls
+  // window.history.pushState synchronously before the route state update
+  // that triggers this effect commits, so window.location.pathname below
+  // is always already the destination path, including for this effect's
+  // own initial run and for browser back/forward (popstate, handled above,
+  // also changes one of this effect's own dependencies).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    analytics.trackPageView(window.location.pathname);
+  }, [activeRoute, activeProductSlug, activePageSlug, activeCaseStudySlug]);
 
   // Theme synchronization with atomic DOM updates
   const applyThemeToDOM = (newTheme: 'light' | 'dark') => {
