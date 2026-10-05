@@ -145,7 +145,7 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Left Column: Brand Message & Hero Copy */}
           <motion.div
-            className="lg:col-span-8 xl:col-span-7 flex flex-col items-start text-left"
+            className="lg:col-span-8 flex flex-col items-start text-left"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -167,12 +167,12 @@ export const Hero: React.FC<HeroProps> = ({
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl mb-3.5 sm:mb-6">
+            <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl lg:max-w-none mb-3.5 sm:mb-6">
               Fully Customized and Adaptive Eco-System designed around your Business enhanced by Next-generation AI, Intelligent Automation and connected Technology.
             </p>
 
             {/* Core Capability Callout */}
-            <div className="relative w-full max-w-2xl p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
+            <div className="relative w-full max-w-2xl lg:max-w-none p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
               <div className="flex items-start sm:items-center gap-3">
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
@@ -231,7 +231,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Right Column: Interactive Neural Ecosystem Visual */}
           <motion.div
-            className="lg:col-span-4 xl:col-span-5 flex flex-col items-end justify-center relative w-full"
+            className="lg:col-span-4 flex flex-col items-center justify-center relative w-full"
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
