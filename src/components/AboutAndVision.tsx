@@ -70,12 +70,12 @@ Estimated Agent Operations: 500,000+ monthly autonomous tasks`,
             <span>OUR CORE BELIEF</span>
           </div>
 
-          <h2 className="text-4xl sm:text-6xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-8">
+          <h1 className="text-4xl sm:text-6xl font-extrabold text-foreground tracking-tight leading-tight font-display mb-8">
             We Believe Software{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-400 to-sky-500">
               Should Think.
             </span>
-          </h2>
+          </h1>
 
           <p className="text-lg sm:text-xl text-foreground-muted leading-relaxed font-normal mb-8">
             For three decades, enterprise software has been passive—silent databases waiting for humans to click buttons, re-enter numbers, and manually copy data across screens.

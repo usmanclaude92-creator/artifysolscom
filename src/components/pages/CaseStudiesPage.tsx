@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Sparkles, ArrowRight, BookOpen, Layers, CheckCircle2, TrendingUp, Award } from 'lucide-react';
 import { CaseStudiesSection } from '../CaseStudiesSection';
+import { ListSkeleton } from '../ListSkeleton';
 import { updatePageSeo } from '../../utils/seo';
 import { publicApi, PublicCaseStudy } from '../../lib/publicApi';
 
@@ -22,6 +23,7 @@ interface CaseStudiesPageProps {
  */
 const RealCaseStudiesSection: React.FC<{ isLight: boolean; onSelectCaseStudy?: (slug: string) => void }> = ({ isLight, onSelectCaseStudy }) => {
   const [caseStudies, setCaseStudies] = useState<PublicCaseStudy[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,12 +32,22 @@ const RealCaseStudiesSection: React.FC<{ isLight: boolean; onSelectCaseStudy?: (
       .then(({ caseStudies: rows }) => {
         if (!cancelled) setCaseStudies(rows);
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setLoaded(true);
+      });
     return () => {
       cancelled = true;
     };
   }, []);
 
+  if (!loaded) {
+    return (
+      <div className="w-[92%] sm:w-[88%] max-w-7xl mx-auto mb-16">
+        <ListSkeleton count={3} isLight={isLight} minHeight={340} label="Loading case studies" />
+      </div>
+    );
+  }
   if (caseStudies.length === 0) return null;
 
   return (

@@ -1,3 +1,4 @@
+import { ListSkeleton } from './ListSkeleton';
 import React, { useState, useEffect } from 'react';
 import { Sparkles, ArrowRight, Calendar, Clock, ArrowUpRight, BookOpen } from 'lucide-react';
 import { publicApi, mapPostToBlogPost } from '../lib/publicApi';
@@ -94,12 +95,8 @@ export const BlogPreviewSection: React.FC<BlogPreviewSectionProps> = ({
           </button>
         </div>
 
-        {/* Loading state */}
-        {isLoading && (
-          <div className="p-10 text-center rounded-2xl border border-white/[0.08] bg-[#0c0c14] text-xs text-zinc-400">
-            Loading articles…
-          </div>
-        )}
+        {/* Loading state — reserves space to avoid layout shift */}
+        {isLoading && <ListSkeleton count={3} minHeight={300} label="Loading articles" />}
 
         {/* Honest error state — never a fabricated fallback article list */}
         {!isLoading && loadError && (

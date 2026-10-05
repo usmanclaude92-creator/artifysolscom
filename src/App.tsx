@@ -2,38 +2,23 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustStatement } from './components/TrustStatement';
-import { AdaptiveEcosystem } from './components/AdaptiveEcosystem';
-import { NextGenAiLayer } from './components/NextGenAiLayer';
-import { AdaptiveIntelligence } from './components/AdaptiveIntelligence';
-import { EnterpriseSolutions } from './components/EnterpriseSolutions';
-import { IndustryShowcase } from './components/IndustryShowcase';
-import { LiveScenarios } from './components/LiveScenarios';
-import { EnterpriseArchitecture } from './components/EnterpriseArchitecture';
-import { SecurityAndSovereignty } from './components/SecurityAndSovereignty';
-import { DeploymentMethodology } from './components/DeploymentMethodology';
 import { WhatWeBuild } from './components/WhatWeBuild';
 import { AiAgentsSection } from './components/AiAgentsSection';
-import { AiOrchestration } from './components/AiOrchestration';
 import { IndustryExplorer } from './components/IndustryExplorer';
 import { SolutionsByFunction } from './components/SolutionsByFunction';
 import { ArtifyDifference } from './components/ArtifyDifference';
-import { BeforeAfterSlider } from './components/BeforeAfterSlider';
-import { AiCommandCenter } from './components/AiCommandCenter';
 import { IntegrationsEcosystem } from './components/IntegrationsEcosystem';
 import { SecurityAndGovernance } from './components/SecurityAndGovernance';
-import { HumanPlusAi } from './components/HumanPlusAi';
 import { CustomizationShowcase } from './components/CustomizationShowcase';
 import { CaseStudiesSection } from './components/CaseStudiesSection';
 import { TechnologyStack } from './components/TechnologyStack';
 import { AboutAndVision } from './components/AboutAndVision';
-import { ContactAndBrief } from './components/ContactAndBrief';
 import { Footer } from './components/Footer';
+import { Deferred } from './components/Deferred';
 import { BreadcrumbNav } from './components/BreadcrumbNav';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AuthModal } from './components/portal/AuthModal';
 import { BlogPreviewSection } from './components/BlogPreviewSection';
-import { BusinessMap } from './components/BusinessMap';
-import { PremiumThemesSection } from './components/PremiumThemesSection';
 import { PremiumThemesModal } from './components/PremiumThemesModal';
 import { PREMIUM_THEMES } from './data/premiumThemesData';
 import { Bot, Sparkles, ArrowRight, MessageSquare, Zap, Cpu, Layers } from 'lucide-react';
@@ -54,6 +39,22 @@ import { motion } from 'framer-motion';
 // Code-splitting: the home route is the only one eagerly bundled. Every other
 // route, the client portal (which pulls in the chart library) and the modal
 // overlays are fetched on demand, keeping them out of the initial payload.
+const BusinessMap = lazy(() => import('./components/BusinessMap').then((m) => ({ default: m.BusinessMap })));
+const PremiumThemesSection = lazy(() => import('./components/PremiumThemesSection').then((m) => ({ default: m.PremiumThemesSection })));
+const AdaptiveEcosystem = lazy(() => import('./components/AdaptiveEcosystem').then((m) => ({ default: m.AdaptiveEcosystem })));
+const NextGenAiLayer = lazy(() => import('./components/NextGenAiLayer').then((m) => ({ default: m.NextGenAiLayer })));
+const AdaptiveIntelligence = lazy(() => import('./components/AdaptiveIntelligence').then((m) => ({ default: m.AdaptiveIntelligence })));
+const EnterpriseSolutions = lazy(() => import('./components/EnterpriseSolutions').then((m) => ({ default: m.EnterpriseSolutions })));
+const IndustryShowcase = lazy(() => import('./components/IndustryShowcase').then((m) => ({ default: m.IndustryShowcase })));
+const LiveScenarios = lazy(() => import('./components/LiveScenarios').then((m) => ({ default: m.LiveScenarios })));
+const AiOrchestration = lazy(() => import('./components/AiOrchestration').then((m) => ({ default: m.AiOrchestration })));
+const BeforeAfterSlider = lazy(() => import('./components/BeforeAfterSlider').then((m) => ({ default: m.BeforeAfterSlider })));
+const AiCommandCenter = lazy(() => import('./components/AiCommandCenter').then((m) => ({ default: m.AiCommandCenter })));
+const EnterpriseArchitecture = lazy(() => import('./components/EnterpriseArchitecture').then((m) => ({ default: m.EnterpriseArchitecture })));
+const SecurityAndSovereignty = lazy(() => import('./components/SecurityAndSovereignty').then((m) => ({ default: m.SecurityAndSovereignty })));
+const DeploymentMethodology = lazy(() => import('./components/DeploymentMethodology').then((m) => ({ default: m.DeploymentMethodology })));
+const HumanPlusAi = lazy(() => import('./components/HumanPlusAi').then((m) => ({ default: m.HumanPlusAi })));
+const ContactAndBrief = lazy(() => import('./components/ContactAndBrief').then((m) => ({ default: m.ContactAndBrief })));
 const AiSolutionsPage = lazy(() =>
   import('./components/solutions/AiSolutionsPage').then((m) => ({ default: m.AiSolutionsPage }))
 );
@@ -782,15 +783,18 @@ function MainAppContent() {
             </AnimatedSection>
 
             {/* Signature Architecture Flow: The Business Map */}
+            <Deferred>
             <BusinessMap
               onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
               onOpenConsultant={() => setIsConsultantOpen(true)}
               onNavigateToContact={handleNavigateToContact}
               theme={theme}
             />
+            </Deferred>
 
             {/* Bespoke Enterprise Design Systems & Themes Studio Showcase */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <PremiumThemesSection
                 onOpenThemesModal={() => setIsThemesModalOpen(true)}
                 onApplyTheme={handleApplyPremiumTheme}
@@ -798,89 +802,118 @@ function MainAppContent() {
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 theme={theme}
               />
+              </Deferred>
             </AnimatedSection>
 
             {/* 3. The Adaptive Enterprise Ecosystem (16 Integrated Nodes) */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <AdaptiveEcosystem
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 onNavigateToContact={handleNavigateToContact}
               />
+              </Deferred>
             </AnimatedSection>
 
             {/* 4. Enterprise Intelligence Layer: Next-Gen AI Fabric */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <NextGenAiLayer onOpenConsultant={() => setIsConsultantOpen(true)} />
+              </Deferred>
             </AnimatedSection>
 
             {/* 5. Continuous Enterprise Adaptability: Software That Evolves With You */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <AdaptiveIntelligence onNavigateToContact={handleNavigateToContact} />
+              </Deferred>
             </AnimatedSection>
 
             {/* 6. Specialized Enterprise Solutions: 6 Core Business Ecosystems */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <EnterpriseSolutions
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 onNavigateToContact={handleNavigateToContact}
               />
+              </Deferred>
             </AnimatedSection>
 
             {/* 7. Domain-Specific Solutions: Industry Architecture */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <IndustryShowcase
                 onSelectIndustry={(id) => handleOpenSolutionBuilder(id)}
                 onNavigateToContact={handleNavigateToContact}
                 onNavigateToAllIndustries={() => navigateToRoute('industries', '/industries')}
               />
+              </Deferred>
             </AnimatedSection>
 
             {/* 8. Live Real-World Enterprise Scenarios */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <LiveScenarios
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 onNavigateToContact={handleNavigateToContact}
               />
+              </Deferred>
             </AnimatedSection>
 
             {/* 9. Cross-Agent Orchestration Engine */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <AiOrchestration />
+              </Deferred>
             </AnimatedSection>
 
             {/* 10. Operational Transformation: Before vs. After */}
             <AnimatedSection variant="scale-up">
+              <Deferred>
               <BeforeAfterSlider />
+              </Deferred>
             </AnimatedSection>
 
             {/* 11. Conversational Business Intelligence: AI Command Center */}
             <AnimatedSection variant="blur-up">
+              <Deferred>
               <AiCommandCenter />
+              </Deferred>
             </AnimatedSection>
 
             {/* 12. Enterprise Architecture: 5-Layer Production Blueprint */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <EnterpriseArchitecture onNavigateToContact={handleNavigateToContact} />
+              </Deferred>
             </AnimatedSection>
 
             {/* 13. Security, Compliance & Data Sovereignty */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <SecurityAndSovereignty onNavigateToContact={handleNavigateToContact} />
+              </Deferred>
             </AnimatedSection>
 
             {/* 14. Rapid Deployment Methodology: From Audit to Production */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <DeploymentMethodology onNavigateToContact={handleNavigateToContact} />
+              </Deferred>
             </AnimatedSection>
 
             {/* 15. The Human + AI Symbiotic Enterprise */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <HumanPlusAi />
+              </Deferred>
             </AnimatedSection>
 
             {/* 16. Technical Contact & Solution Brief */}
             <AnimatedSection variant="fade-up">
+              <Deferred>
               <ContactAndBrief prefilledBrief={prefilledBrief} />
+              </Deferred>
             </AnimatedSection>
           </>
         )}

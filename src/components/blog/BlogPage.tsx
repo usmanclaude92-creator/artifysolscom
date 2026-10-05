@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { BlogPost } from '../../types';
 import { publicApi, mapPostToBlogPost } from '../../lib/publicApi';
+import { ListSkeleton } from '../ListSkeleton';
 import { ApiClientError } from '../../lib/apiClient';
 import { BlogPostPage } from './BlogPostPage';
 import { updatePageSeo, generateCategoryKeywords, generateDynamicKeywords } from '../../utils/seo';
@@ -371,16 +372,8 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           </p>
         </div>
 
-        {/* Loading state */}
-        {isLoading && (
-          <div
-            className={`p-10 text-center rounded-2xl border text-xs ${
-              isLight ? 'bg-white border-slate-200 text-slate-500' : 'bg-[#0e0e16] border-white/[0.08] text-zinc-400'
-            }`}
-          >
-            Loading articles…
-          </div>
-        )}
+        {/* Loading state — reserves card-grid space to avoid layout shift */}
+        {isLoading && <ListSkeleton isLight={isLight} label="Loading articles" />}
 
         {/* Honest error state — never a fabricated fallback article list */}
         {!isLoading && loadError && (

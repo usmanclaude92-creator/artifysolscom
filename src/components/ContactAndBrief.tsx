@@ -227,7 +227,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Name */}
                     <div>
-                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                      <label htmlFor="contact-form-name" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Your Name *
                       </label>
                       <input
@@ -243,7 +243,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                     {/* Company */}
                     <div>
-                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                      <label htmlFor="contact-form-company" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Company Name *
                       </label>
                       <input
@@ -261,7 +261,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Email */}
                     <div>
-                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                      <label htmlFor="contact-form-email" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Work Email *
                       </label>
                       <input
@@ -277,7 +277,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                     {/* Phone */}
                     <div>
-                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                      <label htmlFor="contact-form-phone" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Phone (Optional)
                       </label>
                       <input
@@ -294,7 +294,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     {/* Industry */}
                     <div>
-                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                      <label htmlFor="contact-form-industry" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Industry
                       </label>
                       <select
@@ -313,7 +313,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                     {/* Estimated Timeline */}
                     <div>
-                      <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                      <label htmlFor="contact-form-timeline" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                         Target Timeline
                       </label>
                       <select
@@ -332,7 +332,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                   {/* Project Description */}
                   <div>
-                    <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                    <label htmlFor="contact-form-description" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                       What would you like to build or automate? *
                     </label>
                     <textarea
@@ -348,7 +348,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
 
                   {/* Current Tools */}
                   <div>
-                    <label className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
+                    <label htmlFor="contact-form-tools" className="text-xs font-bold label-theme font-mono-code uppercase block mb-1.5">
                       Current Software & Database Stack (Optional)
                     </label>
                     <input
