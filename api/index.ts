@@ -170,6 +170,8 @@ async function getIndexHtmlTemplate(baseUrl: string): Promise<string> {
   const res = await fetch(`${baseUrl}/app-shell.html`);
   if (!res.ok) throw new Error(`Could not load app shell (${res.status})`);
   const html = await res.text();
+  // Never cache or serve anything that isn't the real app shell (e.g. a deployment-protection login page).
+  if (!html.includes('id="root"')) throw new Error("app-shell.html did not contain the app root");
   // A fresh function instance only ever serves one deployment's assets,
   // so caching for the lifetime of the instance is safe (a new deploy
   // always gets a new instance).
