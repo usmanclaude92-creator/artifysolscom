@@ -61,7 +61,7 @@ export const SecurityAndSovereignty: React.FC<{ onNavigateToContact?: () => void
       {/* Background illumination */}
       <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
+      <div className="w-full px-[5%] relative z-10">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">

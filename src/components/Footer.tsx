@@ -99,7 +99,7 @@ export const Footer: React.FC<FooterProps> = ({
 
   return (
     <footer className="bg-background border-t border-border pt-12 sm:pt-16 pb-12 text-subtle-text text-xs transition-colors duration-200">
-      <div className="w-full px-[5%] max-w-7xl mx-auto">
+      <div className="w-full px-[5%]">
         {/* Brand Logo Row - Placed above columns per specification */}
         <div className="mb-6 sm:mb-8">
           <a

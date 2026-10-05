@@ -140,7 +140,7 @@ export const LiveScenarios: React.FC<LiveScenariosProps> = ({
       {/* Background illumination */}
       <div className="absolute top-1/3 right-1/4 w-[650px] h-[650px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
+      <div className="w-full px-[5%] relative z-10">
         
         {/* Header */}
         <div className="max-w-4xl mb-16">

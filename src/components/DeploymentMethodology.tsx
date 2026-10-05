@@ -66,7 +66,7 @@ export const DeploymentMethodology: React.FC<{ onNavigateToContact?: () => void 
       {/* Background illumination */}
       <div className="absolute top-1/2 right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[160px] pointer-events-none" />
 
-      <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
+      <div className="w-full px-[5%] relative z-10">
         
         {/* Header */}
         <div className="max-w-4xl mb-16">
