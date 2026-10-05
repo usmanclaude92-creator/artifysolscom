@@ -24,6 +24,8 @@
     "noEmit": true
   },
   "exclude": [
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "dist",
+    "node_modules"
   ]
 }

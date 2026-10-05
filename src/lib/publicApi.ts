@@ -164,88 +164,6 @@ export interface PublicProductModule {
   displayOrder: number;
 }
 
-// Phase 3 (Site Identity + Global Styles, Artify-Backend repo) — mirrors
-// publicSiteService.ts's `getSiteSettings()` projection exactly. `null`
-// when the Control Center hasn't configured a public organization at all
-// (same "not set up" signal `getSiteStatus().configured` already uses) —
-// every field inside a non-null result is always present, since the
-// backend's zod schema defaults (matching this site's own current
-// hardcoded branding) fill in anything never published.
-export interface PublicSiteIdentity {
-  siteName: string;
-  tagline: string;
-  description: string;
-  logo: PublicMedia | null;
-  logoDark: PublicMedia | null;
-  logoMobile: PublicMedia | null;
-  favicon: PublicMedia | null;
-  socialImage: PublicMedia | null;
-  defaultMetaTitle: string;
-  defaultMetaDescription: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  address?: string;
-  organizationLegalName?: string;
-}
-
-export type PublicFontWeight = number | 'normal' | 'bold';
-
-export interface PublicGlobalStyles {
-  colors: {
-    primary: string;
-    primaryHover: string;
-    primaryForeground: string;
-    secondary: string;
-    secondaryForeground: string;
-    background: string;
-    surface: string;
-    textPrimary: string;
-    textSecondary: string;
-    link: string;
-    linkHover: string;
-    border: string;
-  };
-  typography: {
-    fontFamilyBase: string;
-    fontFamilyHeading: string;
-    fontSizeBase: string;
-    headingScale: { h1: string; h2: string; h3: string; h4: string; h5: string; h6: string };
-    lineHeightBase: number;
-    lineHeightHeading: number;
-    fontWeightBase: PublicFontWeight;
-    fontWeightHeading: PublicFontWeight;
-    fontWeightBold: PublicFontWeight;
-  };
-  layout: {
-    containerMaxWidth: string;
-    spacingScale: { xs: string; sm: string; md: string; lg: string; xl: string };
-    borderRadius: { sm: string; md: string; lg: string; full: string };
-  };
-  effects: { borderColor: string; borderWidth: string; shadowSm: string; shadowMd: string; shadowLg: string };
-  buttons: {
-    radius: string;
-    paddingX: string;
-    paddingY: string;
-    fontWeight: PublicFontWeight;
-    primaryBg: string;
-    primaryText: string;
-    primaryHoverBg: string;
-    secondaryBg: string;
-    secondaryText: string;
-    secondaryBorder: string;
-  };
-  forms: { radius: string; borderColor: string; focusColor: string; background: string; text: string };
-  responsive: {
-    tablet: { containerMaxWidth?: string; fontSizeBase?: string };
-    mobile: { containerMaxWidth?: string; fontSizeBase?: string };
-  };
-}
-
-export interface PublicSiteSettings {
-  identity: PublicSiteIdentity;
-  globalStyles: PublicGlobalStyles;
-}
-
 // Phase 11 (Case Studies + Content Relationships, Artify-Backend repo) —
 // mirrors publicSiteService.ts's projectCaseStudy() exactly. Only an
 // ACTIVE/PUBLISHED related Product/Page/Post is ever included — the
@@ -372,11 +290,6 @@ export interface PublicFormSubmitInput {
 export const publicApi = {
   async getSiteStatus(): Promise<{ configured: boolean }> {
     return apiClient.get<{ configured: boolean }>('/public/site');
-  },
-
-  async getSiteSettings(): Promise<PublicSiteSettings | null> {
-    const { settings } = await apiClient.get<{ settings: PublicSiteSettings | null }>('/public/site-settings');
-    return settings;
   },
 
   async getPageBySlug(slug: string): Promise<PublicPage> {

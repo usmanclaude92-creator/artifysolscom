@@ -28,6 +28,7 @@ import { TechnologyStack } from './components/TechnologyStack';
 import { AboutAndVision } from './components/AboutAndVision';
 import { ContactAndBrief } from './components/ContactAndBrief';
 import { Footer } from './components/Footer';
+import { BreadcrumbNav } from './components/BreadcrumbNav';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AuthModal } from './components/portal/AuthModal';
 import { BlogPreviewSection } from './components/BlogPreviewSection';
@@ -40,7 +41,6 @@ import { playHoverSound } from './utils/soundEffects';
 import { safeGetLocalStorage, safeSetLocalStorage } from './utils/storage';
 import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
-import { applyPublishedSiteSettings } from './utils/applySiteSettings';
 import { publicApi, PublicPage } from './lib/publicApi';
 import { analytics } from './lib/analytics';
 import {
@@ -136,7 +136,7 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
   if (path === '/contact') return { route: 'contact' };
   if (path === '/privacy') return { route: 'privacy' };
   if (path === '/terms') return { route: 'terms' };
-  if (path === '/blog' || path.startsWith('/blog/')) return { route: 'blog' };
+  if (path === '/blog' || path.startsWith('/blog/') || path === '/updates') return { route: 'blog' };
   if (path === '/') return { route: 'home' };
 
   // Catch-all: any other single-segment path is a candidate CMS Page slug
@@ -359,13 +359,6 @@ function MainAppContent() {
   useEffect(() => {
     applyThemeToDOM(theme);
   }, [theme]);
-
-  // Phase 3 (Site Identity + Global Styles) — fetches once on initial mount
-  // and applies published Control Center settings on top of this site's
-  // existing defaults; a no-op until something is actually published.
-  useEffect(() => {
-    void applyPublishedSiteSettings().catch(() => undefined);
-  }, []);
 
   const handleToggleTheme = (event?: React.MouseEvent | MouseEvent) => {
     const nextTheme: 'light' | 'dark' = theme === 'dark' ? 'light' : 'dark';
@@ -617,6 +610,7 @@ function MainAppContent() {
         onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
         onNavigateToAbout={() => navigateToRoute('about', '/about')}
         onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
+        onNavigateToUpdates={() => navigateToRoute('blog', '/updates')}
         onSelectProduct={handleSelectProduct}
         onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
         onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
@@ -628,6 +622,24 @@ function MainAppContent() {
 
       {/* Main Multi-Page Dynamic Switch */}
       <main>
+        {activeRoute !== 'home' && (
+          <BreadcrumbNav
+            activeRoute={activeRoute}
+            productSlug={activeProductSlug}
+            pageSlug={activePageSlug}
+            theme={theme}
+            onNavigateHome={() => navigateToRoute('home', '/')}
+            onNavigateToSolutions={() => navigateToRoute('solutions-catalog', '/solutions')}
+            onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+            onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}
+            onNavigateToServices={() => navigateToRoute('services', '/services')}
+            onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
+            onNavigateToAbout={() => navigateToRoute('about', '/about')}
+            onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
+            onNavigateToUpdates={() => navigateToRoute('blog', '/updates')}
+            onNavigateToContact={handleNavigateToContact}
+          />
+        )}
         <Suspense fallback={<RouteFallback />}>
         {activeRoute === 'solutions-catalog' && (
           <SolutionsCatalogPage
