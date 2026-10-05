@@ -167,6 +167,7 @@ export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: str
     { loc: `${baseUrl}/blog`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'Blog' },
     { loc: `${baseUrl}/case-studies`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Case Studies' },
     { loc: `${baseUrl}/services`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Services' },
+    { loc: `${baseUrl}/ecosystem`, lastmod: currentDate, changefreq: 'monthly', priority: 0.85, type: 'core', title: 'Our Ecosystem' },
     { loc: `${baseUrl}/about`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'About' },
     { loc: `${baseUrl}/contact`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' }
   );

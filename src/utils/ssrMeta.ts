@@ -197,8 +197,26 @@ export function buildBlogArchiveMeta(baseUrl: string): SeoConfig {
   };
 }
 
+/** Mirrors EcosystemPage.tsx's SEO block. */
+export function buildEcosystemMeta(baseUrl: string): SeoConfig {
+  const canonicalUrl = `${baseUrl}/ecosystem`;
+  const description =
+    'Explore the Artify enterprise ecosystem — connected people, processes, data, applications and AI designed to work together around your business.';
+  return {
+    title: `Our Ecosystem | ${SITE_NAME}`,
+    description,
+    canonicalUrl,
+    ogType: 'website',
+    ogTitle: `Our Ecosystem | ${SITE_NAME}`,
+    ogDescription: description,
+    twitterCard: 'summary_large_image',
+    jsonLd: { '@type': 'WebPage', '@id': `${canonicalUrl}#webpage`, url: canonicalUrl, name: 'Our Ecosystem', description },
+  };
+}
+
 export type SsrRoute =
   | { kind: 'home' }
+  | { kind: 'ecosystem' }
   | { kind: 'blog-archive' }
   | { kind: 'blog-post'; slug: string }
   | { kind: 'product-detail'; slug: string }
@@ -215,6 +233,7 @@ export type SsrRoute =
 export function resolveSsrRoute(pathname: string): SsrRoute {
   const path = (pathname || '/').replace(/\/+$/, '') || '/';
   if (path === '/') return { kind: 'home' };
+  if (path === '/ecosystem') return { kind: 'ecosystem' };
   if (path === '/blog') return { kind: 'blog-archive' };
   const blogPost = path.match(/^\/blog\/([^/]+)$/);
   if (blogPost) return { kind: 'blog-post', slug: decodeURIComponent(blogPost[1]!) };
@@ -222,7 +241,7 @@ export function resolveSsrRoute(pathname: string): SsrRoute {
   if (product) return { kind: 'product-detail', slug: decodeURIComponent(product[1]!) };
   const caseStudy = path.match(/^\/case-studies\/([^/]+)$/);
   if (caseStudy) return { kind: 'case-study-detail', slug: decodeURIComponent(caseStudy[1]!) };
-  const RESERVED = new Set(['solutions', 'solutions-catalog', 'ai-solutions', 'services', 'industries', 'case-studies', 'about', 'contact', 'privacy', 'terms']);
+  const RESERVED = new Set(['solutions', 'solutions-catalog', 'ai-solutions', 'services', 'industries', 'case-studies', 'about', 'contact', 'privacy', 'terms', 'ecosystem']);
   const singleSegment = path.match(/^\/([^/]+)$/);
   if (singleSegment && !RESERVED.has(singleSegment[1]!)) return { kind: 'cms-page', slug: decodeURIComponent(singleSegment[1]!) };
   return { kind: 'other' };
@@ -293,6 +312,10 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
       }
     }
     return { meta, status: 200, redirect: null };
+  }
+
+  if (route.kind === 'ecosystem') {
+    return { meta: buildEcosystemMeta(baseUrl), status: 200, redirect: null };
   }
 
   if (route.kind === 'blog-archive') {

@@ -75,6 +75,7 @@ const CaseStudiesPage = lazy(() =>
 const CaseStudyDetailPage = lazy(() =>
   import('./components/pages/CaseStudyDetailPage').then((m) => ({ default: m.CaseStudyDetailPage }))
 );
+const EcosystemPage = lazy(() => import('./components/pages/EcosystemPage').then((m) => ({ default: m.EcosystemPage })));
 const AboutPage = lazy(() =>
   import('./components/pages/AboutPage').then((m) => ({ default: m.AboutPage }))
 );
@@ -132,6 +133,7 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
     return { route: 'case-study-detail', slug: decodeURIComponent(path.replace('/case-studies/', '')) };
   }
   if (path === '/case-studies') return { route: 'case-studies' };
+  if (path === '/ecosystem') return { route: 'ecosystem' };
   if (path === '/about') return { route: 'about' };
   if (path === '/contact') return { route: 'contact' };
   if (path === '/privacy') return { route: 'privacy' };
@@ -244,6 +246,18 @@ function MainAppContent() {
       });
     }
   };
+
+  // Backward compatibility: the old homepage anchor /#ecosystem now lives at /ecosystem.
+  useEffect(() => {
+    const redirectLegacyHash = () => {
+      if (typeof window === 'undefined' || window.location.hash !== '#ecosystem') return;
+      window.history.replaceState({}, '', '/ecosystem');
+      setActiveRoute('ecosystem');
+    };
+    redirectLegacyHash();
+    window.addEventListener('hashchange', redirectLegacyHash);
+    return () => window.removeEventListener('hashchange', redirectLegacyHash);
+  }, []);
 
   // Listen for browser back/forward navigation (popstate fires for
   // history.pushState-driven route changes, not hashchange).
@@ -609,6 +623,7 @@ function MainAppContent() {
         onNavigateToIndustries={() => navigateToRoute('industries', '/industries')}
         onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
         onNavigateToAbout={() => navigateToRoute('about', '/about')}
+        onNavigateToEcosystem={() => navigateToRoute('ecosystem', '/ecosystem')}
         onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
         onNavigateToUpdates={() => navigateToRoute('blog', '/updates')}
         onSelectProduct={handleSelectProduct}
@@ -681,6 +696,14 @@ function MainAppContent() {
             onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
             onNavigateToContact={handleNavigateToContact}
             onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
+            theme={theme}
+          />
+        )}
+
+        {activeRoute === 'ecosystem' && (
+          <EcosystemPage
+            onNavigateToContact={handleNavigateToContact}
+            onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
             theme={theme}
           />
         )}
@@ -784,6 +807,7 @@ function MainAppContent() {
             <AnimatedSection variant="fade-up">
               <Deferred>
               <AdaptiveEcosystem
+                onNavigateToEcosystem={() => navigateToRoute('ecosystem', '/ecosystem')}
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 onNavigateToContact={handleNavigateToContact}
               />
@@ -907,6 +931,7 @@ function MainAppContent() {
         onNavigateToCaseStudies={() => navigateToRoute('case-studies', '/case-studies')}
         onNavigateToAbout={() => navigateToRoute('about', '/about')}
         onNavigateToContact={handleNavigateToContact}
+        onNavigateToEcosystem={() => navigateToRoute('ecosystem', '/ecosystem')}
         onNavigateToLegal={(type) => navigateToRoute(type, `/${type === 'privacy' ? 'privacy' : 'terms'}`)}
         onSelectProduct={handleSelectProduct}
         onOpenSitemap={() => setIsSitemapOpen(true)}

@@ -98,6 +98,7 @@ export type AppRoute =
   | 'ai-product-detail'
   | 'product-detail'
   | 'services'
+  | 'ecosystem'
   | 'industries'
   | 'case-studies'
   | 'case-study-detail'

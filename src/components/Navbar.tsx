@@ -107,35 +107,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  // Section smooth-scroll or route fallback
-  const handleSectionClick = (e: React.MouseEvent, sectionId: string, fallbackRoute?: () => void) => {
-    e.preventDefault();
-    setSideMenuOpen(false);
-
-    if (activeRoute !== 'home') {
-      if (fallbackRoute) {
-        fallbackRoute();
-      } else if (onNavigateToHome) {
-        onNavigateToHome();
-        setTimeout(() => {
-          const el = document.getElementById(sectionId);
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 150);
-      }
-      return;
-    }
-
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      if (typeof window !== 'undefined' && window.location.hash !== `#${sectionId}`) {
-        window.history.pushState(null, '', `#${sectionId}`);
-      }
-    } else if (fallbackRoute) {
-      fallbackRoute();
-    }
-  };
-
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -196,11 +167,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* 2. Our Ecosystem */}
           <a
-            href="#ecosystem"
-            onClick={(e) => handleSectionClick(e, 'ecosystem', onNavigateToEcosystem)}
+            href="/ecosystem"
+            onClick={(e) => handleRouteClick(e, onNavigateToEcosystem)}
             id="nav-link-ecosystem"
             className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              isLight
+              activeRoute === 'ecosystem'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
                 ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
@@ -634,8 +607,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                 {/* 3. Ecosystem */}
                 <a
-                  href="#ecosystem"
-                  onClick={(e) => handleSectionClick(e, 'ecosystem')}
+                  href="/ecosystem"
+                  onClick={(e) => handleRouteClick(e, onNavigateToEcosystem)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors ${
                     isLight ? 'text-slate-800 hover:bg-slate-100' : 'text-zinc-200 hover:bg-white/[0.06]'
                   }`}

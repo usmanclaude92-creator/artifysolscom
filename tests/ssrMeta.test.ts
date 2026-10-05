@@ -194,6 +194,17 @@ describe('injectMetaIntoHtml', () => {
   });
 });
 
+describe('Our Ecosystem route', () => {
+  it('resolves /ecosystem to its own SSR route (not a CMS page) with the specified metadata', async () => {
+    expect(resolveSsrRoute('/ecosystem')).toEqual({ kind: 'ecosystem' });
+    const result = await renderSeoForPath('/ecosystem', BASE_URL, 'https://api.example.com/api/v1');
+    expect(result.status).toBe(200);
+    expect(result.meta?.title).toBe('Our Ecosystem | Artify Solutions');
+    expect(result.meta?.canonicalUrl).toBe(`${BASE_URL}/ecosystem`);
+    expect(result.meta?.description).toMatch(/connected people, processes, data, applications and AI/);
+  });
+});
+
 describe('renderSeoForPath (orchestrator, mocked network)', () => {
   const originalFetch = global.fetch;
 

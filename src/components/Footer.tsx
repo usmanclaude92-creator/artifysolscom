@@ -27,6 +27,7 @@ interface FooterProps {
   onNavigateToIndustries?: () => void;
   onNavigateToCaseStudies?: () => void;
   onNavigateToAbout?: () => void;
+  onNavigateToEcosystem?: () => void;
   onNavigateToContact?: () => void;
   onNavigateToLegal?: (type: 'privacy' | 'terms') => void;
   onSelectProduct?: (product: { slug: string }) => void;
@@ -47,6 +48,7 @@ export const Footer: React.FC<FooterProps> = ({
   onNavigateToIndustries,
   onNavigateToCaseStudies,
   onNavigateToAbout,
+  onNavigateToEcosystem,
   onNavigateToContact,
   onNavigateToLegal,
   onSelectProduct,
@@ -79,22 +81,6 @@ export const Footer: React.FC<FooterProps> = ({
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSectionScroll = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    if (typeof window !== 'undefined') {
-      if (window.location.pathname !== '/') {
-        if (onNavigateToHome) onNavigateToHome();
-        setTimeout(() => {
-          const el = document.getElementById(sectionId);
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }, 150);
-      } else {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
   };
 
   return (
@@ -257,8 +243,13 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
-                  href="#ecosystem"
-                  onClick={(e) => handleSectionScroll(e, 'ecosystem')}
+                  href="/ecosystem"
+                  onClick={(e) => {
+                    if (onNavigateToEcosystem) {
+                      e.preventDefault();
+                      onNavigateToEcosystem();
+                    }
+                  }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block"
                 >
                   Adaptive Ecosystem
