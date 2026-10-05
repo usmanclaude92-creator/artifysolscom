@@ -40,7 +40,6 @@ import { motion } from 'framer-motion';
 // route, the client portal (which pulls in the chart library) and the modal
 // overlays are fetched on demand, keeping them out of the initial payload.
 const BusinessMap = lazy(() => import('./components/BusinessMap').then((m) => ({ default: m.BusinessMap })));
-const PremiumThemesSection = lazy(() => import('./components/PremiumThemesSection').then((m) => ({ default: m.PremiumThemesSection })));
 const AdaptiveEcosystem = lazy(() => import('./components/AdaptiveEcosystem').then((m) => ({ default: m.AdaptiveEcosystem })));
 const NextGenAiLayer = lazy(() => import('./components/NextGenAiLayer').then((m) => ({ default: m.NextGenAiLayer })));
 const AdaptiveIntelligence = lazy(() => import('./components/AdaptiveIntelligence').then((m) => ({ default: m.AdaptiveIntelligence })));
@@ -791,19 +790,6 @@ function MainAppContent() {
               theme={theme}
             />
             </Deferred>
-
-            {/* Bespoke Enterprise Design Systems & Themes Studio Showcase */}
-            <AnimatedSection variant="fade-up">
-              <Deferred>
-              <PremiumThemesSection
-                onOpenThemesModal={() => setIsThemesModalOpen(true)}
-                onApplyTheme={handleApplyPremiumTheme}
-                currentThemeId={currentPremiumTheme}
-                onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-                theme={theme}
-              />
-              </Deferred>
-            </AnimatedSection>
 
             {/* 3. The Adaptive Enterprise Ecosystem (16 Integrated Nodes) */}
             <AnimatedSection variant="fade-up">
