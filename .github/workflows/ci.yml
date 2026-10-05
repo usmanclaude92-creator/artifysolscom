@@ -21,18 +21,21 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          # vitest 5 requires Node ^22.12 || ^24 (see package.json devDependencies).
+          node-version: "22"
+          cache: "npm"
 
-      # This repo has no package-lock.json (only bun.lock), so `npm ci` and
-      # setup-node's npm cache — both of which require one — can't be used.
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci
 
       - name: Typecheck
         run: npm run typecheck
 
       - name: Lint (Phase 1 additions)
         run: npm run lint
+
+      - name: Unit tests
+        run: npm test
 
       - name: Build (frontend + backend bundle)
         run: npm run build
