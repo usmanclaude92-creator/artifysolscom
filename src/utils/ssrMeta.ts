@@ -47,31 +47,54 @@ export interface SiteIdentityDefaults {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
+  /** Social-card overrides (Site Identity → Social Share Card); blank falls back to title/description. */
+  socialTitle?: string;
+  socialDescription?: string;
 }
 
 async function fetchSiteIdentityDefaults(apiBase: string): Promise<SiteIdentityDefaults> {
   const data = await fetchPublicJson<{
-    settings: { identity?: { defaultMetaTitle?: string; defaultMetaDescription?: string; socialImage?: { url?: string } | null } } | null;
+    settings: {
+      identity?: {
+        defaultMetaTitle?: string;
+        defaultMetaDescription?: string;
+        socialTitle?: string;
+        socialDescription?: string;
+        socialImageAlt?: string;
+        socialImage?: { url?: string } | null;
+      };
+    } | null;
   }>(apiBase, '/public/site-settings');
   const identity = data?.settings?.identity;
   return {
     title: identity?.defaultMetaTitle?.trim() || undefined,
     description: identity?.defaultMetaDescription?.trim() || undefined,
     image: identity?.socialImage?.url || undefined,
+    imageAlt: identity?.socialImageAlt?.trim() || undefined,
+    socialTitle: identity?.socialTitle?.trim() || undefined,
+    socialDescription: identity?.socialDescription?.trim() || undefined,
   };
+}
+
+function absoluteUrl(url: string | undefined, baseUrl: string): string | undefined {
+  if (!url) return undefined;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
 /** Builds home-route metadata purely from Site Identity defaults; null when none are configured. */
 export function buildSiteIdentityMeta(defaults: SiteIdentityDefaults, baseUrl: string): SeoConfig | null {
-  if (!defaults.title && !defaults.description && !defaults.image) return null;
+  if (!defaults.title && !defaults.description && !defaults.image && !defaults.socialTitle && !defaults.socialDescription) return null;
   return {
     title: defaults.title || '',
     description: defaults.description || '',
     canonicalUrl: `${baseUrl}/`,
     ogType: 'website',
-    ogTitle: defaults.title,
-    ogDescription: defaults.description,
-    ogImage: defaults.image,
+    ogTitle: defaults.socialTitle || defaults.title,
+    ogDescription: defaults.socialDescription || defaults.description,
+    ogImage: absoluteUrl(defaults.image, baseUrl),
+    ogImageAlt: defaults.imageAlt,
   };
 }
 
@@ -264,7 +287,10 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
     const meta = buildCmsPageMeta(homepage, baseUrl, '/');
     if (!meta.ogImage) {
       const defaults = await fetchSiteIdentityDefaults(apiBase);
-      if (defaults.image) meta.ogImage = defaults.image;
+      if (defaults.image) {
+        meta.ogImage = absoluteUrl(defaults.image, baseUrl);
+        meta.ogImageAlt = defaults.imageAlt;
+      }
     }
     return { meta, status: 200, redirect: null };
   }
@@ -367,6 +393,14 @@ export function injectMetaIntoHtml(html: string, meta: SeoConfig, opts: { status
   }
   if (meta.ogImage) {
     out = replaceTag(out, /<meta property="og:image" content="[^"]*"\s*\/?>/, `<meta property="og:image" content="${escapeHtmlAttr(meta.ogImage)}" />`);
+    // The shell's fixed 1200x630 size describes the stock banner, not whatever image was supplied here.
+    out = out.replace(/\s*<meta property="og:image:(width|height)" content="[^"]*"\s*\/?>/g, '');
+    if (meta.ogImageAlt && !/property="og:image:alt"/.test(out)) {
+      out = out.replace(
+        /(<meta property="og:image" content="[^"]*"\s*\/?>)/,
+        `$1\n    <meta property="og:image:alt" content="${escapeHtmlAttr(meta.ogImageAlt)}" />`
+      );
+    }
   }
   if (meta.twitterTitle || meta.title) {
     out = replaceTag(

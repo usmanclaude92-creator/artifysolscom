@@ -167,7 +167,8 @@ let cachedIndexHtml: string | null = null;
 
 async function getIndexHtmlTemplate(baseUrl: string): Promise<string> {
   if (cachedIndexHtml) return cachedIndexHtml;
-  const res = await fetch(`${baseUrl}/index.html`);
+  const res = await fetch(`${baseUrl}/app-shell.html`);
+  if (!res.ok) throw new Error(`Could not load app shell (${res.status})`);
   const html = await res.text();
   // A fresh function instance only ever serves one deployment's assets,
   // so caching for the lifetime of the instance is safe (a new deploy
@@ -180,7 +181,7 @@ app.get("*", async (req, res, next) => {
   // Defensive: a real static asset request should never reach this
   // handler (Vercel resolves a matching file before applying rewrites),
   // but if one somehow does, don't try to HTML-render it.
-  if (/\.[a-z0-9]{1,8}$/i.test(req.path) && req.path !== "/index.html") return next();
+  if (/\.[a-z0-9]{1,8}$/i.test(req.path) && req.path !== "/app-shell.html") return next();
 
   const baseUrl = getBaseUrl(req);
 

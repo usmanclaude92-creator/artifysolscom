@@ -259,6 +259,43 @@ describe('renderSeoForPath (orchestrator, mocked network)', () => {
     expect(out).toContain('<meta property="og:title" content="Identity Title" />');
   });
 
+  it('applies the Social Share Card overrides (title, description, image alt) and drops the stock image size tags', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
+      if (String(url).includes('/public/homepage')) return { ok: true, json: async () => ({ success: true, data: { page: null } }) };
+      return {
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            settings: {
+              identity: {
+                defaultMetaTitle: 'Meta Title',
+                defaultMetaDescription: 'Meta description.',
+                socialTitle: 'Share Title',
+                socialDescription: 'Share description.',
+                socialImageAlt: 'A banner',
+                socialImage: { url: '/uploads/share.png' },
+              },
+            },
+          },
+        }),
+      };
+    });
+    const result = await renderSeoForPath('/', BASE_URL, 'https://api.example.com/api/v1');
+    expect(result.meta?.title).toBe('Meta Title');
+    expect(result.meta?.ogTitle).toBe('Share Title');
+    expect(result.meta?.ogDescription).toBe('Share description.');
+    expect(result.meta?.ogImage).toBe(`${BASE_URL}/uploads/share.png`);
+
+    const html =
+      '<head><title>x</title><meta property="og:title" content="x" /><meta property="og:image" content="x" />\n<meta property="og:image:width" content="1200" />\n<meta property="og:image:height" content="630" /></head>';
+    const out = injectMetaIntoHtml(html, result.meta!);
+    expect(out).toContain('<meta property="og:title" content="Share Title" />');
+    expect(out).toContain('<meta property="og:image:alt" content="A banner" />');
+    expect(out).not.toContain('og:image:width');
+    expect(out).not.toContain('og:image:height');
+  });
+
   it('follows a real redirect instead of rendering a 404 when one exists', async () => {
     (global.fetch as ReturnType<typeof vi.fn>)
       .mockResolvedValueOnce({ ok: false, json: async () => ({ success: false }) }) // page lookup 404s

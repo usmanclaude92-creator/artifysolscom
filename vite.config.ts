@@ -1,11 +1,32 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'node:fs';
 import {defineConfig} from 'vite';
+
+/**
+ * Vercel serves a real file at "/" straight from the filesystem and never
+ * applies the catch-all rewrite to it, so the homepage bypassed the SSR-head
+ * function (api/index.ts) and always showed index.html's baked-in share tags.
+ * Emitting the built shell under another name leaves "/" without a static
+ * file, so it is rewritten to the function like every other route; the
+ * function reads the shell from /app-shell.html.
+ */
+function renameShellForSsr() {
+  return {
+    name: 'rename-shell-for-ssr',
+    apply: 'build' as const,
+    closeBundle() {
+      const dist = path.resolve(__dirname, 'dist');
+      const from = path.join(dist, 'index.html');
+      if (fs.existsSync(from)) fs.renameSync(from, path.join(dist, 'app-shell.html'));
+    },
+  };
+}
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), renameShellForSsr()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
