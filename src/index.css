@@ -2083,3 +2083,15 @@ main[data-home-layout='true'] section:not(#hero) > .relative.z-10 {
   padding-left: 7.5%;
   padding-right: 7.5%;
 }
+
+/*
+ * "Desktop site" mode on phones: the layout viewport is desktop-wide (>=768px)
+ * but extremely tall (aspect ratio <= 9/16), so the hero's 92vh min-height
+ * leaves huge empty bands above and below. Let the hero fit its content there.
+ * Real desktops and tablets are far wider than 9/16 and are unaffected.
+ */
+@media (min-width: 768px) and (max-aspect-ratio: 9/16) {
+  #hero {
+    min-height: 0;
+  }
+}
