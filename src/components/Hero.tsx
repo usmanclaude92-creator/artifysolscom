@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowRight,
@@ -41,6 +41,19 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const [activeNode, setActiveNode] = useState<string | null>('agents');
   const [pulseCount, setPulseCount] = useState(0);
+  // Orbit diagram size, so every node can sit exactly on the middle ring (inset-16 = 64px).
+  const orbitRef = useRef<HTMLDivElement>(null);
+  const [orbitSize, setOrbitSize] = useState(0);
+  useEffect(() => {
+    const el = orbitRef.current;
+    if (!el) return;
+    const measure = () => setOrbitSize(el.offsetWidth);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const ringRadius = orbitSize > 0 ? orbitSize / 2 - 64 : 0;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -236,7 +249,7 @@ export const Hero: React.FC<HeroProps> = ({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="relative w-full max-w-[340px] xs:max-w-[420px] sm:max-w-[506px] aspect-square flex items-center justify-center scale-[0.88] xs:scale-95 sm:scale-100 origin-center">
+            <div ref={orbitRef} className="relative w-full max-w-[340px] xs:max-w-[420px] sm:max-w-[506px] aspect-square flex items-center justify-center scale-[0.88] xs:scale-95 sm:scale-100 origin-center">
               
               {/* Concentric subtle rings */}
               <div className="absolute inset-4 rounded-full border border-violet-500/15 animate-[spin_60s_linear_infinite]" />
@@ -244,7 +257,7 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="absolute inset-28 rounded-full border border-indigo-500/20" />
 
               {/* Dynamic SVG Connection Lines & Data Pulses */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 460 460">
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox={`0 0 ${orbitSize || 460} ${orbitSize || 460}`}>
                 <defs>
                   <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.6" />
@@ -253,10 +266,11 @@ export const Hero: React.FC<HeroProps> = ({
                 </defs>
                 {nodes.map((node, i) => {
                   const rad = (node.angle * Math.PI) / 180;
-                  const centerX = 230;
-                  const centerY = 230;
-                  const targetX = centerX + Math.cos(rad) * (node.distance * 0.95);
-                  const targetY = centerY + Math.sin(rad) * (node.distance * 0.95);
+                  const centerX = (orbitSize || 460) / 2;
+                  const centerY = centerX;
+                  const reach = ringRadius > 0 ? ringRadius : node.distance * 0.95;
+                  const targetX = centerX + Math.cos(rad) * reach;
+                  const targetY = centerY + Math.sin(rad) * reach;
                   const isSelected = activeNode === node.id;
 
                   return (
@@ -306,8 +320,10 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Orbiting Nodes */}
               {nodes.map((node) => {
                 const rad = (node.angle * Math.PI) / 180;
-                const top = 50 + (Math.sin(rad) * node.distance * 100) / 460;
-                const left = 50 + (Math.cos(rad) * node.distance * 100) / 460;
+                const orbitR = ringRadius > 0 ? ringRadius : (node.distance * (orbitSize || 460)) / 460;
+                const base = orbitSize || 460;
+                const top = 50 + (Math.sin(rad) * orbitR * 100) / base;
+                const left = 50 + (Math.cos(rad) * orbitR * 100) / base;
                 const isSelected = activeNode === node.id;
                 const IconComponent = node.icon;
 
