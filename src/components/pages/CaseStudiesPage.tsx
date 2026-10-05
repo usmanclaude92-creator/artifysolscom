@@ -23,14 +23,29 @@ interface CaseStudiesPageProps {
  */
 const RealCaseStudiesSection: React.FC<{ isLight: boolean; onSelectCaseStudy?: (slug: string) => void }> = ({ isLight, onSelectCaseStudy }) => {
   const [caseStudies, setCaseStudies] = useState<PublicCaseStudy[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  // Remember the last known result so a returning visitor to a site with no published
+  // case studies never sees a skeleton collapse (layout shift) on every visit.
+  const knownEmpty = (() => {
+    try {
+      return window.localStorage.getItem('artify:caseStudiesEmpty') === '1';
+    } catch {
+      return false;
+    }
+  })();
+  const [loaded, setLoaded] = useState(knownEmpty);
 
   useEffect(() => {
     let cancelled = false;
     publicApi
       .listCaseStudies({ limit: 6 })
       .then(({ caseStudies: rows }) => {
-        if (!cancelled) setCaseStudies(rows);
+        if (cancelled) return;
+        setCaseStudies(rows);
+        try {
+          window.localStorage.setItem('artify:caseStudiesEmpty', rows.length === 0 ? '1' : '0');
+        } catch {
+          /* storage unavailable — hint is optional */
+        }
       })
       .catch(() => undefined)
       .finally(() => {
