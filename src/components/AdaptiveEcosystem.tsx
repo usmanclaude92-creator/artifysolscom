@@ -13,7 +13,6 @@ import {
   Boxes,
   Workflow,
   BarChart3,
-  Smartphone,
   Sparkles,
   FileCheck2,
   LayoutGrid,
@@ -144,17 +143,6 @@ export const ECOSYSTEM_MODULES: EcosystemModule[] = [
     autonomousActions: 'Synthesizes multi-department KPIs and surfaces hidden root causes within seconds.',
     integratesWith: ['All Ecosystem Modules'],
     status: 'Continuous Link',
-  },
-  {
-    id: 'mobile',
-    name: 'Mobile Workforce',
-    category: 'experience',
-    icon: Smartphone,
-    summary: 'Native iOS & Android apps for field technicians, floor operators, and executive signoffs.',
-    capabilities: ['Offline-first sync engine', 'Biometric signoff & geolocation', 'Instant mobile ticket dispatch', 'Camera receipt & barcode capture'],
-    autonomousActions: 'Caches local states securely and auto-merges transaction logs when reconnected.',
-    integratesWith: ['Workforce', 'Projects', 'Inventory'],
-    status: 'Edge Connected',
   },
   {
     id: 'ai-automation',
@@ -383,7 +371,7 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
                     : 'text-foreground-muted hover:text-foreground hover:bg-secondary'
                 }`}
               >
-                {cat === 'all' ? 'All 16 Nodes' : cat}
+                {cat === 'all' ? 'All 15 Nodes' : cat}
               </button>
             ))}
           </div>
@@ -392,7 +380,7 @@ export const AdaptiveEcosystem: React.FC<AdaptiveEcosystemProps> = ({
         {/* 2-Column Interactive Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: 16 Module Nodes Bento Selector */}
+          {/* Left Column: 15 Module Nodes Bento Selector */}
           <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-3">
             {filteredModules.map((mod) => {
               const isSelected = mod.id === activeModule.id;
