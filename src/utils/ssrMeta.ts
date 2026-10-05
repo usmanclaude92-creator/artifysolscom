@@ -17,9 +17,9 @@
  * mount and simply re-applies the same values (a harmless no-op), so no
  * existing client-side behavior changes.
  */
-import { generateBlogPostSeo, type SeoConfig } from './seo';
-import { resolveApiBaseUrl } from './sitemap';
-import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi';
+import { generateBlogPostSeo, type SeoConfig } from './seo.js';
+import { resolveApiBaseUrl } from './sitemap.js';
+import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi.js';
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
 const SITE_NAME = 'Artify Solutions';

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BlogPost, AiProductItem } from '../types';
+import type { BlogPost, AiProductItem } from '../types';
 
 export interface SeoProductDetails {
   brand?: string;

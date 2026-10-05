@@ -7,7 +7,7 @@
  * projection exactly (see publicSiteService.ts/publicProductService.ts) —
  * nothing here fabricates a field the backend didn't send.
  */
-import { apiClient } from './apiClient';
+import { apiClient } from './apiClient.js';
 import type { BlogPost, BlogCategory, ArticleSeoMetadata } from '../types';
 
 export interface PublicMedia {
