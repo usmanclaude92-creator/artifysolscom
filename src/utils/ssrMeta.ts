@@ -37,6 +37,44 @@ async function fetchPublicJson<T>(apiBase: string, path: string): Promise<T | nu
   }
 }
 
+/**
+ * Site Identity defaults managed in the Control Center (Website → Site
+ * Identity): default meta title, default meta description and default social
+ * share image. These drive the link-preview card (og:title / og:description /
+ * og:image) whenever the page itself doesn't supply its own.
+ */
+export interface SiteIdentityDefaults {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+async function fetchSiteIdentityDefaults(apiBase: string): Promise<SiteIdentityDefaults> {
+  const data = await fetchPublicJson<{
+    settings: { identity?: { defaultMetaTitle?: string; defaultMetaDescription?: string; socialImage?: { url?: string } | null } } | null;
+  }>(apiBase, '/public/site-settings');
+  const identity = data?.settings?.identity;
+  return {
+    title: identity?.defaultMetaTitle?.trim() || undefined,
+    description: identity?.defaultMetaDescription?.trim() || undefined,
+    image: identity?.socialImage?.url || undefined,
+  };
+}
+
+/** Builds home-route metadata purely from Site Identity defaults; null when none are configured. */
+export function buildSiteIdentityMeta(defaults: SiteIdentityDefaults, baseUrl: string): SeoConfig | null {
+  if (!defaults.title && !defaults.description && !defaults.image) return null;
+  return {
+    title: defaults.title || '',
+    description: defaults.description || '',
+    canonicalUrl: `${baseUrl}/`,
+    ogType: 'website',
+    ogTitle: defaults.title,
+    ogDescription: defaults.description,
+    ogImage: defaults.image,
+  };
+}
+
 function plainTextExcerpt(html: string, maxLen = 160): string {
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   return text.length > maxLen ? `${text.slice(0, maxLen - 3)}...` : text;
@@ -218,8 +256,17 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
 
   if (route.kind === 'home') {
     const homepage = await fetchPublicJson<{ page: PublicPage | null }>(apiBase, '/public/homepage').then((d) => d?.page ?? null);
-    if (!homepage) return { meta: null, status: 200, redirect: null };
-    return { meta: buildCmsPageMeta(homepage, baseUrl, '/'), status: 200, redirect: null };
+    if (!homepage) {
+      // No CMS homepage: the static shell's own tags would show on a shared link, so apply the Site Identity defaults instead.
+      const defaults = await fetchSiteIdentityDefaults(apiBase);
+      return { meta: buildSiteIdentityMeta(defaults, baseUrl), status: 200, redirect: null };
+    }
+    const meta = buildCmsPageMeta(homepage, baseUrl, '/');
+    if (!meta.ogImage) {
+      const defaults = await fetchSiteIdentityDefaults(apiBase);
+      if (defaults.image) meta.ogImage = defaults.image;
+    }
+    return { meta, status: 200, redirect: null };
   }
 
   if (route.kind === 'blog-archive') {

@@ -228,6 +228,37 @@ describe('renderSeoForPath (orchestrator, mocked network)', () => {
     expect(result.redirect).toBeNull();
   });
 
+  it('uses Site Identity defaults (title, description, social image) for the home link preview when no CMS homepage exists', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
+      if (String(url).includes('/public/homepage')) return { ok: true, json: async () => ({ success: true, data: { page: null } }) };
+      return {
+        ok: true,
+        json: async () => ({
+          success: true,
+          data: {
+            settings: {
+              identity: {
+                defaultMetaTitle: 'Identity Title',
+                defaultMetaDescription: 'Identity description.',
+                socialImage: { url: 'https://cdn.example.com/share.png' },
+              },
+            },
+          },
+        }),
+      };
+    });
+
+    const result = await renderSeoForPath('/', BASE_URL, 'https://api.example.com/api/v1');
+    expect(result.meta?.ogTitle).toBe('Identity Title');
+    expect(result.meta?.ogDescription).toBe('Identity description.');
+    expect(result.meta?.ogImage).toBe('https://cdn.example.com/share.png');
+
+    const html = '<head><title>x</title><meta name="description" content="x" /><meta property="og:title" content="x" /><meta property="og:description" content="x" /><meta property="og:image" content="x" /></head>';
+    const out = injectMetaIntoHtml(html, result.meta!);
+    expect(out).toContain('<meta property="og:image" content="https://cdn.example.com/share.png" />');
+    expect(out).toContain('<meta property="og:title" content="Identity Title" />');
+  });
+
   it('follows a real redirect instead of rendering a 404 when one exists', async () => {
     (global.fetch as ReturnType<typeof vi.fn>)
       .mockResolvedValueOnce({ ok: false, json: async () => ({ success: false }) }) // page lookup 404s
