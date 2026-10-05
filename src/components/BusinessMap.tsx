@@ -14,12 +14,9 @@ import {
   Zap,
   Activity,
   Layers,
-  ChevronDown,
-  Building,
   ShieldCheck,
   RefreshCw,
   Cpu,
-  ArrowDown,
   Compass,
 } from 'lucide-react';
 import { playHoverSound } from '../utils/soundEffects';
@@ -293,9 +290,6 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
   // Active layer selection for interactive tab/comparison
   const [activeLayerId, setActiveLayerId] = useState<string>('layer-people');
   
-  // Layer displayed sliding UP in front of "YOUR BUSINESS"
-  const [frontLayerId, setFrontLayerId] = useState<string | null>(null);
-
   const [viewModes, setViewModes] = useState<Record<string, 'transformed' | 'traditional'>>({
     'layer-people': 'transformed',
     'layer-processes': 'transformed',
@@ -304,27 +298,6 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
     'layer-ai': 'transformed',
     'layer-integrations': 'transformed',
   });
-
-  // Close front layer on Escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && frontLayerId) {
-        setFrontLayerId(null);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [frontLayerId]);
-
-  // Derived front layer and navigation
-  const frontLayerIndex = LAYERS.findIndex((l) => l.id === frontLayerId);
-  const frontLayer = frontLayerIndex !== -1 ? LAYERS[frontLayerIndex] : null;
-  const prevLayerIndex = frontLayerIndex > 0 ? frontLayerIndex - 1 : null;
-  const nextLayerIndex = frontLayerIndex !== -1 && frontLayerIndex < LAYERS.length - 1 ? frontLayerIndex + 1 : null;
-  const prevLayer = prevLayerIndex !== null ? LAYERS[prevLayerIndex] : null;
-  const nextLayer = nextLayerIndex !== null ? LAYERS[nextLayerIndex] : null;
-  const isFrontTraditional = frontLayer ? (viewModes[frontLayer.id] || 'transformed') === 'traditional' : false;
-  const FrontIcon = frontLayer ? frontLayer.icon : null;
 
   // Scroll Progress across entire BusinessMap section
   const { scrollYProgress } = useScroll({
@@ -348,25 +321,6 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
       ...prev,
       [layerId]: prev[layerId] === 'transformed' ? 'traditional' : 'transformed',
     }));
-  };
-
-  const scrollToLayer = (layerId: string) => {
-    playHoverSound(0.05);
-    setActiveLayerId(layerId);
-    setFrontLayerId(layerId);
-    const element = document.getElementById('business-map-top');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  };
-
-  const scrollToTop = () => {
-    playHoverSound(0.05);
-    setFrontLayerId(null);
-    const element = document.getElementById('business-map-top');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
   };
 
   const scrollToBottom = () => {
@@ -439,408 +393,9 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
         </div>
 
         {/* ========================================================================= */}
-        {/* 1. TOP ANCHOR: YOUR BUSINESS (The Origin Node & In-Front Layer Reveal) */}
-        {/* ========================================================================= */}
-        <div id="business-map-top" className="relative max-w-4xl mx-auto mb-16 sm:mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className={`relative rounded-3xl p-6 sm:p-9 text-center border shadow-xl transition-all duration-300 min-h-[500px] sm:min-h-[540px] flex flex-col justify-center overflow-hidden ${
-              isLight
-                ? 'bg-white border-slate-300/80 shadow-slate-200/80'
-                : 'bg-[#0d0d16] border-white/10 shadow-2xl'
-            }`}
-          >
-            {/* Background subtle radial ambient inside card */}
-            <div className="absolute inset-0 pointer-events-none opacity-40 overflow-hidden" aria-hidden="true">
-              <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full blur-3xl bg-violet-600/15" />
-            </div>
-
-            {/* Origin Content (Stays Still Behind) */}
-            <div className="relative z-10 my-auto">
-              {/* Origin Header: Clean unboxed metadata */}
-              <div className="text-[11px] font-mono uppercase tracking-widest text-foreground-muted mb-2 flex items-center justify-center gap-2">
-                <Building className="w-3.5 h-3.5 text-zinc-400" />
-                <span>Origin Point · Disparate Operational State</span>
-              </div>
-
-              <h3 className="text-2xl sm:text-4xl font-extrabold font-display tracking-tight mb-3">
-                YOUR BUSINESS
-              </h3>
-
-              <p
-                className={`text-xs sm:text-sm max-w-xl mx-auto leading-relaxed ${
-                  isLight ? 'text-slate-600' : 'text-zinc-400'
-                }`}
-              >
-                Rich in domain expertise, proprietary workflows, and valuable institutional data—yet traditionally partitioned
-                across siloed departments, disconnected applications, and manual handoffs.
-              </p>
-
-              {/* Quick Segment Jump Bar (Click to scroll layer UP in front of Your Business) */}
-              <div className="mt-7 pt-5 border-t border-border flex flex-col items-center">
-                <div className="text-[11px] font-mono text-zinc-400 mb-3 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-                  <span>Click any section tab to scroll it up in front of Your Business:</span>
-                </div>
-
-                <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-mono">
-                  {LAYERS.map((l, idx) => {
-                    const isCurrent = frontLayerId === l.id;
-                    return (
-                      <button
-                        key={l.id}
-                        id={`btn-tab-layer-${idx + 1}`}
-                        onClick={() => {
-                          playHoverSound(0.04);
-                          setFrontLayerId(l.id);
-                        }}
-                        onMouseEnter={() => playHoverSound(0.02)}
-                        className={`px-3 py-2 rounded-xl border transition-all flex items-center gap-1.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 cursor-pointer ${
-                          isCurrent
-                            ? 'bg-violet-600 text-white border-violet-500 shadow-md shadow-violet-600/30 font-semibold'
-                            : isLight
-                            ? 'bg-slate-100 border-slate-200 text-slate-700 hover:border-violet-400 hover:bg-violet-50'
-                            : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:border-violet-500/50 hover:bg-violet-950/30'
-                        }`}
-                      >
-                        <span className={isCurrent ? 'text-white font-bold' : 'text-violet-500 font-bold'}>0{idx + 1}.</span>
-                        <span>{l.name}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Downward Pulse Arrow Indicator for Natural Continuous Scroll */}
-              <div className="mt-8 flex flex-col items-center justify-center">
-                <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
-                  Or scroll down to descend through the continuous 6-layer conduit
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    playHoverSound(0.03);
-                    const streamEl = document.getElementById('layers-continuous-stream');
-                    if (streamEl) {
-                      streamEl.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-violet-500/10 text-violet-500 hover:bg-violet-500/20 transition-all cursor-pointer"
-                  title="Scroll to continuous stream"
-                >
-                  <ChevronDown className="w-4 h-4 animate-bounce" />
-                </button>
-              </div>
-            </div>
-
-            {/* ========================================================================= */}
-            {/* FRONT LAYER SLIDE-UP OVERLAY (Rises UP in front of Your Business) */}
-            {/* ========================================================================= */}
-            <AnimatePresence>
-              {frontLayer && FrontIcon && (
-                <motion.div
-                  key={frontLayer.id}
-                  initial={{ y: '100%', opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: '100%', opacity: 0 }}
-                  transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-                  className={`absolute inset-0 z-30 flex flex-col rounded-3xl overflow-hidden backdrop-blur-xl border ${
-                    isLight
-                      ? 'bg-white/98 border-violet-300 shadow-2xl shadow-slate-300'
-                      : 'bg-[#090910]/98 border-violet-500/40 shadow-[0_20px_60px_rgba(0,0,0,0.85)]'
-                  }`}
-                >
-                  {/* Top Bar inside Front Layer: Tab Switcher & Dismiss */}
-                  <div className={`p-3.5 sm:p-4 border-b flex items-center justify-between gap-2 shrink-0 ${
-                    isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-black/40 border-white/[0.08]'
-                  }`}>
-                    {/* Tab Switcher in Front Layer */}
-                    <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 max-w-[78%] no-scrollbar">
-                      {LAYERS.map((l, idx) => {
-                        const isThisTab = frontLayer.id === l.id;
-                        return (
-                          <button
-                            key={l.id}
-                            onClick={() => {
-                              playHoverSound(0.04);
-                              setFrontLayerId(l.id);
-                            }}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all shrink-0 flex items-center gap-1 cursor-pointer ${
-                              isThisTab
-                                ? 'bg-violet-600 text-white font-bold shadow-xs'
-                                : isLight
-                                ? 'text-slate-600 hover:bg-slate-200'
-                                : 'text-zinc-400 hover:text-white hover:bg-white/[0.06]'
-                            }`}
-                          >
-                            <span className={isThisTab ? 'text-white' : 'text-violet-400 font-bold'}>0{idx + 1}</span>
-                            <span className="hidden sm:inline">{l.name}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    {/* Return to Your Business button */}
-                    <button
-                      onClick={() => {
-                        playHoverSound(0.04);
-                        setFrontLayerId(null);
-                      }}
-                      className={`px-3 py-1.5 rounded-xl border text-xs font-mono flex items-center gap-1.5 transition-all shrink-0 active:scale-95 cursor-pointer ${
-                        isLight
-                          ? 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100 shadow-xs'
-                          : 'border-white/[0.1] bg-white/[0.05] text-zinc-300 hover:text-white hover:bg-white/[0.1]'
-                      }`}
-                      title="Return to Your Business (or press Esc)"
-                    >
-                      <ChevronDown className="w-3.5 h-3.5 rotate-180 text-violet-400" />
-                      <span className="hidden sm:inline">Your Business</span>
-                      <span className="text-zinc-500 sm:hidden">Close</span>
-                      <span className="text-[10px] text-zinc-500 hidden sm:inline">(Esc)</span>
-                    </button>
-                  </div>
-
-                  {/* Scrollable Content inside Front Layer */}
-                  <div className="p-5 sm:p-7 overflow-y-auto flex-1 text-left space-y-5">
-                    {/* Header: Icon, Badge, Name & Friction/Transformed Toggle */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br ${frontLayer.accentColor} text-white shadow-md`}
-                        >
-                          <FrontIcon className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400 mb-0.5">
-                            <span className="font-semibold text-violet-500">Layer {frontLayer.number}</span>
-                            <span aria-hidden="true" className="text-zinc-500">·</span>
-                            <span>{frontLayer.badge}</span>
-                          </div>
-                          <h4 className="text-xl sm:text-2xl font-bold font-display text-foreground">
-                            {frontLayer.name}
-                          </h4>
-                        </div>
-                      </div>
-
-                      {/* Interactive Comparison Toggle */}
-                      <div
-                        className={`inline-flex items-center p-1 rounded-xl border text-xs font-medium self-start sm:self-auto ${
-                          isLight ? 'bg-slate-100 border-slate-200' : 'bg-black/40 border-white/[0.08]'
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => toggleLayerMode(frontLayer.id)}
-                          className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                            !isFrontTraditional
-                              ? 'bg-violet-600 text-white shadow-xs'
-                              : isLight
-                              ? 'text-slate-600 hover:text-slate-900'
-                              : 'text-zinc-400 hover:text-white'
-                          }`}
-                        >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Artify Unified State</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => toggleLayerMode(frontLayer.id)}
-                          className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer ${
-                            isFrontTraditional
-                              ? 'bg-amber-600 text-white shadow-xs'
-                              : isLight
-                              ? 'text-slate-600 hover:text-slate-900'
-                              : 'text-zinc-400 hover:text-white'
-                          }`}
-                        >
-                          <AlertTriangle className="w-3.5 h-3.5" />
-                          <span>Traditional Friction</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Headline & Summary */}
-                    <div>
-                      <h5 className="text-base sm:text-lg font-bold text-foreground mb-1.5">
-                        {frontLayer.headline}
-                      </h5>
-                      <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
-                        {frontLayer.summary}
-                      </p>
-                    </div>
-
-                    {/* Dynamic Points: Friction vs Transformed */}
-                    <AnimatePresence mode="wait">
-                      {isFrontTraditional ? (
-                        <motion.div
-                          key="front-traditional"
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -8 }}
-                          transition={{ duration: 0.18 }}
-                          className={`p-4 sm:p-5 rounded-2xl border ${
-                            isLight
-                              ? 'bg-amber-50/70 border-amber-200 text-slate-800'
-                              : 'bg-amber-950/20 border-amber-500/30 text-amber-200'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider font-mono text-amber-600 dark:text-amber-400">
-                            <AlertTriangle className="w-4 h-4 shrink-0" />
-                            <span>{frontLayer.traditional.title}</span>
-                          </div>
-                          <ul className="space-y-2 text-xs sm:text-sm">
-                            {frontLayer.traditional.points.map((pt, i) => (
-                              <li key={i} className="flex items-start gap-2.5">
-                                <span className="text-amber-500 font-bold shrink-0 mt-0.5">✕</span>
-                                <span>{pt}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="front-transformed"
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -8 }}
-                          transition={{ duration: 0.18 }}
-                          className={`p-4 sm:p-5 rounded-2xl border ${
-                            isLight
-                              ? 'bg-violet-50/70 border-violet-200 text-slate-800'
-                              : 'bg-violet-950/20 border-violet-500/30 text-zinc-200'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider font-mono text-violet-600 dark:text-violet-400">
-                            <CheckCircle2 className="w-4 h-4 shrink-0" />
-                            <span>{frontLayer.transformed.title}</span>
-                          </div>
-                          <ul className="space-y-2 text-xs sm:text-sm mb-3">
-                            {frontLayer.transformed.points.map((pt, i) => (
-                              <li key={i} className="flex items-start gap-2.5">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                                <span>{pt}</span>
-                              </li>
-                            ))}
-                          </ul>
-
-                          {/* Capabilities Strip */}
-                          <div className="pt-2.5 border-t border-border flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs">
-                            <span className="font-mono text-foreground-muted">Capabilities:</span>
-                            {frontLayer.transformed.capabilities.map((cap, capIdx) => (
-                              <React.Fragment key={cap}>
-                                <span className="text-foreground font-medium">{cap}</span>
-                                {capIdx < frontLayer.transformed.capabilities.length - 1 && (
-                                  <span aria-hidden="true" className="text-zinc-500">·</span>
-                                )}
-                              </React.Fragment>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {/* Entities & Metrics */}
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center pt-3 border-t border-border">
-                      <div className="md:col-span-7">
-                        <div className="text-[11px] font-mono text-foreground-muted mb-1 flex items-center justify-between">
-                          <span>Synchronized Layer Entities:</span>
-                          <span className="text-zinc-500">{frontLayer.telemetryStream.protocol}</span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-400">
-                          {frontLayer.entities.map((ent, entIdx) => (
-                            <React.Fragment key={ent}>
-                              <span>{ent}</span>
-                              {entIdx < frontLayer.entities.length - 1 && (
-                                <span aria-hidden="true" className="text-zinc-600">/</span>
-                              )}
-                            </React.Fragment>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="md:col-span-5 grid grid-cols-3 gap-2 text-center">
-                        {frontLayer.metrics.map((m, idx) => (
-                          <div
-                            key={idx}
-                            className={`p-2 rounded-xl border ${
-                              isLight ? 'bg-slate-50 border-slate-200' : 'bg-black/40 border-white/[0.04]'
-                            }`}
-                          >
-                            <div className="text-sm font-bold font-mono text-violet-500">{m.value}</div>
-                            <div className="text-[10px] text-foreground-muted truncate mt-0.5">{m.label}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom Footer inside Front Layer: Previous / Next & Descend */}
-                  <div className={`p-3 sm:p-4 border-t flex items-center justify-between shrink-0 text-xs font-mono ${
-                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-black/50 border-white/[0.08]'
-                  }`}>
-                    {prevLayer ? (
-                      <button
-                        onClick={() => {
-                          playHoverSound(0.04);
-                          setFrontLayerId(prevLayer.id);
-                        }}
-                        className="flex items-center gap-1.5 text-zinc-400 hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        <span>← 0{prevLayerIndex + 1}. {prevLayer.name}</span>
-                      </button>
-                    ) : (
-                      <span className="text-zinc-600">Layer 01</span>
-                    )}
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          playHoverSound(0.04);
-                          setFrontLayerId(null);
-                        }}
-                        className="text-violet-500 hover:text-violet-400 font-semibold cursor-pointer"
-                      >
-                        ▲ Your Business
-                      </button>
-                    </div>
-
-                    {nextLayer ? (
-                      <button
-                        onClick={() => {
-                          playHoverSound(0.04);
-                          setFrontLayerId(nextLayer.id);
-                        }}
-                        className="flex items-center gap-1.5 text-zinc-400 hover:text-foreground transition-colors cursor-pointer"
-                      >
-                        <span>0{nextLayerIndex + 1}. {nextLayer.name} →</span>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          playHoverSound(0.04);
-                          setFrontLayerId(null);
-                          scrollToBottom();
-                        }}
-                        className="text-emerald-500 hover:text-emerald-400 font-semibold cursor-pointer"
-                      >
-                        Synthesis ↓
-                      </button>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
-
-        {/* ========================================================================= */}
         {/* 2. THE 6 LAYERS WITH SIGNATURE CONTINUOUS SCROLL CONDUIT */}
         {/* ========================================================================= */}
-        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-[80vw] max-w-none left-1/2 -translate-x-1/2">
 
           {/* Sticky Left Telemetry Rail (Desktop) */}
           <aside className="hidden lg:block lg:col-span-3 sticky top-28 space-y-4">
@@ -861,31 +416,15 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
 
               {/* Progress Stepper Links */}
               <div className="space-y-1.5">
-                <button
-                  onClick={scrollToTop}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg font-mono text-[11px] font-medium transition-all flex items-center justify-between ${
-                    isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-white/[0.05] text-zinc-300'
-                  }`}
-                >
-                  <span>▲ YOUR BUSINESS</span>
-                  <span className="text-[10px] text-zinc-500">Origin</span>
-                </button>
-
-                <div className="h-px bg-border my-1" />
-
                 {LAYERS.map((layer) => {
-                  const isActive = frontLayerId === layer.id || (!frontLayerId && activeLayerId === layer.id);
+                  const isActive = activeLayerId === layer.id;
                   const Icon = layer.icon;
                   return (
                     <button
                       key={layer.id}
                       onClick={() => {
                         playHoverSound(0.04);
-                        setFrontLayerId(layer.id);
-                        const element = document.getElementById('business-map-top');
-                        if (element) {
-                          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
+                        setActiveLayerId(layer.id);
                       }}
                       onMouseEnter={() => playHoverSound(0.02)}
                       className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all flex items-center justify-between group cursor-pointer ${
@@ -937,8 +476,30 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
             </div>
           </aside>
 
-          {/* Right Column: Cascading 6 Layers */}
-          <div id="layers-continuous-stream" className="lg:col-span-9 relative space-y-12 sm:space-y-16">
+          {/* Mobile layer selector (the rail is desktop-only) */}
+          <div className="lg:hidden flex flex-wrap gap-2 text-xs font-mono">
+            {LAYERS.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => {
+                  playHoverSound(0.04);
+                  setActiveLayerId(l.id);
+                }}
+                className={`px-3 py-2 rounded-xl border transition-all cursor-pointer ${
+                  activeLayerId === l.id
+                    ? 'bg-violet-600 text-white border-violet-500 font-semibold'
+                    : isLight
+                    ? 'bg-slate-100 border-slate-200 text-slate-700'
+                    : 'bg-white/[0.04] border-white/[0.08] text-zinc-300'
+                }`}
+              >
+                {l.number}. {l.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Right Column: stacked layer cards (selected card slides up in front) */}
+          <div id="layers-continuous-stream" className="lg:col-span-9 relative">
             
             {/* The Animated Signature Vertical Conduit Line */}
             <div
@@ -961,8 +522,9 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
               />
             </div>
 
-            {/* Loop through the 6 Layers */}
-            {LAYERS.map((layer, index) => {
+            {/* Only the selected layer card is shown; the others stay hidden behind it */}
+            <AnimatePresence mode="popLayout" initial={false}>
+            {LAYERS.filter((layer) => layer.id === activeLayerId).map((layer) => {
               const Icon = layer.icon;
               const mode = viewModes[layer.id] || 'transformed';
               const isTraditional = mode === 'traditional';
@@ -971,11 +533,11 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
                 <motion.article
                   key={layer.id}
                   id={layer.id}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-60px' }}
-                  transition={{ duration: 0.65, delay: index * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                  onViewportEnter={() => setActiveLayerId(layer.id)}
+                  initial={{ opacity: 0, y: 160 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.96, zIndex: 0 }}
+                  transition={{ type: 'spring', damping: 28, stiffness: 240 }}
+                  style={{ zIndex: 10 }}
                   className={`relative sm:pl-16 sm:ml-2 rounded-3xl p-6 sm:p-8 border transition-all duration-300 ${
                     isLight
                       ? 'bg-white border-slate-200 shadow-md hover:shadow-xl hover:border-violet-300'
@@ -1172,6 +734,7 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
                 </motion.article>
               );
             })}
+            </AnimatePresence>
           </div>
         </div>
 
