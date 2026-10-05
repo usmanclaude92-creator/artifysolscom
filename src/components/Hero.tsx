@@ -145,7 +145,7 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Left Column: Brand Message & Hero Copy */}
           <motion.div
-            className="lg:col-span-7 flex flex-col items-start text-left"
+            className="lg:col-span-8 xl:col-span-7 flex flex-col items-start text-left"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -231,7 +231,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           {/* Right Column: Interactive Neural Ecosystem Visual */}
           <motion.div
-            className="lg:col-span-5 flex flex-col items-center justify-center relative w-full"
+            className="lg:col-span-4 xl:col-span-5 flex flex-col items-end justify-center relative w-full"
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
