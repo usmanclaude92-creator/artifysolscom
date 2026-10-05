@@ -36,6 +36,7 @@ import {
   Gauge,
 } from 'lucide-react';
 import { updatePageSeo } from '../../utils/seo';
+import { EcosystemExplorer } from '../ecosystem/EcosystemExplorer';
 
 interface EcosystemPageProps {
   onNavigateToContact: () => void;
@@ -290,6 +291,9 @@ export const EcosystemPage: React.FC<EcosystemPageProps> = ({ onNavigateToContac
           ))}
         </ul>
       </Section>
+
+      {/* 3b. Interactive node explorer */}
+      <EcosystemExplorer onOpenSolutionBuilder={onOpenSolutionBuilder} onNavigateToContact={onNavigateToContact} />
 
       {/* 4. ONE CONNECTED BUSINESS */}
       <Section label="One connected business">
