@@ -185,7 +185,7 @@ export const Hero: React.FC<HeroProps> = ({
             </p>
 
             {/* Core Capability Callout */}
-            <div className="relative w-full max-w-2xl lg:max-w-none p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
+            <div className="relative w-fit max-w-full p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
               <div className="flex items-start sm:items-center gap-3">
                 <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                   <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
