@@ -765,17 +765,6 @@ function MainAppContent() {
               />
             </AnimatedSection>
 
-            {/* Subtle, professional horizontal separator between Hero and Problem Section */}
-            <div className="relative w-full max-w-7xl mx-auto px-6 py-2 overflow-hidden" aria-hidden="true">
-              <div className="relative flex items-center justify-center">
-                <div className="h-px w-full bg-gradient-to-r from-transparent via-violet-500/25 to-transparent" />
-                <div className="absolute flex items-center gap-2 px-3 py-1 rounded-full surface-card border border-border shadow-sm text-[10px] font-mono-code text-foreground-muted uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  <span>The Paradigm Shift</span>
-                </div>
-              </div>
-            </div>
-
             {/* 2. Core Philosophy: Technology Adapts to Business */}
             <AnimatedSection variant="fade-up">
               <TrustStatement />
