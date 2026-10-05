@@ -2069,3 +2069,17 @@ main > section:nth-child(n + 4) {
 .artify-code-copy-btn-done {
   color: #6ee7b7;
 }
+
+/*
+ * Universal home-page section width: every section except the hero (header and
+ * footer sit outside <main>) uses 7.5% side margins at every viewport size.
+ * Unlayered on purpose so it overrides each section's own max-w/px utilities.
+ */
+main[data-home-layout='true'] section:not(#hero) > .relative.z-10 {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 7.5%;
+  padding-right: 7.5%;
+}

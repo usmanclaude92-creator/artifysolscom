@@ -621,7 +621,7 @@ function MainAppContent() {
       />
 
       {/* Main Multi-Page Dynamic Switch */}
-      <main>
+      <main data-home-layout={activeRoute === 'home' && !dynamicHomepage ? 'true' : undefined}>
         {activeRoute !== 'home' && (
           <BreadcrumbNav
             activeRoute={activeRoute}

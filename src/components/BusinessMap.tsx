@@ -387,7 +387,7 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
         {/* ========================================================================= */}
         {/* 2. THE 6 LAYERS WITH SIGNATURE CONTINUOUS SCROLL CONDUIT */}
         {/* ========================================================================= */}
-        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-[80vw] max-w-none left-1/2 -translate-x-1/2">
+        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* Sticky Left Telemetry Rail (Desktop) */}
           <aside className="hidden lg:block lg:col-span-3 sticky top-28 space-y-4">
