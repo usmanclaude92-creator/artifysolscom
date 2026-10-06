@@ -79,6 +79,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_SESSION_KEY = 'artify_auth_session';
 
+/** Control Center origin — staff (any role other than CLIENT_PORTAL) are handed off here after signing in. */
+const CONTROL_CENTER_URL: string =
+  ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env?.VITE_CONTROL_CENTER_URL || 'https://cc.artifysols.com').replace(/\/+$/, '');
+const CLIENT_PORTAL_ROLE = 'CLIENT_PORTAL';
+
 interface StoredSession {
   token: string;
   expiresAt: string;
@@ -201,15 +206,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = async (email: string, password: string, keepSignedIn = true): Promise<boolean> => {
     const result = await apiClient.post<{ session: { token: string; expiresAt: string } }>('/auth/login', { email, password });
     applySession({ token: result.session.token, expiresAt: result.session.expiresAt }, keepSignedIn);
+    let signedIn: AuthUser;
     try {
-      await refreshUser();
+      signedIn = await refreshUser();
     } catch (err) {
       applySession(null);
       throw err;
     }
+    if (signedIn.role !== CLIENT_PORTAL_ROLE) {
+      await handOffToControlCenter();
+      return true;
+    }
     setIsAuthModalOpen(false);
     openPortal('overview');
     return true;
+  };
+
+  /**
+   * Control Center users sign in here too: ask the Platform API for a single-use 60s code and continue on
+   * cc.artifysols.com, which exchanges it for its own session. No session token is ever placed in a URL, and
+   * the staff session is dropped from this public origin's storage once the code is issued.
+   */
+  const handOffToControlCenter = async (): Promise<void> => {
+    try {
+      const { code } = await apiClient.post<{ code: string }>('/auth/handoff');
+      apiClient.post('/auth/logout').catch(() => {});
+      applySession(null);
+      setUser(null);
+      window.location.assign(`${CONTROL_CENTER_URL}/auth/callback?code=${encodeURIComponent(code)}`);
+    } catch (err) {
+      apiClient.post('/auth/logout').catch(() => {});
+      applySession(null);
+      setUser(null);
+      throw err;
+    }
   };
 
   /**

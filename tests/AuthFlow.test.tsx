@@ -121,3 +121,31 @@ describe('account pages', () => {
     expect(post).toHaveBeenCalledWith('/auth/password-reset/confirm', { token: 'tok', newPassword: 'correct horse battery' });
   });
 });
+
+describe('Control Center handoff', () => {
+  const staff = {
+    user: { id: '1', organizationId: 'o', firstName: 'S', lastName: 'T', email: 's@corp.com', title: null, phone: null, role: { key: 'ADMIN', name: 'Admin', permissions: [] } },
+    organizations: [],
+  };
+
+  it('sends non-portal roles to the Control Center with a one-time code (never the token)', async () => {
+    const assign = vi.fn();
+    Object.defineProperty(window, 'location', { value: { ...window.location, assign }, writable: true });
+    const post = vi.spyOn(apiClient, 'post').mockImplementation(async (path: string) => {
+      if (path === '/auth/login') return { session: { token: 'secret-token', expiresAt: new Date(Date.now() + 3600_000).toISOString() } } as never;
+      if (path === '/auth/handoff') return { code: 'art_handoff_x' } as never;
+      return {} as never;
+    });
+    vi.spyOn(apiClient, 'get').mockResolvedValue(staff as never);
+    setup('login');
+    fill('login-email-input', 's@corp.com');
+    fill('login-password-input', 'correct horse battery');
+    fireEvent.submit(document.getElementById('client-login-form')!);
+    await waitFor(() => expect(assign).toHaveBeenCalled());
+    const url = String(assign.mock.calls[0]![0]);
+    expect(url).toBe('https://cc.artifysols.com/auth/callback?code=art_handoff_x');
+    expect(url).not.toContain('secret-token');
+    expect(post).toHaveBeenCalledWith('/auth/logout');
+    expect(window.localStorage.getItem('artify_auth_session')).toBeNull();
+  });
+});
