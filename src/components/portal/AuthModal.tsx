@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   Zap,
 } from 'lucide-react';
-import { apiClient } from '../../lib/apiClient';
+import { apiClient, ApiClientError } from '../../lib/apiClient';
+import { EMAIL_PATTERN, TurnstileWidget, TURNSTILE_SITE_KEY, checkPassword, friendlyAuthError } from './authHelpers';
 
 export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propTheme }) => {
   const {
@@ -24,6 +25,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
     openAuthModal,
     login,
     register,
+    resendVerification,
   } = useAuth();
 
   const isLight = propTheme === 'light' || (typeof document !== 'undefined' && document.documentElement.classList.contains('theme-light'));
@@ -38,11 +40,34 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [infoMsg, setInfoMsg] = useState('');
+  const [keepSignedIn, setKeepSignedIn] = useState(true);
+  const [honeypot, setHoneypot] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaReset, setCaptchaReset] = useState(0);
+  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  const pw = checkPassword(password, email);
+  const captchaMissing = !!TURNSTILE_SITE_KEY && !captchaToken;
+  const resetCaptcha = () => {
+    setCaptchaToken('');
+    setCaptchaReset((n) => n + 1);
+  };
+
+  React.useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const t = setTimeout(() => setResendCooldown((n) => n - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendCooldown]);
 
   // Keep mode in sync with context when modal opens
   React.useEffect(() => {
     setMode(authModalMode);
     setErrorMsg('');
+    setInfoMsg('');
+    setNeedsVerification(false);
+    setPendingEmail(null);
   }, [authModalMode, isAuthModalOpen]);
 
   if (!isAuthModalOpen) return null;
@@ -51,15 +76,25 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
     e.preventDefault();
     setErrorMsg('');
     setInfoMsg('');
-    if (!email || !email.includes('@')) {
+    setNeedsVerification(false);
+    if (!EMAIL_PATTERN.test(email.trim())) {
       setErrorMsg('Please provide a valid corporate email address.');
+      return;
+    }
+    if (!password) {
+      setErrorMsg('Please enter your password.');
       return;
     }
     setIsLoading(true);
     try {
-      await login(email, password);
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Login failed. Please try again.');
+      await login(email.trim(), password, keepSignedIn);
+    } catch (err: unknown) {
+      if (err instanceof ApiClientError && err.code === 'EMAIL_NOT_VERIFIED') {
+        setNeedsVerification(true);
+        setErrorMsg('');
+      } else {
+        setErrorMsg(friendlyAuthError(err, 'Login failed. Please try again.'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -68,8 +103,12 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
   const handleForgotPassword = async () => {
     setErrorMsg('');
     setInfoMsg('');
-    if (!email || !email.includes('@')) {
+    if (!EMAIL_PATTERN.test(email.trim())) {
       setErrorMsg('Enter your email above first, then use "Forgot password?".');
+      return;
+    }
+    if (captchaMissing) {
+      setErrorMsg('Please complete the security check first.');
       return;
     }
     setIsLoading(true);
@@ -77,11 +116,12 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
       // Real backend contract (Phase 3 POST /auth/password-reset/request) —
       // always a generic response, never reveals whether the account
       // exists. No fabricated "email dispatched" behavior.
-      const res = await apiClient.post<{ message: string }>('/auth/password-reset/request', { email });
-      setInfoMsg(res.message);
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Could not process the request. Please try again.');
+      const res = await apiClient.post<{ message?: string }>('/auth/password-reset/request', { email: email.trim(), captchaToken: captchaToken || undefined });
+      setInfoMsg(res.message || 'If an account exists for that email, a reset link is on its way. It expires in 1 hour.');
+    } catch (err: unknown) {
+      setErrorMsg(friendlyAuthError(err, 'Could not process the request. Please try again.'));
     } finally {
+      resetCaptcha();
       setIsLoading(false);
     }
   };
@@ -93,27 +133,55 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
       setErrorMsg('Please fill in all required fields.');
       return;
     }
-    if (!email.includes('@')) {
+    if (!EMAIL_PATTERN.test(email.trim())) {
       setErrorMsg('Please provide a valid business email address.');
       return;
     }
-    if (password.length < 10) {
-      setErrorMsg('Password must be at least 10 characters.');
+    if (!pw.valid) {
+      setErrorMsg(
+        !pw.length ? 'Password must be at least 10 characters.' : !pw.noEmail ? 'Password must not contain your email name.' : 'Please choose a less common password.'
+      );
+      return;
+    }
+    if (captchaMissing) {
+      setErrorMsg('Please complete the security check first.');
       return;
     }
     setIsLoading(true);
     try {
-      await register({
+      const outcome = await register({
         name,
-        email,
+        email: email.trim(),
         password,
         company,
         role,
+        website: honeypot,
+        captchaToken: captchaToken || undefined,
       });
-    } catch (err: any) {
-      setErrorMsg(err?.message || 'Registration failed. Please try again.');
+      if (outcome === 'verification_required') {
+        setPendingEmail(email.trim());
+        setPassword('');
+      }
+    } catch (err: unknown) {
+      setErrorMsg(friendlyAuthError(err, 'Registration failed. Please try again.'));
     } finally {
+      resetCaptcha();
       setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    const target = pendingEmail ?? email.trim();
+    if (!target || resendCooldown > 0) return;
+    setErrorMsg('');
+    try {
+      await resendVerification(target, captchaToken || undefined);
+      setInfoMsg('If that account is awaiting verification, a new link has been sent.');
+      setResendCooldown(60);
+    } catch (err: unknown) {
+      setErrorMsg(friendlyAuthError(err, 'Could not resend the email. Please try again shortly.'));
+    } finally {
+      resetCaptcha();
     }
   };
 
@@ -231,7 +299,41 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
           )}
 
           {/* Form */}
-          {mode === 'login' ? (
+          {pendingEmail ? (
+            <div id="check-email-state" className="text-center space-y-4 py-4" role="status">
+              <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center ${isLight ? 'bg-emerald-50 text-emerald-600' : 'bg-emerald-950/40 text-emerald-400'}`}>
+                <Mail className="w-6 h-6" />
+              </div>
+              <h3 className={`text-lg font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Check your email</h3>
+              <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+                If <strong>{pendingEmail}</strong> can be registered, we have sent a verification link. Open it to activate your account,
+                then sign in. An Artify team member will then link your account to your workspace.
+              </p>
+              {infoMsg && <p className={`text-xs ${isLight ? 'text-emerald-700' : 'text-emerald-300'}`}>{infoMsg}</p>}
+              <TurnstileWidget onToken={setCaptchaToken} resetKey={captchaReset} />
+              <div className="flex items-center justify-center gap-4 text-xs">
+                <button
+                  type="button"
+                  onClick={() => void handleResend()}
+                  disabled={resendCooldown > 0 || captchaMissing}
+                  className="font-semibold text-violet-500 underline disabled:opacity-50 disabled:no-underline"
+                >
+                  {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend email'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPendingEmail(null);
+                    setInfoMsg('');
+                    setMode('login');
+                  }}
+                  className={isLight ? 'text-slate-600 hover:text-slate-900' : 'text-zinc-400 hover:text-white'}
+                >
+                  Back to sign in
+                </button>
+              </div>
+            </div>
+          ) : mode === 'login' ? (
             <form onSubmit={handleLoginSubmit} className="space-y-4" id="client-login-form">
               <div>
                 <label className={`block text-xs font-medium mb-1.5 ${isLight ? 'text-slate-700' : 'text-zinc-300'}`}>
@@ -290,7 +392,9 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                 <label className={`flex items-center gap-2 cursor-pointer ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
                   <input
                     type="checkbox"
-                    defaultChecked
+                    checked={keepSignedIn}
+                    onChange={(e) => setKeepSignedIn(e.target.checked)}
+                    id="keep-signed-in"
                     className="rounded text-violet-600 focus:ring-0 w-3.5 h-3.5"
                   />
                   <span>Keep me signed in</span>
@@ -313,6 +417,27 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                   {infoMsg}
                 </div>
               )}
+
+              {needsVerification && (
+                <div
+                  id="unverified-email-notice"
+                  className={`p-3 rounded-lg border text-xs space-y-2 ${
+                    isLight ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-amber-950/30 border-amber-500/30 text-amber-200'
+                  }`}
+                >
+                  <p>Please verify your email address before signing in. Check your inbox for the verification link.</p>
+                  <button
+                    type="button"
+                    onClick={() => void handleResend()}
+                    disabled={resendCooldown > 0 || captchaMissing}
+                    className="font-semibold underline disabled:opacity-50 disabled:no-underline"
+                  >
+                    {resendCooldown > 0 ? `Resend available in ${resendCooldown}s` : 'Resend verification email'}
+                  </button>
+                </div>
+              )}
+
+              <TurnstileWidget onToken={setCaptchaToken} resetKey={captchaReset} />
 
               <button
                 type="submit"
@@ -417,6 +542,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                     placeholder="At least 10 characters"
                     required
                     minLength={10}
+                    autoComplete="new-password"
                     id="signup-password-input"
                     className={`w-full rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-violet-500 border ${
                       isLight
@@ -465,6 +591,50 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                 </div>
               </div>
 
+              {password && (
+                <div id="password-strength" aria-live="polite" className="space-y-1.5">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4].map((i) => (
+                      <span
+                        key={i}
+                        className={`h-1 flex-1 rounded-full ${
+                          i <= pw.score
+                            ? pw.score <= 1
+                              ? 'bg-rose-500'
+                              : pw.score === 2
+                              ? 'bg-amber-500'
+                              : 'bg-emerald-500'
+                            : isLight
+                            ? 'bg-slate-200'
+                            : 'bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className={`text-[11px] ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
+                    {!pw.length
+                      ? 'Use at least 10 characters.'
+                      : !pw.noEmail
+                      ? 'Avoid using your email name in the password.'
+                      : !pw.mix
+                      ? 'Too common — try a longer passphrase.'
+                      : pw.score >= 4
+                      ? 'Strong password.'
+                      : 'Good — longer and more varied is stronger.'}
+                  </p>
+                </div>
+              )}
+
+              {/* Honeypot: invisible to people, tempting to bots. */}
+              <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+                <label>
+                  Website
+                  <input type="text" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} name="website" id="signup-website-input" />
+                </label>
+              </div>
+
+              <TurnstileWidget onToken={setCaptchaToken} resetKey={captchaReset} />
+
               <button
                 type="submit"
                 disabled={isLoading}
@@ -474,11 +644,11 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Provisioning Client Portal...</span>
+                    <span>Creating your account...</span>
                   </span>
                 ) : (
                   <>
-                    <span>Create Account & Launch Portal</span>
+                    <span>Create Client Account</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

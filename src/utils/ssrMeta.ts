@@ -241,7 +241,7 @@ export function resolveSsrRoute(pathname: string): SsrRoute {
   if (product) return { kind: 'product-detail', slug: decodeURIComponent(product[1]!) };
   const caseStudy = path.match(/^\/case-studies\/([^/]+)$/);
   if (caseStudy) return { kind: 'case-study-detail', slug: decodeURIComponent(caseStudy[1]!) };
-  const RESERVED = new Set(['solutions', 'solutions-catalog', 'ai-solutions', 'services', 'industries', 'case-studies', 'about', 'contact', 'privacy', 'terms', 'ecosystem']);
+  const RESERVED = new Set(['solutions', 'solutions-catalog', 'ai-solutions', 'services', 'industries', 'case-studies', 'about', 'contact', 'privacy', 'terms', 'ecosystem', 'verify-email', 'reset-password']);
   const singleSegment = path.match(/^\/([^/]+)$/);
   if (singleSegment && !RESERVED.has(singleSegment[1]!)) return { kind: 'cms-page', slug: decodeURIComponent(singleSegment[1]!) };
   return { kind: 'other' };

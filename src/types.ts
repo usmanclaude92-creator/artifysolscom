@@ -99,6 +99,8 @@ export type AppRoute =
   | 'product-detail'
   | 'services'
   | 'ecosystem'
+  | 'verify-email'
+  | 'reset-password'
   | 'industries'
   | 'case-studies'
   | 'case-study-detail'

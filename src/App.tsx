@@ -75,6 +75,8 @@ const CaseStudiesPage = lazy(() =>
 const CaseStudyDetailPage = lazy(() =>
   import('./components/pages/CaseStudyDetailPage').then((m) => ({ default: m.CaseStudyDetailPage }))
 );
+const VerifyEmailPage = lazy(() => import('./components/pages/AccountActionPage').then((m) => ({ default: m.VerifyEmailPage })));
+const ResetPasswordPage = lazy(() => import('./components/pages/AccountActionPage').then((m) => ({ default: m.ResetPasswordPage })));
 const EcosystemPage = lazy(() => import('./components/pages/EcosystemPage').then((m) => ({ default: m.EcosystemPage })));
 const AboutPage = lazy(() =>
   import('./components/pages/AboutPage').then((m) => ({ default: m.AboutPage }))
@@ -134,6 +136,8 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
   }
   if (path === '/case-studies') return { route: 'case-studies' };
   if (path === '/ecosystem') return { route: 'ecosystem' };
+  if (path === '/verify-email') return { route: 'verify-email' };
+  if (path === '/reset-password') return { route: 'reset-password' };
   if (path === '/about') return { route: 'about' };
   if (path === '/contact') return { route: 'contact' };
   if (path === '/privacy') return { route: 'privacy' };
@@ -699,6 +703,9 @@ function MainAppContent() {
             theme={theme}
           />
         )}
+
+        {activeRoute === 'verify-email' && <VerifyEmailPage theme={theme} />}
+        {activeRoute === 'reset-password' && <ResetPasswordPage theme={theme} />}
 
         {activeRoute === 'ecosystem' && (
           <EcosystemPage

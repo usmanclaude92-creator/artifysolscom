@@ -43,14 +43,18 @@ interface AuthContextType {
   isAuthenticated: boolean;
   /** True only while rehydrating a persisted session on initial page load. */
   isAuthLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, keepSignedIn?: boolean) => Promise<boolean>;
   register: (data: {
     name: string;
     email: string;
     password: string;
     company: string;
     role?: string;
-  }) => Promise<boolean>;
+    /** Honeypot field — real users never fill it. */
+    website?: string;
+    captchaToken?: string;
+  }) => Promise<RegisterOutcome>;
+  resendVerification: (email: string, captchaToken?: string) => Promise<void>;
   logout: () => void;
   /** Updates the caller's own profile fields via the Platform API (PATCH /users/:id) and refreshes the local session. Never touches role/permissions. */
   updateProfile: (updates: { firstName?: string; lastName?: string; title?: string; phone?: string }) => Promise<void>;
@@ -68,6 +72,9 @@ interface AuthContextType {
   setPortalActiveTab: (tab: string) => void;
 }
 
+/** 'signed_in' = degraded mode (no email service): session issued immediately. 'verification_required' = check inbox. */
+export type RegisterOutcome = 'signed_in' | 'verification_required';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const STORAGE_SESSION_KEY = 'artify_auth_session';
@@ -77,9 +84,17 @@ interface StoredSession {
   expiresAt: string;
 }
 
+function readSessionStorage(): string | null {
+  try {
+    return typeof window !== 'undefined' ? window.sessionStorage.getItem(STORAGE_SESSION_KEY) : null;
+  } catch {
+    return null;
+  }
+}
+
 function loadStoredSession(): StoredSession | null {
   try {
-    const raw = safeGetLocalStorage(STORAGE_SESSION_KEY);
+    const raw = safeGetLocalStorage(STORAGE_SESSION_KEY) ?? readSessionStorage();
     if (!raw) return null;
     const parsed = JSON.parse(raw) as StoredSession;
     if (!parsed.token || !parsed.expiresAt) return null;
@@ -106,12 +121,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isPortalOpen, setIsPortalOpen] = useState(false);
   const [portalActiveTab, setPortalActiveTab] = useState<string>('overview');
 
-  const applySession = (session: StoredSession | null) => {
+  // `persist` = "Keep me signed in": localStorage survives browser restarts,
+  // sessionStorage ends with the tab/browser session.
+  const applySession = (session: StoredSession | null, persist = true) => {
     currentToken = session?.token ?? null;
-    if (session) {
+    try {
+      window.sessionStorage.removeItem(STORAGE_SESSION_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+    safeRemoveLocalStorage(STORAGE_SESSION_KEY);
+    if (!session) return;
+    if (persist) {
       safeSetLocalStorage(STORAGE_SESSION_KEY, JSON.stringify(session));
     } else {
-      safeRemoveLocalStorage(STORAGE_SESSION_KEY);
+      try {
+        window.sessionStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(session));
+      } catch {
+        /* session stays in memory only */
+      }
     }
   };
 
@@ -131,7 +159,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsAuthLoading(false);
       return;
     }
-    applySession(stored);
+    applySession(stored, safeGetLocalStorage(STORAGE_SESSION_KEY) !== null);
     refreshUser()
       .catch(() => {
         applySession(null);
@@ -170,9 +198,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    * user is fabricated: every field on AuthUser comes from the backend's
    * own /auth/me response.
    */
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, keepSignedIn = true): Promise<boolean> => {
     const result = await apiClient.post<{ session: { token: string; expiresAt: string } }>('/auth/login', { email, password });
-    applySession({ token: result.session.token, expiresAt: result.session.expiresAt });
+    applySession({ token: result.session.token, expiresAt: result.session.expiresAt }, keepSignedIn);
     try {
       await refreshUser();
     } catch (err) {
@@ -185,12 +213,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   /**
-   * Creates the account via the Platform API's /auth/register (real bcrypt
-   * hash, real organization + ADMIN-role membership). A self-registered
-   * account has its own brand-new organization — it is not automatically
-   * linked to any CRM Client workspace, so its portal screens will
-   * correctly show a "no workspace linked" state until an Artify agency
-   * operator provisions one from the Control Center.
+   * Creates a client-portal account via POST /auth/portal/register. With the
+   * backend email service on, no session is issued — the visitor must verify
+   * their email first ('verification_required'); the response is identical
+   * for new and already-registered emails (anti-enumeration). In degraded
+   * mode (no email provider) a session is returned and we sign in directly.
    */
   const register = async (data: {
     name: string;
@@ -198,19 +225,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     password: string;
     company: string;
     role?: string;
-  }): Promise<boolean> => {
-    const nameParts = data.name.trim().split(' ');
+    website?: string;
+    captchaToken?: string;
+  }): Promise<RegisterOutcome> => {
+    const nameParts = data.name.trim().split(/\s+/);
     const firstName = nameParts[0] || 'User';
     const lastName = nameParts.slice(1).join(' ') || 'Member';
 
-    const result = await apiClient.post<{ session: { token: string; expiresAt: string } }>('/auth/register', {
+    const result = await apiClient.post<{ status?: string; session?: { token: string; expiresAt: string } }>('/auth/portal/register', {
       email: data.email,
       password: data.password,
       firstName,
       lastName,
       organizationName: data.company,
       title: data.role || undefined,
+      website: data.website ?? '',
+      captchaToken: data.captchaToken || undefined,
     });
+    if (!result.session) return 'verification_required';
     applySession({ token: result.session.token, expiresAt: result.session.expiresAt });
     try {
       await refreshUser();
@@ -220,7 +252,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
     setIsAuthModalOpen(false);
     openPortal('overview');
-    return true;
+    return 'signed_in';
+  };
+
+  const resendVerification = async (email: string, captchaToken?: string): Promise<void> => {
+    await apiClient.post('/auth/resend-verification', { email, captchaToken });
   };
 
   const updateProfile = async (updates: { firstName?: string; lastName?: string; title?: string; phone?: string }): Promise<void> => {
@@ -246,6 +282,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isAuthLoading,
         login,
         register,
+        resendVerification,
         logout,
         updateProfile,
         isAuthModalOpen,
