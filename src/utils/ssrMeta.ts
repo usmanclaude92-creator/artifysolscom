@@ -214,7 +214,18 @@ export function buildEcosystemMeta(baseUrl: string): SeoConfig {
   };
 }
 
+/** Account-email landing pages (/verify-email, /reset-password): never indexed, token-bearing URLs. */
+export function buildAccountActionMeta(baseUrl: string, path: string): SeoConfig {
+  return {
+    title: `Account | ${SITE_NAME}`,
+    description: 'Secure account action for the Artify client portal.',
+    canonicalUrl: `${baseUrl}${path}`,
+    robots: 'noindex, nofollow',
+  };
+}
+
 export type SsrRoute =
+  | { kind: 'account-action'; path: string }
   | { kind: 'home' }
   | { kind: 'ecosystem' }
   | { kind: 'blog-archive' }
@@ -234,6 +245,7 @@ export function resolveSsrRoute(pathname: string): SsrRoute {
   const path = (pathname || '/').replace(/\/+$/, '') || '/';
   if (path === '/') return { kind: 'home' };
   if (path === '/ecosystem') return { kind: 'ecosystem' };
+  if (path === '/verify-email' || path === '/reset-password') return { kind: 'account-action', path };
   if (path === '/blog') return { kind: 'blog-archive' };
   const blogPost = path.match(/^\/blog\/([^/]+)$/);
   if (blogPost) return { kind: 'blog-post', slug: decodeURIComponent(blogPost[1]!) };
@@ -312,6 +324,10 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
       }
     }
     return { meta, status: 200, redirect: null };
+  }
+
+  if (route.kind === 'account-action') {
+    return { meta: buildAccountActionMeta(baseUrl, route.path), status: 200, redirect: null };
   }
 
   if (route.kind === 'ecosystem') {

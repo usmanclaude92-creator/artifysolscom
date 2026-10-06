@@ -347,3 +347,14 @@ describe('renderSeoForPath (orchestrator, mocked network)', () => {
     expect(global.fetch).not.toHaveBeenCalled();
   });
 });
+
+describe('account action pages', () => {
+  it('serves /verify-email and /reset-password as noindex, not CMS pages', async () => {
+    for (const path of ['/verify-email', '/reset-password']) {
+      expect(resolveSsrRoute(path)).toEqual({ kind: 'account-action', path });
+      const result = await renderSeoForPath(path, BASE_URL, 'https://api.example.com/api/v1');
+      expect(result.status).toBe(200);
+      expect(result.meta?.robots).toBe('noindex, nofollow');
+    }
+  });
+});
