@@ -5,7 +5,7 @@ export interface SitemapUrlEntry {
   lastmod?: string;
   changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
   priority?: number;
-  type: 'core' | 'product' | 'article' | 'category' | 'portal';
+  type: 'core' | 'product' | 'article' | 'category' | 'portal' | 'landing';
   title?: string;
   category?: string;
   image?: {
@@ -42,6 +42,12 @@ interface RemoteCaseStudy {
   title: string;
   featuredMedia: { url: string } | null;
   publishedAt: string | null;
+  updatedAt: string;
+}
+
+// Step 12 (Marketing landing pages) — only published, indexable pages come back from this endpoint.
+interface RemoteLandingPage {
+  slug: string;
   updatedAt: string;
 }
 
@@ -121,16 +127,19 @@ async function fetchPublicData(apiBaseUrl?: string): Promise<{
   products: RemoteProduct[];
   categories: RemoteCategory[];
   caseStudies: RemoteCaseStudy[];
+  landingPages: RemoteLandingPage[];
 }> {
   const base = resolveApiBaseUrl(apiBaseUrl);
-  if (!base) return { posts: [], products: [], categories: [], caseStudies: [] };
+  if (!base) return { posts: [], products: [], categories: [], caseStudies: [], landingPages: [] };
 
   try {
-    const [posts, products, categoriesRes, caseStudies] = await Promise.all([
+    const [posts, products, categoriesRes, caseStudies, landingPages] = await Promise.all([
       fetchAllPages<RemotePost>(base, '/public/posts', 'posts'),
       fetchAllPages<RemoteProduct>(base, '/public/products', 'products'),
       fetch(`${base}/public/categories`),
       fetchAllPages<RemoteCaseStudy>(base, '/public/case-studies', 'caseStudies'),
+      // Its own failure (older API, outage) must never drop the rest of the sitemap: it just contributes no entries.
+      fetchLandingPages(base),
     ]);
     const categoriesBody = await categoriesRes.json();
     return {
@@ -138,11 +147,22 @@ async function fetchPublicData(apiBaseUrl?: string): Promise<{
       products,
       categories: categoriesRes.ok && categoriesBody.success ? categoriesBody.data.categories : [],
       caseStudies,
+      landingPages,
     };
   } catch {
     // Honest degrade — sitemap just omits dynamic entries rather than
     // fabricating URLs for content that may not exist.
-    return { posts: [], products: [], categories: [], caseStudies: [] };
+    return { posts: [], products: [], categories: [], caseStudies: [], landingPages: [] };
+  }
+}
+
+async function fetchLandingPages(base: string): Promise<RemoteLandingPage[]> {
+  try {
+    const res = await fetch(`${base}/public/landing`);
+    const body = await res.json();
+    return res.ok && body.success && Array.isArray(body.data?.pages) ? body.data.pages : [];
+  } catch {
+    return [];
   }
 }
 
@@ -154,7 +174,7 @@ async function fetchPublicData(apiBaseUrl?: string): Promise<{
  */
 export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: string): Promise<SitemapUrlEntry[]> {
   const baseUrl = (customBaseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL)).replace(/\/+$/, '');
-  const { posts, products, categories, caseStudies } = await fetchPublicData(apiBaseUrl);
+  const { posts, products, categories, caseStudies, landingPages } = await fetchPublicData(apiBaseUrl);
   const currentDate = formatSitemapDate();
 
   const entries: SitemapUrlEntry[] = [];
@@ -208,6 +228,18 @@ export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: str
       type: 'article',
       title: cs.title,
       image: cs.featuredMedia ? { loc: cs.featuredMedia.url, title: cs.title } : undefined,
+    });
+  });
+
+  // 3c. Landing pages — published AND indexable only (the API filters; a noindex or unpublished page never appears)
+  landingPages.forEach((lp) => {
+    entries.push({
+      loc: `${baseUrl}/lp/${lp.slug}`,
+      lastmod: formatSitemapDate(lp.updatedAt),
+      changefreq: 'weekly',
+      priority: 0.7,
+      type: 'landing',
+      title: lp.slug,
     });
   });
 
