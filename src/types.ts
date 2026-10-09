@@ -111,6 +111,8 @@ export type AppRoute =
   | 'privacy'
   | 'privacy-policy'
   | 'terms'
+  | 'data-deletion'
+  | 'data-deletion-status'
   | 'cms-page';
 
 export interface AgentProfile {

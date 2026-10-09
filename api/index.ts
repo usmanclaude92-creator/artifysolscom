@@ -2,6 +2,7 @@ import express from "express";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
 import { renderSeoForPath, injectMetaIntoHtml } from "../src/utils/ssrMeta.js";
+import { renderLegalHtml } from "../src/legal/renderLegalHtml.js";
 import { handleLandingPage, handleLandingPreview, handleLandingSubmit, type LandingContext, type LandingResponse } from "../src/landing/landingHandlers.js";
 
 const app = express();
@@ -207,6 +208,15 @@ app.get("/lp-preview/:token", async (req, res) => {
 app.post("/lp/:slug/submit", express.urlencoded({ extended: false, limit: "20kb" }), async (req, res) => {
   sendLanding(res, await handleLandingSubmit(req.params.slug, (req.body ?? {}) as Record<string, unknown>, landingContext(req)));
 });
+
+// Legal pages (Step 15): plain server-rendered HTML so Meta's reviewers and crawlers can read the policy without running the app.
+for (const [path, type] of [["/privacy", "privacy"], ["/terms", "terms"], ["/data-deletion", "data-deletion"]] as const) {
+  app.get(path, (req, res) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=0, s-maxage=300, stale-while-revalidate=3600");
+    res.status(200).send(renderLegalHtml(type, getBaseUrl(req)));
+  });
+}
 
 app.get("*", async (req, res, next) => {
   // Defensive: a real static asset request should never reach this

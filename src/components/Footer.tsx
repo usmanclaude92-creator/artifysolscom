@@ -29,7 +29,7 @@ interface FooterProps {
   onNavigateToAbout?: () => void;
   onNavigateToEcosystem?: () => void;
   onNavigateToContact?: () => void;
-  onNavigateToLegal?: (type: 'privacy' | 'terms') => void;
+  onNavigateToLegal?: (type: 'privacy' | 'terms' | 'data-deletion') => void;
   onSelectProduct?: (product: { slug: string }) => void;
   onOpenSitemap?: () => void;
   onOpenConsultant?: () => void;
@@ -511,6 +511,19 @@ export const Footer: React.FC<FooterProps> = ({
               className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
             >
               Terms of Service
+            </a>
+            <span>•</span>
+            <a
+              href="/data-deletion"
+              onClick={(e) => {
+                if (onNavigateToLegal) {
+                  e.preventDefault();
+                  onNavigateToLegal('data-deletion');
+                }
+              }}
+              className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
+            >
+              Data Deletion
             </a>
             <span>•</span>
             <button
