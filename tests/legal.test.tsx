@@ -1,7 +1,7 @@
 /** Step 15: legal pages render the real content, keep unfinished owner wording visible, are server-renderable, and are in the sitemap. */
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
-import { LegalPage } from '../src/components/pages/LegalPage';
+import { LegalPage, withOwnerMarkers } from '../src/components/pages/LegalPage';
 import { LEGAL_DOCS, listOwnerMarkers } from '../src/components/pages/legalContent';
 import { renderLegalHtml } from '../src/legal/renderLegalHtml';
 import { getSitemapUrlList } from '../src/utils/sitemap';
@@ -20,19 +20,25 @@ describe('legal content', () => {
     const t = JSON.stringify(LEGAL_DOCS);
     for (const banned of ['SOC2', 'SOC 2', 'HIPAA', 'ISO 27001', '99.9', 'zero-data-retention', 'GDPR compliant', 'GDPR-compliant']) expect(t).not.toContain(banned);
   });
-  it('lists every value the owner still has to confirm (none may be silently dropped)', () => {
-    const m = listOwnerMarkers();
-    expect(m.length).toBeGreaterThan(10);
-    for (const must of ['company legal name', 'registered business address', 'privacy contact email']) expect(m).toContain(must);
+  it('has no unfinished owner placeholders left, and states the contact, date and hosting facts', () => {
+    expect(listOwnerMarkers()).toEqual([]);
+    const t = JSON.stringify(LEGAL_DOCS);
+    for (const needle of ['ArtifySols@gmail.com', '9 October 2026', 'Tokyo', '30 days', 'not yet registered', 'Gemini', 'UAE Data Office']) expect(t).toContain(needle);
+    expect(t).not.toContain('{{OWNER');
+  });
+  it('would still show any future placeholder as a visible highlighted note', () => {
+    render(<p>{withOwnerMarkers('Call {{OWNER: phone number}} today')}</p>);
+    expect(document.querySelectorAll('[data-owner-confirm="true"]').length).toBe(1);
+    expect(screen.getByText(/Owner to confirm: phone number/)).toBeInTheDocument();
   });
 });
 
 describe('LegalPage', () => {
-  it('renders owner markers as visible placeholders', () => {
+  it('renders the privacy policy with the real contact and no placeholders', () => {
     render(<LegalPage type="privacy" />);
     expect(screen.getByRole('heading', { level: 1, name: 'Privacy Policy' })).toBeInTheDocument();
-    expect(document.querySelectorAll('[data-owner-confirm="true"]').length).toBeGreaterThan(10);
-    expect(screen.getAllByText(/Owner to confirm: privacy contact email/).length).toBeGreaterThan(0);
+    expect(document.querySelectorAll('[data-owner-confirm="true"]').length).toBe(0);
+    expect(screen.getAllByText(/ArtifySols@gmail\.com/).length).toBeGreaterThan(0);
   });
   it('renders terms and data deletion instructions with the three options', () => {
     render(<LegalPage type="data-deletion" />);
@@ -63,12 +69,13 @@ describe('deletion status page', () => {
 });
 
 describe('server-rendered legal HTML', () => {
-  it('contains the full text, a canonical link, escaped content and visible owner markers', () => {
+  it('contains the full text, a canonical link and escaped content, with no placeholders', () => {
     for (const type of ['privacy', 'terms', 'data-deletion'] as const) {
       const html = renderLegalHtml(type, 'https://artifysols.com');
       expect(html).toContain(`<link rel="canonical" href="https://artifysols.com${LEGAL_DOCS[type].path}">`);
       expect(html).toContain(LEGAL_DOCS[type].sections[0]!.heading);
-      expect(html).toContain('data-owner-confirm="true"');
+      expect(html).not.toContain('data-owner-confirm');
+      expect(html).toContain('ArtifySols@gmail.com');
       expect(html).not.toContain('{{OWNER');
       expect(html).not.toMatch(/<script/i);
     }

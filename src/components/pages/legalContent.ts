@@ -13,7 +13,7 @@ export interface LegalDoc { title: string; seoDescription: string; path: string;
 
 export const OWNER_MARKER = /\{\{OWNER:\s*([^}]+)\}\}/g;
 
-export const LEGAL_LAST_UPDATED = '{{OWNER: effective date of this version}}';
+export const LEGAL_LAST_UPDATED = '9 October 2026';
 
 const PRIVACY: LegalDoc = {
   title: 'Privacy Policy',
@@ -21,8 +21,8 @@ const PRIVACY: LegalDoc = {
   path: '/privacy',
   effective: LEGAL_LAST_UPDATED,
   intro: [
-    'This policy explains what personal data {{OWNER: company legal name}} ("Artify Solutions", "we") collects through artifysols.com and through our Control Center software, why, how long we keep it, who else handles it, and how you can ask us to delete it.',
-    'Registered address: {{OWNER: registered business address}}. Contact for privacy questions and requests: {{OWNER: privacy contact email}}.',
+    'This policy explains what personal data Artify Solutions ("we") collects through artifysols.com and through our Control Center software, why, how long we keep it, who else handles it, and how you can ask us to delete it.',
+    'Artify Solutions is a trading name and is not yet registered as a company. We will publish our registered legal name and address here once registration is complete. Until then, contact us for any privacy question or request at ArtifySols@gmail.com.',
   ],
   sections: [
     {
@@ -59,12 +59,12 @@ const PRIVACY: LegalDoc = {
         'To measure how the website performs.',
         'To meet legal obligations and to keep records of consent and of how privacy requests were handled.',
       ],
-      paragraphs: ['Where the law requires a legal basis, we rely on: performing a contract with our customers; our legitimate interest in running and securing the service and measuring the website; your consent where we ask for it (for example the tick box on a form); and legal obligation. {{OWNER: confirm the legal bases and the regulations that apply to you, for example UAE PDPL and GDPR}}'],
+      paragraphs: ['Where the law requires a legal basis, we rely on: performing a contract with our customers; our legitimate interest in running and securing the service and measuring the website; your consent where we ask for it (for example the tick box on a form); and legal obligation. We aim to handle personal data in line with the principles of the UAE Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data (PDPL) and, for people in the European Economic Area and the United Kingdom, the principles of the GDPR: lawfulness, fairness and transparency, purpose limitation, data minimisation, accuracy, storage limitation, security and accountability.'],
     },
     {
       heading: '4. Automated processing (AI)',
       paragraphs: [
-        'The Control Center can use an AI model to classify incoming messages (topic, sentiment, priority) and to draft replies for a person to review. {{OWNER: confirm which AI provider is enabled in production and update this sentence}} Draft replies are not sent automatically unless a workspace has explicitly switched automatic replies on, which is off by default. We do not use messages received through Meta to train AI models.',
+        'The Control Center can use an AI model to classify incoming messages (topic, sentiment, priority) and to draft replies for a person to review. When AI features are enabled, the text of a message is sent to Google (Gemini) to be analysed; we do not send passwords or access tokens. Draft replies are not sent automatically unless a workspace has explicitly switched automatic replies on, which is off by default. We do not use messages received through Meta to train AI models.',
       ],
     },
     {
@@ -74,10 +74,10 @@ const PRIVACY: LegalDoc = {
         'Database: Supabase (PostgreSQL).',
         'Facebook and Instagram: Meta Platforms. When a customer connects an account, Meta\'s own privacy policy applies to the data on Meta\'s side.',
         'AI processing, if enabled: the provider named in section 4.',
-        'Email delivery: {{OWNER: email provider, or "none: we do not currently send email from the platform"}}.',
+        'Email: the platform does not currently send email by itself. When we reply to you by email we use our own mailbox, hosted by Google (Gmail).',
         'Professional advisers, authorities and courts, where we are legally required to disclose.',
       ],
-      paragraphs: ['{{OWNER: confirm the hosting regions and any transfer mechanism you rely on for data stored outside your country}}'],
+      paragraphs: ['Our database is hosted in Tokyo, Japan (Supabase, region ap-northeast-1). The Control Center API runs on Vercel in Tokyo, and the public website is served from Vercel\'s United States East region. This means personal data can be processed outside the country where you live. Where the law requires safeguards for such transfers, we use providers that publish their own data protection terms, together with the other protections in this policy. Contact us if you want details.'],
     },
     {
       heading: '6. How long we keep it',
@@ -94,13 +94,13 @@ const PRIVACY: LegalDoc = {
           ['Facebook/Instagram access tokens', 'Until the account is disconnected, access is removed on Meta\'s side, or you ask us to delete your data'],
         ],
       },
-      paragraphs: ['{{OWNER: confirm these retention periods, which are the platform\'s current defaults}}'],
+      paragraphs: ['These are the periods currently configured in the platform. We review them at least once a year, and if we change them we will update this page.'],
     },
     {
       heading: '7. Your rights and how to use them',
       paragraphs: [
-        'Depending on where you live you may have the right to ask for a copy of your data, to correct it, to have it deleted, to restrict or object to its use, and to withdraw consent. To use any of these, email {{OWNER: privacy contact email}} from the address we hold for you, or use the steps on our Data Deletion page (/data-deletion). We may need to confirm it is you. We aim to answer within {{OWNER: response time you commit to, for example 30 days}}.',
-        'You can also complain to your data protection authority. {{OWNER: name the authority for your jurisdiction}}',
+        'Depending on where you live you may have the right to ask for a copy of your data, to correct it, to have it deleted, to restrict or object to its use, and to withdraw consent. To use any of these, email ArtifySols@gmail.com from the address we hold for you, or use the steps on our Data Deletion page (/data-deletion). We may need to confirm it is you. We aim to answer within 30 days.',
+        'You can also complain to the data protection authority where you live, for example the UAE Data Office in the United Arab Emirates, or your national supervisory authority in the EU or UK.',
       ],
     },
     {
@@ -117,7 +117,7 @@ const PRIVACY: LegalDoc = {
     },
     {
       heading: '10. Children',
-      paragraphs: ['Our services are for businesses and are not directed at children. {{OWNER: confirm the minimum age you apply}}'],
+      paragraphs: ['Our services are for businesses and are not directed at children. We do not knowingly collect personal data from anyone under 18; if you believe a child has sent us personal data, write to us and we will delete it.'],
     },
     {
       heading: '11. Changes',
@@ -132,8 +132,8 @@ const TERMS: LegalDoc = {
   path: '/terms',
   effective: LEGAL_LAST_UPDATED,
   intro: [
-    'These terms apply to the artifysols.com website and to the Control Center software provided by {{OWNER: company legal name}} ("Artify Solutions", "we"). Registered address: {{OWNER: registered business address}}. Contact: {{OWNER: contact email}}.',
-    'Customer contracts, statements of work or order forms that we sign with you take precedence over these terms where they differ. {{OWNER: confirm how your customer contracts relate to these terms}}',
+    'These terms apply to the artifysols.com website and to the Control Center software provided by Artify Solutions ("we"), a trading name that is not yet registered as a company. We will publish our registered legal name and address here once registration is complete. Contact: ArtifySols@gmail.com.',
+    'Customer contracts, statements of work or order forms that we sign with you take precedence over these terms where they differ.',
   ],
   sections: [
     { heading: '1. The service', paragraphs: ['The Control Center lets a business manage its website content, customer enquiries, marketing pages and social media accounts (publishing, inbox, analytics). Features depend on the plan or project agreed with us and on the permissions Meta and other platforms grant.'] },
@@ -141,12 +141,12 @@ const TERMS: LegalDoc = {
     { heading: '3. Connected third-party accounts', paragraphs: ['If you connect a Facebook Page or Instagram professional account, you confirm you are allowed to manage it. You remain bound by Meta\'s terms and policies, and by the rules of any other platform you connect. We act on those accounts only as you instruct through the Control Center, and you can disconnect an account at any time. We are not responsible for a platform changing, limiting or withdrawing access.'] },
     { heading: '4. Acceptable use', bullets: ['No unlawful, deceptive, harassing or infringing content, and no spam.', 'No attempts to disrupt, probe or bypass the security of the service, or to access another customer\'s data.', 'Use automation features (for example automatic replies) responsibly and in line with the rules of the platforms involved.'] },
     { heading: '5. Your content and data', paragraphs: ['You keep ownership of the content and data you put into the service. You give us the right to host, process and display it as needed to provide the service to you. How we handle personal data is described in the Privacy Policy.'] },
-    { heading: '6. Our intellectual property', paragraphs: ['We and our licensors own the software, design and documentation. Work product created for you under a separate agreement belongs to whoever that agreement says. {{OWNER: confirm ownership of custom work and any open-source or third-party licences you want to mention}}'] },
-    { heading: '7. Availability and changes', paragraphs: ['We work to keep the service available, but we do not promise uninterrupted operation unless a signed agreement says so. We may change or retire features; where a change materially affects you we will give reasonable notice. {{OWNER: add any service-level commitment you actually offer, or leave this sentence as is}}'] },
-    { heading: '8. Fees', paragraphs: ['{{OWNER: describe fees and payment terms, or state that fees are set in each order form or statement of work}}'] },
+    { heading: '6. Our intellectual property', paragraphs: ['We and our licensors own the software, design and documentation. Work created specifically for you under a separate agreement belongs to you once it has been paid for in full, unless that agreement says otherwise. Our pre-existing tools, templates and know-how remain ours, and open-source components stay under their own licences.'] },
+    { heading: '7. Availability and changes', paragraphs: ['We work to keep the service available, but we do not promise uninterrupted operation unless a signed agreement says so. We may change or retire features; where a change materially affects you we will give reasonable notice. We give no uptime guarantee unless a signed agreement states one.'] },
+    { heading: '8. Fees', paragraphs: ['Fees and payment terms are set in each written proposal, order form or statement of work. Where none applies, we do not charge for using the website.'] },
     { heading: '9. Suspension and ending', paragraphs: ['You may stop using the service at any time. We may suspend or end access for breach of these terms or to protect the service or others. On ending, you can ask for an export of your data and for deletion as described in the Privacy Policy.'] },
-    { heading: '10. Liability', paragraphs: ['{{OWNER: limitation of liability and warranty wording, to be written or approved by your lawyer. Do not publish this page without it.}}'] },
-    { heading: '11. Governing law', paragraphs: ['{{OWNER: governing law and courts, for example the law of the country where the company is registered}}'] },
+    { heading: '10. Liability', paragraphs: ['To the extent the law allows: the service is provided "as is", and we give no warranty that it will be uninterrupted or error-free; we are not liable for indirect or consequential loss, or for loss of profit, revenue, data or goodwill; and our total liability for any claim relating to the service is limited to the fees you paid us for the service in the 12 months before the claim arose. Nothing in these terms limits liability that cannot be limited by law, including liability for fraud or intentional misconduct.'] },
+    { heading: '11. Governing law', paragraphs: ['These terms are governed by the laws of the United Arab Emirates, including the federal laws applicable in the emirate where we are established. Disputes are brought before the competent courts there, unless a separate signed agreement says otherwise.'] },
     { heading: '12. Changes to these terms', paragraphs: ['We may update these terms; the date at the top shows the current version. Continuing to use the service after a change means you accept it.'] },
   ],
 };
@@ -181,7 +181,7 @@ const DELETION: LegalDoc = {
     {
       heading: 'Option 3: write to us',
       paragraphs: [
-        'Email {{OWNER: privacy contact email}} with the subject "Data deletion request". From the address you used with us, tell us who you are and which service or Page this concerns. If your request is about a Facebook or Instagram message you sent to a Page, include the name of the Page and roughly when you wrote, because Meta does not tell us who sent a direct message when it forwards a deletion request. We may ask you to confirm your identity. We aim to reply within {{OWNER: response time you commit to, for example 30 days}}.',
+        'Email ArtifySols@gmail.com with the subject "Data deletion request". From the address you used with us, tell us who you are and which service or Page this concerns. If your request is about a Facebook or Instagram message you sent to a Page, include the name of the Page and roughly when you wrote, because Meta does not tell us who sent a direct message when it forwards a deletion request. We may ask you to confirm your identity. We aim to reply within 30 days.',
       ],
     },
     {
