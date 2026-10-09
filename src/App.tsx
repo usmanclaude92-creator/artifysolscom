@@ -142,6 +142,8 @@ function getRouteFromPath(pathname: string): { route: AppRoute; slug?: string } 
   if (path === '/contact') return { route: 'contact' };
   if (path === '/privacy') return { route: 'privacy' };
   if (path === '/terms') return { route: 'terms' };
+  if (path === '/data-deletion') return { route: 'data-deletion' };
+  if (path === '/data-deletion-status') return { route: 'data-deletion-status' };
   if (path === '/blog' || path.startsWith('/blog/') || path === '/updates') return { route: 'blog' };
   if (path === '/') return { route: 'home' };
 
@@ -761,6 +763,10 @@ function MainAppContent() {
 
         {activeRoute === 'terms' && <LegalPage type="terms" theme={theme} />}
 
+        {activeRoute === 'data-deletion' && <LegalPage type="data-deletion" theme={theme} />}
+
+        {activeRoute === 'data-deletion-status' && <LegalPage type="data-deletion-status" theme={theme} />}
+
         {activeRoute === 'blog' && (
           <BlogPage
             theme={theme}
@@ -939,7 +945,7 @@ function MainAppContent() {
         onNavigateToAbout={() => navigateToRoute('about', '/about')}
         onNavigateToContact={handleNavigateToContact}
         onNavigateToEcosystem={() => navigateToRoute('ecosystem', '/ecosystem')}
-        onNavigateToLegal={(type) => navigateToRoute(type, `/${type === 'privacy' ? 'privacy' : 'terms'}`)}
+        onNavigateToLegal={(type) => navigateToRoute(type, `/${type}`)}
         onSelectProduct={handleSelectProduct}
         onOpenSitemap={() => setIsSitemapOpen(true)}
         onOpenConsultant={() => setIsConsultantOpen(true)}

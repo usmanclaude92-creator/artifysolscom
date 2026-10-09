@@ -189,7 +189,10 @@ export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: str
     { loc: `${baseUrl}/services`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Services' },
     { loc: `${baseUrl}/ecosystem`, lastmod: currentDate, changefreq: 'monthly', priority: 0.85, type: 'core', title: 'Our Ecosystem' },
     { loc: `${baseUrl}/about`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'About' },
-    { loc: `${baseUrl}/contact`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' }
+    { loc: `${baseUrl}/contact`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' },
+    { loc: `${baseUrl}/privacy`, lastmod: currentDate, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Privacy Policy' },
+    { loc: `${baseUrl}/terms`, lastmod: currentDate, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Terms of Service' },
+    { loc: `${baseUrl}/data-deletion`, lastmod: currentDate, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Data Deletion Instructions' }
   );
 
   // 2. Dynamic Product Detail Routes
