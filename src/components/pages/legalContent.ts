@@ -106,7 +106,7 @@ const PRIVACY: LegalDoc = {
     {
       heading: '8. Deleting data that came from Facebook or Instagram',
       paragraphs: [
-        'If you used Facebook or Instagram to sign in to a service of ours, or you want data that came from Meta removed, see /data-deletion. You can remove Artify Solutions from your Facebook settings at any time; Facebook then tells us, and we disconnect the account and delete the stored access tokens. You can also ask Facebook to send us a data deletion request: we confirm it with a code and a status page, a team member reviews it, and then we delete or anonymise the data we hold that is linked to your Facebook account.',
+        'If you used Facebook or Instagram to sign in to a service of ours, or you want data that came from Meta removed, see /data-deletion. You can remove our app (shown on Facebook as "Artify Social Media Management") from your Facebook settings at any time; Facebook then tells us, and we disconnect the account and delete the stored access tokens. You can also ask Facebook to send us a data deletion request: we confirm it with a code and a status page, a team member reviews it, and then we delete or anonymise the data we hold that is linked to your Facebook account.',
       ],
     },
     {
@@ -161,12 +161,12 @@ const DELETION: LegalDoc = {
   ],
   sections: [
     {
-      heading: 'Option 1: remove Artify Solutions from your Facebook account',
+      heading: 'Option 1: remove our app from your Facebook account',
       paragraphs: ['This is for people whose Facebook or Instagram account is connected to a Page we manage through the Control Center, and for anyone who wants Facebook to tell us to delete their data.'],
       bullets: [
         'Open Facebook and go to Settings & privacy, then Settings.',
         'Open "Apps and websites" (it may be called "Business integrations" or "Active apps").',
-        'Find "Artify Solutions" and choose Remove.',
+        'Find "Artify Social Media Management" (the app we run under the name Artify Solutions) and choose Remove.',
         'Tick the option to delete the posts, photos and videos the app published, if you want that, and confirm.',
       ],
     },
