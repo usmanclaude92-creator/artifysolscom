@@ -2,6 +2,7 @@ import express from "express";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
 import { renderSeoForPath, injectMetaIntoHtml } from "../src/utils/ssrMeta.js";
+import { handleLandingPage, handleLandingPreview, handleLandingSubmit, type LandingContext, type LandingResponse } from "../src/landing/landingHandlers.js";
 
 const app = express();
 app.use(express.json());
@@ -178,6 +179,34 @@ async function getIndexHtmlTemplate(baseUrl: string): Promise<string> {
   cachedIndexHtml = html;
   return html;
 }
+
+// Marketing landing pages (Step 12): server-rendered HTML at /lp/<slug>, private draft previews at /lp-preview/<token>, and the
+// no-JS form fallback. The pages come from the Control Center's public API; see src/landing/ and the backend's
+// docs/MARKETING_LANDING_PAGES.md.
+function landingContext(req: express.Request): LandingContext {
+  const fwd = req.headers["x-forwarded-for"];
+  const clientIp = (typeof fwd === "string" ? fwd.split(",")[0] : undefined)?.trim() || req.ip;
+  return {
+    baseUrl: getBaseUrl(req),
+    apiBase: process.env.PLATFORM_API_BASE_URL,
+    clientIp,
+    referer: typeof req.headers.referer === "string" ? req.headers.referer : undefined,
+  };
+}
+function sendLanding(res: express.Response, out: LandingResponse) {
+  for (const [k, v] of Object.entries(out.headers)) res.setHeader(k, v);
+  res.status(out.status).send(out.body);
+}
+app.get("/lp/:slug", async (req, res) => {
+  const qs = req.url.includes("?") ? req.url.slice(req.url.indexOf("?") + 1) : "";
+  sendLanding(res, await handleLandingPage(req.params.slug, qs, landingContext(req)));
+});
+app.get("/lp-preview/:token", async (req, res) => {
+  sendLanding(res, await handleLandingPreview(req.params.token, landingContext(req)));
+});
+app.post("/lp/:slug/submit", express.urlencoded({ extended: false, limit: "20kb" }), async (req, res) => {
+  sendLanding(res, await handleLandingSubmit(req.params.slug, (req.body ?? {}) as Record<string, unknown>, landingContext(req)));
+});
 
 app.get("*", async (req, res, next) => {
   // Defensive: a real static asset request should never reach this
