@@ -1,18 +1,15 @@
 import React from 'react';
 import {
   Bot,
-  Sparkles,
   ArrowUp,
   Globe,
   Mail,
   ShieldCheck,
-  Activity,
-  Layers,
   LayoutDashboard,
   Lock,
   ArrowRight,
-  Cpu,
-  Search,
+  Facebook,
+  Instagram,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { publicApi, PublicProduct } from '../lib/publicApi';
@@ -21,6 +18,7 @@ interface FooterProps {
   theme?: 'dark' | 'light';
   onNavigateToHome?: () => void;
   onNavigateToBlog?: () => void;
+  onNavigateToUpdates?: () => void;
   onNavigateToSolutionsCatalog?: () => void;
   onNavigateToAiSolutions?: () => void;
   onNavigateToServices?: () => void;
@@ -33,15 +31,18 @@ interface FooterProps {
   onSelectProduct?: (product: { slug: string }) => void;
   onOpenSitemap?: () => void;
   onOpenConsultant?: () => void;
-  onOpenSolutionBuilder?: () => void;
-  onOpenAuditSpec?: () => void;
-  onOpenGlobalSearch?: () => void;
 }
+
+const SOCIAL_LINKS = [
+  { label: 'Artify Solutions on Facebook', href: 'https://www.facebook.com/1429069786945855', Icon: Facebook },
+  { label: 'Artify Solutions on Instagram', href: 'https://www.instagram.com/artifysols/', Icon: Instagram },
+] as const;
 
 export const Footer: React.FC<FooterProps> = ({
   theme,
   onNavigateToHome,
   onNavigateToBlog,
+  onNavigateToUpdates,
   onNavigateToSolutionsCatalog,
   onNavigateToAiSolutions,
   onNavigateToServices,
@@ -54,9 +55,6 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectProduct,
   onOpenSitemap,
   onOpenConsultant,
-  onOpenSolutionBuilder,
-  onOpenAuditSpec,
-  onOpenGlobalSearch,
 }) => {
   const { user, openPortal, openAuthModal } = useAuth();
   const [footerProducts, setFooterProducts] = React.useState<PublicProduct[]>([]);
@@ -117,7 +115,7 @@ export const Footer: React.FC<FooterProps> = ({
           </a>
         </div>
 
-        {/* Main 5-Column Grid - Top-aligned across all 5 sections */}
+        {/* Main 4-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-6 xl:gap-8 pb-16 border-b border-border">
           {/* Col 1: Brand Info & Positioning */}
           <div className="lg:col-span-4 space-y-4 max-w-sm sm:max-w-md">
@@ -126,21 +124,8 @@ export const Footer: React.FC<FooterProps> = ({
             </h3>
 
             <p className="text-xs sm:text-[13px] text-subtle-text leading-relaxed">
-              Artify Solutions engineers fully customized, adaptive enterprise software ecosystems enhanced by foundational intelligence, autonomous agent swarms, event-driven pipelines, and sovereign data architecture.
+              Artify Solutions builds custom software around how your business works, with AI built in where it helps. Tell us what you need and we will design it with you.
             </p>
-
-            {/* Strategic Value Attributes */}
-            <div className="flex flex-wrap gap-2 pt-1">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/25 font-medium">
-                Zero Rigid SaaS
-              </span>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/25 font-medium">
-                SOC2 VPC Sovereign
-              </span>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 font-medium">
-                AI Agent Swarms
-              </span>
-            </div>
 
             <div className="pt-2 flex flex-col gap-2.5 text-xs">
               <span className="flex items-center gap-2 text-foreground font-mono-code">
@@ -163,11 +148,26 @@ export const Footer: React.FC<FooterProps> = ({
                   contact@artifysols.com
                 </a>
               </span>
+              <span className="flex items-center gap-3 pt-1">
+                {SOCIAL_LINKS.map(({ label, href, Icon }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    title={label}
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-full border border-border text-subtle-text hover:text-foreground hover:bg-surface transition-colors"
+                  >
+                    <Icon className="w-4 h-4" aria-hidden="true" />
+                  </a>
+                ))}
+              </span>
             </div>
           </div>
 
           {/* Col 2: OUR SOLUTIONS */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="lg:col-span-3 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               OUR SOLUTIONS
             </h4>
@@ -201,44 +201,30 @@ export const Footer: React.FC<FooterProps> = ({
                 }}
                 className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold flex items-center justify-between text-xs group"
               >
-                <span>Solutions Catalog (24 Systems)</span>
+                <span>Solutions Catalog</span>
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform shrink-0 ml-1.5" />
               </a>
             </div>
           </div>
 
           {/* Col 3: NAVIGATION */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="lg:col-span-3 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               NAVIGATION
             </h4>
             <ul className="space-y-2.5 text-xs">
               <li>
                 <a
-                  href="/solutions"
+                  href="/about"
                   onClick={(e) => {
-                    if (onNavigateToSolutionsCatalog) {
+                    if (onNavigateToAbout) {
                       e.preventDefault();
-                      onNavigateToSolutionsCatalog();
+                      onNavigateToAbout();
                     }
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block"
                 >
-                  Enterprise Solutions
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/industries"
-                  onClick={(e) => {
-                    if (onNavigateToIndustries) {
-                      e.preventDefault();
-                      onNavigateToIndustries();
-                    }
-                  }}
-                  className="text-left text-subtle-text hover:text-foreground transition-colors block"
-                >
-                  Industries Matrix
+                  Our Core Belief
                 </a>
               </li>
               <li>
@@ -252,7 +238,21 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block"
                 >
-                  Adaptive Ecosystem
+                  Ecosystem
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/industries"
+                  onClick={(e) => {
+                    if (onNavigateToIndustries) {
+                      e.preventDefault();
+                      onNavigateToIndustries();
+                    }
+                  }}
+                  className="text-left text-subtle-text hover:text-foreground transition-colors block"
+                >
+                  Industries
                 </a>
               </li>
               <li>
@@ -266,7 +266,7 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block"
                 >
-                  Enterprise Services
+                  Services
                 </a>
               </li>
               <li>
@@ -280,21 +280,21 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block whitespace-nowrap"
                 >
-                  Case Studies & Blueprints
+                  Case Studies
                 </a>
               </li>
               <li>
                 <a
-                  href="/about"
+                  href="/updates"
                   onClick={(e) => {
-                    if (onNavigateToAbout) {
+                    if (onNavigateToUpdates || onNavigateToBlog) {
                       e.preventDefault();
-                      onNavigateToAbout();
+                      (onNavigateToUpdates || onNavigateToBlog)?.();
                     }
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block"
                 >
-                  About Artify
+                  Updates
                 </a>
               </li>
               <li>
@@ -308,7 +308,7 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-left text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300 font-semibold transition-colors flex items-center gap-1.5"
                 >
-                  <span>Insights & Research</span>
+                  <span>Insights</span>
                   <span className="text-[9px] bg-violet-500/20 text-violet-700 dark:text-violet-300 px-1.5 py-0.5 rounded font-mono-code font-bold">New</span>
                 </a>
               </li>
@@ -323,7 +323,7 @@ export const Footer: React.FC<FooterProps> = ({
                   }}
                   className="text-left text-subtle-text hover:text-foreground transition-colors block"
                 >
-                  Talk to Artify Solutions
+                  Talk to Us
                 </a>
               </li>
             </ul>
@@ -416,69 +416,11 @@ export const Footer: React.FC<FooterProps> = ({
                     className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
                   >
                     <Bot className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 shrink-0" />
-                    <span>AI Architectural Advisor</span>
-                  </button>
-                </li>
-              )}
-              {onOpenSolutionBuilder && (
-                <li>
-                  <button
-                    onClick={onOpenSolutionBuilder}
-                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-start gap-1.5"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
-                    <span className="leading-tight">Solution Blueprint Builder</span>
-                  </button>
-                </li>
-              )}
-              {onOpenAuditSpec && (
-                <li>
-                  <button
-                    onClick={onOpenAuditSpec}
-                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 shrink-0" />
-                    <span>Technical &amp; SEO Audit Spec</span>
-                  </button>
-                </li>
-              )}
-              {onOpenGlobalSearch && (
-                <li>
-                  <button
-                    onClick={onOpenGlobalSearch}
-                    className="text-left text-subtle-text hover:text-foreground transition-colors flex items-center gap-1.5"
-                  >
-                    <Search className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-                    <span>Global Search (⌘K)</span>
+                    <span>AI Advisor</span>
                   </button>
                 </li>
               )}
             </ul>
-          </div>
-
-          {/* Col 5: SYSTEM TELEMETRY */}
-          <div className="lg:col-span-2 space-y-3.5">
-            <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
-              SYSTEM TELEMETRY
-            </h4>
-            <div className="p-3.5 rounded-xl surface-card-subtle border border-border/80 space-y-2.5 text-[11px] font-mono-code">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
-                <span className="text-foreground font-semibold">Nodes: Active</span>
-              </div>
-              <div className="text-subtle-text flex items-center justify-between gap-1">
-                <span>Production SLA:</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">99.99%</span>
-              </div>
-              <div className="text-subtle-text flex items-center justify-between gap-1">
-                <span>Isolation:</span>
-                <span className="text-violet-600 dark:text-violet-400 font-bold">SOC2 VPC</span>
-              </div>
-              <div className="text-subtle-text flex items-center justify-between gap-1">
-                <span>Architecture:</span>
-                <span className="text-foreground font-bold">Adaptive</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -527,24 +469,10 @@ export const Footer: React.FC<FooterProps> = ({
             </a>
             <span>•</span>
             <button
-              onClick={() => {
-                if (onNavigateToAbout) onNavigateToAbout();
-                setTimeout(() => {
-                  const el = document.getElementById('partner-access-policy');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-              }}
-              className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
-            >
-              Partner Access
-            </button>
-            <span>•</span>
-            <button
               onClick={() => onOpenSitemap && onOpenSitemap()}
               className="hover:text-violet-600 dark:hover:text-violet-400 transition-colors underline-offset-2 hover:underline font-mono-code flex items-center gap-1"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-              Sitemap (XML)
+              Sitemap
             </button>
           </div>
 

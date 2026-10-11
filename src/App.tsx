@@ -937,6 +937,7 @@ function MainAppContent() {
         theme={theme}
         onNavigateToHome={() => navigateToRoute('home', '/')}
         onNavigateToBlog={() => navigateToRoute('blog', '/blog')}
+        onNavigateToUpdates={() => navigateToRoute('blog', '/updates')}
         onNavigateToSolutionsCatalog={() => navigateToRoute('solutions-catalog', '/solutions')}
         onNavigateToAiSolutions={() => navigateToRoute('ai-solutions', '/ai-solutions')}
         onNavigateToServices={() => navigateToRoute('services', '/services')}
@@ -949,9 +950,6 @@ function MainAppContent() {
         onSelectProduct={handleSelectProduct}
         onOpenSitemap={() => setIsSitemapOpen(true)}
         onOpenConsultant={() => setIsConsultantOpen(true)}
-        onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
-        onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
-        onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
       />
 
       {/* Overlay modals. Each is mounted only while open so its chunk is
@@ -1112,13 +1110,13 @@ function MainAppContent() {
           onClick={() => setIsConsultantOpen(true)}
           id="floating-ai-demo-btn"
           className="group flex items-center gap-2.5 hover:gap-3 px-4 hover:px-5 py-3 rounded-full bg-[#111118]/90 hover:bg-[#181824] border border-violet-500/40 text-white shadow-2xl backdrop-blur-xl transition-all duration-300 hover:scale-105 hover:border-violet-400"
-          title="Open Artify AI Demo"
+          title="Open the AI Advisor"
         >
           <div className="w-7 h-7 rounded-full bg-violet-600 flex items-center justify-center text-white shadow-md shadow-violet-600/40 shrink-0 transition-transform duration-300 group-hover:scale-110">
             <Bot className="w-[17px] h-[17px]" />
           </div>
           <span className="text-xs font-bold font-display whitespace-nowrap tracking-tight group-hover:tracking-wide transition-all duration-300">
-            Test AI Demo
+            AI Advisor
           </span>
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse -ml-0.5 shrink-0" />
         </button>
