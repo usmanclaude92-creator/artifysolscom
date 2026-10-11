@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           : 'bg-transparent py-3.5 sm:py-4.5'
       }`}
     >
-      <div className="w-full px-4 sm:px-6 lg:px-[4%] xl:px-[5%] flex items-center justify-between gap-3 sm:gap-4">
+      <div className="w-full px-4 sm:px-6 lg:px-4 xl:px-[3%] 2xl:px-[5%] flex items-center justify-between gap-2 lg:gap-3 xl:gap-4">
         {/* Brand Logo */}
         <a
           href="/"
@@ -136,7 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               alt="Artify Solutions"
               width={418}
               height={132}
-              className="h-9 sm:h-11 w-auto object-contain"
+              className="h-9 sm:h-11 lg:h-9 xl:h-11 w-auto object-contain"
             />
           </picture>
         </a>
@@ -144,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Desktop Primary Navigation (Home | Our Core Belief | Ecosystem | Our Solutions | Industries | Updates | Insights) */}
         <nav
           aria-label="Main Navigation"
-          className={`hidden md:flex items-center gap-1 lg:gap-1.5 xl:gap-2 border rounded-full px-2.5 sm:px-3 lg:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
+          className={`hidden xl:flex min-w-0 items-center gap-1.5 2xl:gap-2 border rounded-full px-3 2xl:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
             isLight
               ? 'bg-slate-100/90 border-slate-200/90 text-slate-800'
               : 'bg-[#0d0d14]/80 border-white/[0.08] text-zinc-300'
@@ -173,7 +173,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="/about"
             onClick={(e) => handleRouteClick(e, onNavigateToAbout)}
             id="nav-link-core-belief"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+            className={`text-xs xl:text-[13px] font-medium px-2 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'about'
                 ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
@@ -189,7 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="/ecosystem"
             onClick={(e) => handleRouteClick(e, onNavigateToEcosystem)}
             id="nav-link-ecosystem"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'ecosystem'
                 ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
@@ -207,7 +207,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               handleRouteClick(e, onNavigateToSolutionsCatalog || onNavigateToAiSolutions)
             }
             id="nav-link-solutions"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'solutions-catalog' ||
               activeRoute === 'ai-solutions' ||
               activeRoute === 'product-detail'
@@ -225,7 +225,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="/industries"
             onClick={(e) => handleRouteClick(e, onNavigateToIndustries)}
             id="nav-link-industries"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'industries'
                 ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
@@ -241,7 +241,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="/updates"
             onClick={(e) => handleRouteClick(e, onNavigateToUpdates || onNavigateToBlog)}
             id="nav-link-updates"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
               activeRoute === 'updates'
                 ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
@@ -257,7 +257,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
             id="nav-link-insights"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5 ${
+            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap flex items-center gap-1.5 ${
               activeRoute === 'blog'
                 ? 'bg-violet-600 text-white shadow-sm'
                 : isLight
@@ -266,12 +266,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <span>Insights</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
+            <span className="hidden xl:block w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
           </a>
         </nav>
 
         {/* Global Search Bar - Positioned directly between Menu Bar and Theme Toggle */}
-        <div className="hidden lg:flex items-center">
+        <div className="hidden min-[1800px]:flex items-center">
           <button
             onClick={onOpenGlobalSearch}
             id="nav-global-search-btn"
@@ -298,12 +298,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Desktop Right Controls (>= 768px) */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-2.5">
+        <div className="hidden md:flex shrink-0 items-center gap-2 lg:gap-2.5">
           {/* Tablet/Medium Screen Search Icon Trigger */}
           <button
             onClick={onOpenGlobalSearch}
             id="nav-global-search-compact-btn"
-            className={`lg:hidden flex items-center justify-center p-2 rounded-lg border transition-all duration-200 shadow-sm focus:outline-none ${
+            className={`min-[1800px]:hidden flex items-center justify-center p-2 rounded-lg border transition-all duration-200 shadow-sm focus:outline-none ${
               isLight
                 ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700'
                 : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-300 hover:text-white'
@@ -348,7 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={onOpenConsultant}
             id="nav-interactive-ai-btn"
-            className={`hidden xl:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-all shadow-sm ${
+            className={`hidden min-[1800px]:flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border transition-all shadow-sm ${
               isLight
                 ? 'text-slate-700 hover:text-slate-950 bg-slate-100 hover:bg-slate-200 border-slate-200'
                 : 'text-zinc-300 hover:text-white bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08]'
@@ -363,7 +363,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             href="/contact"
             onClick={(e) => handleRouteClick(e, onNavigateToContact)}
             id="nav-talk-to-us-btn"
-            className={`group relative inline-flex items-center gap-1.5 text-xs font-semibold px-3 lg:px-3.5 py-2 rounded-lg border shadow-sm transition-all active:scale-[0.98] ${
+            className={`group relative inline-flex shrink-0 whitespace-nowrap items-center gap-1.5 text-xs font-semibold px-3 lg:px-3.5 py-2 rounded-lg border shadow-sm transition-all active:scale-[0.98] ${
               activeRoute === 'contact'
                 ? 'bg-violet-600 text-white border-violet-500 shadow-md'
                 : isLight
@@ -372,7 +372,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <span>Talk to Us</span>
-            <ArrowRight className="w-3.5 h-3.5 text-violet-400 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="hidden xl:block w-3.5 h-3.5 text-violet-400 group-hover:translate-x-0.5 transition-transform" />
           </a>
 
           {/* Client Portal & Sign-out Controls (Sign-out restricted strictly to authorized sessions) */}
@@ -424,13 +424,27 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => openAuthModal('login')}
               id="nav-client-login-btn"
-              className="flex items-center gap-2 text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-violet-400/30 px-3.5 py-2 rounded-lg shadow-md shadow-violet-600/30 hover:shadow-violet-600/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="flex shrink-0 whitespace-nowrap items-center gap-2 text-xs font-semibold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-violet-400/30 px-3.5 py-2 rounded-lg shadow-md shadow-violet-600/30 hover:shadow-violet-600/50 transition-all hover:scale-[1.02] active:scale-[0.98]"
               title="Client & Executive Login"
             >
               <LogIn className="w-3.5 h-3.5 text-violet-200" />
               <span>Login</span>
             </button>
           )}
+
+          {/* Menu button for tablet / small laptop widths (768px to 1279px), where the full menu bar does not fit */}
+          <button
+            onClick={() => setSideMenuOpen(true)}
+            id="tablet-hamburger-btn"
+            className={`xl:hidden p-2 rounded-lg border transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500/40 ${
+              isLight
+                ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800'
+                : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-200 hover:text-white'
+            }`}
+            aria-label="Open Navigation Menu"
+          >
+            <Menu className="w-4 h-4 text-current" />
+          </button>
         </div>
 
         {/* Mobile Header Controls (< 768px) */}
@@ -507,9 +521,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Hamburger-Style Side Navigation Drawer (< 768px) */}
+      {/* Hamburger-Style Side Navigation Drawer (< 1280px) */}
       {sideMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
+        <div className="xl:hidden fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
             onClick={() => setSideMenuOpen(false)}

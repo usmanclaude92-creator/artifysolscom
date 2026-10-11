@@ -1,4 +1,6 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { lazyWithRetry as lazy } from './lib/lazyWithRetry';
+import { LoadFailureBoundary } from './components/LoadFailureBoundary';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { TrustStatement } from './components/TrustStatement';
@@ -598,9 +600,11 @@ function MainAppContent() {
   if (isPortalOpen) {
     return (
       <div className={theme === 'light' ? 'theme-light' : 'theme-dark'}>
-        <Suspense fallback={<RouteFallback />}>
-          <ClientPortal theme={theme} onToggleTheme={handleToggleTheme} />
-        </Suspense>
+        <LoadFailureBoundary>
+          <Suspense fallback={<RouteFallback />}>
+            <ClientPortal theme={theme} onToggleTheme={handleToggleTheme} />
+          </Suspense>
+        </LoadFailureBoundary>
         {isAuthModalOpen && <AuthModal theme={theme} />}
       </div>
     );
@@ -661,6 +665,7 @@ function MainAppContent() {
             onNavigateToContact={handleNavigateToContact}
           />
         )}
+        <LoadFailureBoundary>
         <Suspense fallback={<RouteFallback />}>
         {activeRoute === 'solutions-catalog' && (
           <SolutionsCatalogPage
@@ -930,6 +935,7 @@ function MainAppContent() {
           </>
         )}
         </Suspense>
+        </LoadFailureBoundary>
       </main>
 
       {/* Global Footer */}
@@ -958,6 +964,7 @@ function MainAppContent() {
           fetched on first use rather than shipped in the initial bundle.
           All three already returned null when closed, so gating the mount
           here preserves their existing behaviour. */}
+      <LoadFailureBoundary silent>
       <Suspense fallback={null}>
         {/* Dynamic XML Sitemap Inspector Modal */}
         {isSitemapOpen && (
@@ -1045,6 +1052,7 @@ function MainAppContent() {
           />
         )}
       </Suspense>
+      </LoadFailureBoundary>
 
       {/* Auth Modal */}
       <AuthModal theme={theme} />

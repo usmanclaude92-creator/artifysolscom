@@ -67,9 +67,38 @@ export interface ApiRequestOptions {
   body?: unknown;
   timeoutMs?: number;
   signal?: AbortSignal;
+  /** Extra attempts after a transient failure. Only GET is ever retried (safe to repeat); default 2. */
+  retries?: number;
+  /** Base back-off between attempts in ms (grows 3x per attempt, plus jitter). Default 300. */
+  retryDelayMs?: number;
 }
 
+/** Gateway errors that are normally gone a moment later. */
+const RETRYABLE_STATUSES = new Set([502, 503, 504]);
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+function isTransient(err: unknown, attempt: number): boolean {
+  if (!(err instanceof ApiClientError)) return false;
+  if (err.code === "NETWORK_ERROR") return true;
+  if (err.code === "TIMEOUT") return attempt === 0; // a slow request is retried once at most
+  return RETRYABLE_STATUSES.has(err.status);
+}
+
+/** Repeats a read after a brief hiccup (502/503/504, network error). Writes are never repeated. */
 async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
+  const maxRetries = (options.method ?? "GET") === "GET" ? options.retries ?? 2 : 0;
+  const baseDelay = options.retryDelayMs ?? 300;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await singleApiRequest<T>(path, options);
+    } catch (err) {
+      if (attempt >= maxRetries || options.signal?.aborted || !isTransient(err, attempt)) throw err;
+      await sleep(baseDelay * 3 ** attempt + Math.random() * baseDelay * 0.5);
+    }
+  }
+}
+
+async function singleApiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
   const baseUrl = resolveBaseUrl();
   const url = `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 
