@@ -292,9 +292,6 @@ export const WhatWeBuild: React.FC<WhatWeBuildProps> = ({
                   <span className="text-zinc-400 font-bold block mb-1">EXECUTION POLICY:</span>
                   <span>Autonomous where appropriate • Human-controlled where necessary</span>
                 </div>
-                <div className="text-zinc-300">
-                  <span className="text-sky-400">telemetry:</span> latency: 1.4ms | throughput: 4,200 req/s | safety_check: PASSED
-                </div>
                 {currentItem.sampleQuery && (
                   <div className="mt-3 p-3 rounded bg-[#121218] border border-white/[0.08]">
                     <span className="text-zinc-500 text-[10px] block">SAMPLE NATURAL LANGUAGE INPUT:</span>

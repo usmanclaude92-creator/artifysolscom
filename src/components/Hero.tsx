@@ -11,7 +11,6 @@ import {
   Network,
   ShieldCheck,
   Zap,
-  Activity,
 } from 'lucide-react';
 
 interface HeroProps {
@@ -28,8 +27,7 @@ interface OrbitNode {
   icon: any;
   angle: number;
   distance: number;
-  telemetry: string;
-  status: string;
+  description: string;
   color: string;
 }
 
@@ -70,8 +68,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: Bot,
       angle: 0,
       distance: 175,
-      telemetry: '7 Specialized Agents Active • 4,200 Ops/sec',
-      status: 'Synchronized',
+      description: 'AI agents that take care of routine tasks, with your people reviewing the decisions that matter.',
       color: '#8B5CF6',
     },
     {
@@ -81,8 +78,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: Database,
       angle: 51,
       distance: 180,
-      telemetry: 'Vector Embeddings Live • 12 DB Bridges Active',
-      status: 'Real-Time Sync',
+      description: 'Brings your data sources together so your team can search and use them in one place.',
       color: '#38BDF8',
     },
     {
@@ -92,8 +88,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: Cpu,
       angle: 102,
       distance: 175,
-      telemetry: '99.4% Touchless Processing • Zero Lag',
-      status: 'Optimized',
+      description: 'Automates repetitive steps so your team can focus on work that needs judgment.',
       color: '#10B981',
     },
     {
@@ -103,8 +98,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: Zap,
       angle: 154,
       distance: 185,
-      telemetry: 'Full-Stack Web & Mobile • Enterprise Architecture',
-      status: 'High Availability',
+      description: 'Custom web and mobile software built around how your business works.',
       color: '#F59E0B',
     },
     {
@@ -114,8 +108,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: Workflow,
       angle: 205,
       distance: 175,
-      telemetry: 'Cross-Department Orchestration Active',
-      status: 'Active Flow',
+      description: 'Connects steps across departments so work moves forward without manual hand-offs.',
       color: '#EC4899',
     },
     {
@@ -125,8 +118,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: LineChart,
       angle: 257,
       distance: 180,
-      telemetry: 'Conversational BI • Instant Root-Cause Analysis',
-      status: 'Live Stream',
+      description: 'Ask questions in plain language and get answers from your own data.',
       color: '#6366F1',
     },
     {
@@ -136,8 +128,7 @@ export const Hero: React.FC<HeroProps> = ({
       icon: Network,
       angle: 308,
       distance: 175,
-      telemetry: 'ERP, CRM, Banking, Cloud & APIs Linked',
-      status: 'Continuous Link',
+      description: 'Connects the tools you already use, such as ERP, CRM and cloud services.',
       color: '#14B8A6',
     },
   ];
@@ -365,26 +356,17 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div
-                    className="w-2.5 h-2.5 rounded-full animate-pulse"
+                    className="w-2.5 h-2.5 rounded-full"
                     style={{ backgroundColor: selectedNodeData.color }}
                   />
                   <span className="text-xs font-bold text-foreground uppercase tracking-wider font-mono-code">
                     {selectedNodeData.name}
                   </span>
                 </div>
-                <span className="text-[10px] font-semibold text-foreground-muted surface-card-subtle border border-border px-2 py-0.5 rounded">
-                  {selectedNodeData.status}
-                </span>
               </div>
               <p className="text-xs text-foreground-secondary font-medium leading-relaxed">
-                {selectedNodeData.telemetry}
+                {selectedNodeData.description}
               </p>
-              <div className="mt-2 pt-2 border-t border-border flex items-center justify-between text-[11px] text-foreground-muted">
-                <span>Intelligence Layer Sync</span>
-                <span className="text-emerald-500 dark:text-emerald-400 flex items-center gap-1 font-mono-code font-semibold">
-                  <Activity className="w-3 h-3" /> 99.98% Coherence
-                </span>
-              </div>
             </div>
 
           </motion.div>
