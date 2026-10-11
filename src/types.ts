@@ -259,7 +259,6 @@ export interface ArtifyProduct {
   trialDays: number;
   rating: number;
   reviewsCount: number;
-  uptime: string;
   faqs: { question: string; answer: string }[];
   requirements: string[];
   status: 'active' | 'beta' | 'coming_soon';

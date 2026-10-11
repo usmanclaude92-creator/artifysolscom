@@ -49,7 +49,7 @@ Desired Access Level: [Enterprise Partner / Growth Client / Security Auditor]
 Target AI Systems & Workflows: [e.g., Autonomous Financial Reconciliation, Multi-Agent ERP Orchestration, Hybrid Graph RAG]
 Infrastructure Requirement: [Dedicated Private VPC / AWS / GCP / Azure / Air-Gapped On-Premise]
 Estimated Monthly Agentic Throughput: [e.g., 500,000+ operations / month]
-Security & Compliance Standards Needed: [SOC2 Type II / HIPAA / GDPR / Custom mTLS]`;
+Security & Compliance Requirements: [Describe any standards or policies you must meet]`;
 
   const handleCopyTemplate = async () => {
     const success = await safeCopyToClipboard(sampleTemplate);
@@ -182,7 +182,7 @@ Security & Compliance Standards Needed: [SOC2 Type II / HIPAA / GDPR / Custom mT
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                      <span>SOC2 Type II Aligned Immutable Telemetry Logs</span>
+                      <span>Audit logs for every request</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
@@ -250,7 +250,7 @@ Security & Compliance Standards Needed: [SOC2 Type II / HIPAA / GDPR / Custom mT
                   </div>
                   <h4 className="text-sm font-bold text-foreground mt-1">Compliance & Security Auditor</h4>
                   <p className="text-xs mt-1 leading-relaxed text-foreground-muted">
-                    Zero-persistence verification, SOC2 Type II cryptographic audit trails, and execution safety policy compliance.
+                    Review of audit trails and execution safety policies.
                   </p>
                 </div>
               </div>
@@ -299,7 +299,7 @@ Security & Compliance Standards Needed: [SOC2 Type II / HIPAA / GDPR / Custom mT
                 <div>
                   <h5 className="text-xs font-bold text-primary">Ready to initiate partner credentialing?</h5>
                   <p className="text-[11px] text-foreground-muted">
-                    Our partner review SLA is typically under 24 hours for verified corporate domains.
+                    We review each partner request personally.
                   </p>
                 </div>
                 <button
@@ -356,7 +356,7 @@ Security & Compliance Standards Needed: [SOC2 Type II / HIPAA / GDPR / Custom mT
         <div className="p-6 sm:p-8 border-t border-border surface-card-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2 text-xs text-foreground-muted">
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span>End-to-end encrypted · SOC2 Type II Aligned</span>
+            <span>Encrypted in transit</span>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">

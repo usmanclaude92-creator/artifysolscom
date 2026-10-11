@@ -183,7 +183,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                 </div>
                 <div className="flex items-center gap-3 text-xs text-foreground-secondary">
                   <Clock className="w-4 h-4 text-emerald-400" />
-                  <span>Discovery Response SLA: <strong className="text-emerald-400">Under 4 Hours</strong></span>
+                  <span>We read and respond to every brief</span>
                 </div>
               </div>
             </div>

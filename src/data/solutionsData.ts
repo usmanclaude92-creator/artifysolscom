@@ -19,7 +19,7 @@ export const INDUSTRIES_DATA: Industry[] = [
       {
         title: 'Multi-Bank Real-Time Reconciliation',
         desc: 'Ingests thousands of transactions per minute across 12+ institutional accounts, matching with ERP invoices using fuzzy entity matching and sub-penny tolerance.',
-        impact: '99.4% Automated Match Rate',
+        impact: 'Automated Match Rate',
       },
       {
         title: 'Conversational Variance Analysis',
@@ -35,7 +35,6 @@ export const INDUSTRIES_DATA: Industry[] = [
     connectedSystems: ['NetSuite', 'QuickBooks', 'SAP S/4HANA', 'Stripe', 'Plaid', 'Bloomberg Terminal'],
     metrics: [
       { label: 'Time Saved per Month', value: '140+ hrs' },
-      { label: 'Reconciliation Accuracy', value: '99.98%' },
       { label: 'Anomaly Detection Speed', value: '< 2.4 sec' },
     ],
   },
@@ -44,7 +43,7 @@ export const INDUSTRIES_DATA: Industry[] = [
     name: 'Healthcare',
     icon: 'Stethoscope',
     tagline: 'Intelligent clinical workflows, zero-delay prior authorization, and administrative automation',
-    description: 'Intelligent administration, HIPAA-compliant patient intake workflows, clinical document structuring, predictive scheduling, and operational triage.',
+    description: 'Intelligent administration, patient intake workflows, clinical document structuring, predictive scheduling, and operational triage.',
     coreAgents: ['Prior Authorization Agent', 'Clinical Triage Coordinator', 'Patient Scheduling Optimizer', 'Revenue Cycle Analyst'],
     keyWorkflows: [
       {
@@ -63,11 +62,10 @@ export const INDUSTRIES_DATA: Industry[] = [
         impact: '-35% 30-Day Readmissions',
       },
     ],
-    connectedSystems: ['Epic Systems', 'Cerner', 'Athenahealth', 'HL7/FHIR APIs', 'Twilio HIPAA'],
+    connectedSystems: ['Epic Systems', 'Cerner', 'Athenahealth', 'HL7/FHIR APIs', 'Twilio'],
     metrics: [
       { label: 'Prior-Auth Resolution', value: 'Under 4 hours' },
       { label: 'Documentation Overhead', value: '-65%' },
-      { label: 'Intake Accuracy', value: '99.9%' },
     ],
   },
   {
@@ -123,8 +121,6 @@ export const INDUSTRIES_DATA: Industry[] = [
     connectedSystems: ['Yardi Voyager', 'RealPage', 'AppFolio', 'DocuSign', 'Matterport IoT'],
     metrics: [
       { label: 'Lease Processing Speed', value: '12x Faster' },
-      { label: 'Tenant Inquiry SLA', value: '< 45 seconds' },
-      { label: 'NOI Accuracy', value: '99.8%' },
     ],
   },
   {
@@ -634,7 +630,7 @@ export const METHODOLOGY_STEPS: MethodologyStep[] = [
     title: 'Evolve',
     tagline: 'Continuous algorithmic improvement',
     description: 'As your business scales and operational dynamics shift, the AI layer continuously optimizes, learning from new feedback and expanding into new workflows.',
-    deliverables: ['Continuous Model Optimization', 'Quarterly Capability Upgrades', 'Dedicated Support SLA'],
+    deliverables: ['Continuous Model Optimization', 'Quarterly Capability Upgrades', 'Dedicated Support'],
     duration: 'Ongoing',
   },
 ];
@@ -679,7 +675,6 @@ export const CASE_STUDIES: CaseStudy[] = [
     solution: 'Constructed an autonomous ledger reconciliation pipeline that extracts invoices via vision AI, performs 3-way matching with POs, and executes continuous variance auditing.',
     systemsConnected: ['Oracle NetSuite', 'SAP S/4HANA', 'Stripe Payments', 'Plaid', 'Bloomberg Feed'],
     results: [
-      { metric: '99.4%', label: 'Automated Match Rate' },
       { metric: '1.5 Days', label: 'Month-End Close (was 12 Days)' },
       { metric: '-90%', label: 'Audit Preparation Effort' },
       { metric: '45,000', label: 'Transactions Reconciled / Mo' },
@@ -688,7 +683,6 @@ export const CASE_STUDIES: CaseStudy[] = [
     architecture: ['OCR Vision Pipelines', 'Vector Embedding Index', 'NetSuite Dual-Sync', 'Slack Approval Bot'],
     agents: ['Ledger Reconciliation Agent', 'Receipt Extractor AI', 'Cash Variance Analyst'],
     kpis: [
-      { label: 'Match Rate', value: '99.4%' },
       { label: 'Month-End Close', value: '1.5 Days (was 12 Days)' },
       { label: 'Audit Prep Effort', value: '-90%' },
     ],
@@ -755,17 +749,16 @@ export const CASE_STUDIES: CaseStudy[] = [
     industry: 'Retail & SaaS',
     clientType: 'Global Direct-to-Consumer Brand',
     timeframe: '5 Weeks to Production',
-    tagline: 'High-precision customer support engine capable of performing real actions with 99.9% accuracy.',
+    tagline: 'High-precision customer support engine capable of performing real actions.',
     challenge: 'Support queue overwhelmed with 10,000+ weekly inquiries regarding orders, tracking, refunds, and technical setup with 18-hour response times.',
     solution: 'Engineered a multi-modal support agent fleet connected directly to Shopify, payment gateways, and knowledge bases to resolve issues autonomously and escalate complex cases with summaries.',
     systemsConnected: ['Shopify Plus', 'Zendesk', 'Gorgias', 'Stripe', 'Twilio SMS'],
     results: [
       { metric: '84.2%', label: 'Autonomous Resolution Without Human' },
-      { metric: '1.4 Sec', label: 'First Response Time SLA' },
       { metric: '+34%', label: 'CSAT Customer Satisfaction' },
       { metric: '$620k', label: 'Annual Support Headcount Savings' },
     ],
-    description: 'High-precision customer support engine capable of performing actions (canceling subscriptions, updating delivery addresses, debugging API tokens) with 99.9% accuracy.',
+    description: 'High-precision customer support engine capable of performing actions (canceling subscriptions, updating delivery addresses, debugging API tokens).',
     architecture: ['Knowledge Graph RAG', 'Sandbox Tool Execution API', 'Zendesk & Intercom Hook', 'Human Escalation Relay'],
     agents: ['Tier-1 Resolution Agent', 'Knowledge Graph Sentinel', 'Customer Sentiment Sentinel'],
     kpis: [
@@ -878,7 +871,7 @@ export const INTEGRATION_CATEGORIES: IntegrationCategory[] = [
     category: 'Cloud & Infrastructure',
     description: 'Enterprise hosting environments, serverless compute, and security perimeters.',
     items: [
-      { name: 'Amazon Web Services (AWS)', type: 'Cloud Infrastructure', status: 'SOC2 Compliant' },
+      { name: 'Amazon Web Services (AWS)', type: 'Cloud Infrastructure', status: 'Cloud Hosting' },
       { name: 'Google Cloud Platform (GCP)', type: 'Cloud & AI Engine', status: 'VPC Peering' },
       { name: 'Microsoft Azure', type: 'Cloud & AI Foundry', status: 'Enterprise VPC' },
       { name: 'Cloudflare Workers & CDN', type: 'Edge Security', status: 'Zero Trust' },
@@ -959,10 +952,9 @@ export const COMMAND_CENTER_PRESETS = [
       highlights: [
         { label: 'Enterprise Pipeline', value: '$14.8M', delta: '+16% WoW', positive: true },
         { label: 'Sprint Velocity', value: '94.2%', delta: '18 tickets done', positive: true },
-        { label: 'Customer Retention', value: '99.1%', delta: '0 churned', positive: true },
         { label: 'Cash In Bank', value: '$11.4M', delta: '28 mos runway', positive: true },
       ],
-      investigationNote: 'Key priority this week: Finalize SOC2 Type II audit walkthrough (scheduled Wednesday 10 AM) and complete hiring for VP of European Operations.',
+      investigationNote: 'Key priority this week: Finalize the security audit walkthrough (scheduled Wednesday 10 AM) and complete hiring for VP of European Operations.',
       chartData: [
         { month: 'W1', revenue: 3.8, opex: 1.7 },
         { month: 'W2', revenue: 3.9, opex: 1.72 },

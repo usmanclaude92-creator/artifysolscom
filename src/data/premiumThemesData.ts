@@ -70,7 +70,6 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     },
     metrics: [
       { label: 'Asset Under Management', value: '$4.2B', trend: '+14.2% YoY' },
-      { label: 'Autonomous Settlement SLA', value: '1.2s', trend: 'Sub-second' },
       { label: 'Governance Consensus', value: '100%', trend: 'Multi-Sig Validated' },
     ],
     palette: [
@@ -157,7 +156,6 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     metrics: [
       { label: 'Active Edge Node Swarm', value: '1,420', trend: '100% Operational' },
       { label: 'Event Transit Latency', value: '4.8ms', trend: 'mTLS Zero-Copy' },
-      { label: 'Threat Interception Rate', value: '99.99%', trend: 'Autonomous Defense' },
     ],
     palette: [
       { name: 'Terminal Abyss', hex: '#020805', role: 'Base Background', wcagContrast: '21.0:1' },
@@ -243,7 +241,6 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     metrics: [
       { label: 'Settlement Throughput', value: '420k/s', trend: '+28% Peak Load' },
       { label: 'FX Slippage Mitigation', value: '0.002 bps', trend: 'Smart Order Router' },
-      { label: 'System Uptime SLA', value: '99.999%', trend: 'Multi-Region Active' },
     ],
     palette: [
       { name: 'Midnight Oceanic', hex: '#040814', role: 'Base Background', wcagContrast: '21.0:1' },
@@ -329,7 +326,6 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     metrics: [
       { label: 'Cognitive Readability Score', value: '100%', trend: 'WCAG AAA Gold' },
       { label: 'Interface Noise Ratio', value: '0.0%', trend: 'Distraction Free' },
-      { label: 'Strategic Alignment', value: '99.4%', trend: 'Bylaw Verification' },
     ],
     palette: [
       { name: 'Warm Marble Canvas', hex: '#F9F9FB', role: 'Base Background', wcagContrast: '19.8:1' },
@@ -363,7 +359,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
         },
         {
           timestamp: '15:58 CET',
-          title: 'GDPR Article 28 DPA Alignment Verification',
+          title: 'Data Processing Agreement Review',
           detail: 'Audited 120 sub-processor agreements; certified compliance dossier ready',
           status: 'verified',
         },
@@ -415,7 +411,6 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
     metrics: [
       { label: 'Autonomous Agent Fleet', value: '64 Swarms', trend: 'Consensus Synchronized' },
       { label: 'Neural Recall Latency', value: '< 12ms', trend: 'Hybrid RAG pgvector' },
-      { label: 'Deterministic Accuracy', value: '99.98%', trend: 'Consensus Filter' },
     ],
     palette: [
       { name: 'Cosmic Obsidian', hex: '#07070B', role: 'Base Background', wcagContrast: '20.2:1' },
@@ -450,7 +445,7 @@ export const PREMIUM_THEMES: PremiumTheme[] = [
         {
           timestamp: '11:12:35 UTC',
           title: 'Multi-Modal Document Extraction Pipeline',
-          detail: 'Parsed 450 customs declarations with 99.94% OCR extraction confidence',
+          detail: 'Parsed 450 customs declarations',
           status: 'verified',
         },
         {

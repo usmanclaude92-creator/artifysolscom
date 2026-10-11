@@ -102,7 +102,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
       id: 'security-governance',
       title: 'AI Security, Governance & Red-Teaming Audits',
       tagline: 'Continuous Defense Against Jailbreaks, PII Leakage & Drift',
-      description: 'Deploy AI with complete compliance. We provide real-time zero-trust security proxies, automated red-teaming, and SOC2/HIPAA audit ledgers.',
+      description: 'Deploy AI with governance built in. We provide zero-trust security proxies, automated red-teaming, and audit ledgers.',
       icon: Shield,
       deliverables: [
         'Real-Time PII De-Identification & Masking Gateway',

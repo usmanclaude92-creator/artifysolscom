@@ -45,7 +45,7 @@ export const AiOrchestration: React.FC = () => {
       agent: 'Ledger Audit Agent',
       duration: '410ms',
       status: currentStepIndex >= 1 ? (currentStepIndex === 1 ? 'running' : 'completed') : 'pending',
-      output: 'Classified OPEX, COGS, and CAPEX entries. Verified 99.8% transaction integrity against signed contracts.',
+      output: 'Classified OPEX, COGS, and CAPEX entries. Checked transactions against signed contracts.',
       icon: Cpu,
     },
     {

@@ -57,7 +57,7 @@ export const DeploymentMethodology: React.FC<{ onNavigateToContact?: () => void 
       timeframe: 'Week 11 onwards',
       badge: 'Live Operations',
       summary: 'Production go-live with 24/7 autonomous monitoring, continuous prompt and schema adaptation, and dedicated engineering support.',
-      deliverables: ['Zero-Downtime Production Cutover', 'Real-Time Telemetry & SLA Guarantee', 'Continuous Model & Business Rule Adaptation'],
+      deliverables: ['Zero-Downtime Production Cutover', 'Real-Time Telemetry & Monitoring', 'Continuous Model & Business Rule Adaptation'],
     },
   ];
 

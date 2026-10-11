@@ -158,7 +158,6 @@ export const DevelopmentMethodology: React.FC<DevelopmentMethodologyProps> = ({
             <div className="lg:col-span-5 bg-[#060609] border border-white/[0.08] rounded-2xl p-6 font-mono-code text-xs">
               <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/[0.06] text-zinc-400">
                 <span className="text-violet-400 font-bold">STAGE_ENGINEERING_CRITERIA</span>
-                <span className="text-emerald-400">SOC2 COMPLIANT</span>
               </div>
 
               <div className="space-y-3 text-[11px] leading-relaxed text-zinc-300">
@@ -179,7 +178,7 @@ export const DevelopmentMethodology: React.FC<DevelopmentMethodologyProps> = ({
                     <span className="text-sky-400">&lt; 50ms sync</span>
                   </div>
                   <div className="flex items-center justify-between text-zinc-400">
-                    <span>Human Override SLA:</span>
+                    <span>Human Override:</span>
                     <span className="text-violet-300">Instant Killswitch</span>
                   </div>
                 </div>

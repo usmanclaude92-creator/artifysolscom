@@ -79,7 +79,6 @@ const CATEGORY_SEARCH_INTENT_MAP: Record<string, string[]> = {
     'VPC isolated AI deployment',
     'zero data retention AI',
     'private enterprise LLM',
-    'SOC2 compliant AI infrastructure',
     'microservices AI middleware',
     'hybrid cloud AI models',
   ],
@@ -282,7 +281,6 @@ export function generateDynamicKeywords(options: KeywordGeneratorOptions): strin
   // 8. Type-Specific Modifiers
   if (type === 'product') {
     keywordPool.push('Enterprise AI Product');
-    keywordPool.push('SOC2 Compliant AI Software');
     keywordPool.push('Autonomous Agent Deployment');
   } else if (type === 'article') {
     keywordPool.push('AI Engineering Research');
@@ -351,7 +349,6 @@ export function generateProductKeywords(product: AiProductItem): string[] {
     tags: [
       product.name,
       product.categoryLabel,
-      product.uptime ? `${product.uptime} SLA` : 'Enterprise SLA',
       ...industries,
       ...(product.demoCapabilities || []),
     ],
@@ -815,7 +812,6 @@ export function generateProductSeo(
       category: product.categoryLabel,
       availability: 'InStock',
       rating: product.rating,
-      uptime: product.uptime,
     },
     twitterCard: 'summary_large_image',
     twitterTitle: `${product.name} - ${product.tagline}`,

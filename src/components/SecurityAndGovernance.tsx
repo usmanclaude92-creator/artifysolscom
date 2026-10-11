@@ -39,7 +39,7 @@ export const SecurityAndGovernance: React.FC = () => {
     {
       icon: FileCheck2,
       title: 'Regulatory & Industry Compliance',
-      desc: 'Architecture designed to support SOC2 Type II, HIPAA, GDPR, ISO 27001, and GLBA data handling standards from day one.',
+      desc: 'Built with data-protection requirements in mind. Any specific regulatory needs are scoped with you for each project.',
       color: '#EC4899',
     },
     {

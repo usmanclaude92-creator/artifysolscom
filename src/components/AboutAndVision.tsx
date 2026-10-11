@@ -43,7 +43,7 @@ export const AboutAndVision: React.FC<AboutAndVisionProps> = ({
 Company: [Your Organization Name]
 Access Level Required: Enterprise Partner & AI Coworker Mesh
 Target Integration Systems: SAP / NetSuite / Salesforce / Custom REST APIs
-Deployment Model: Dedicated Private VPC / SOC2 High-Throughput Cluster
+Deployment Model: Dedicated Private VPC
 Estimated Agent Operations: 500,000+ monthly autonomous tasks`,
       currentTools: 'Enterprise ERP, CRM, REST APIs, OAuth2/mTLS',
       timeline: 'Immediate (Next 7-14 Days)',
@@ -78,7 +78,7 @@ Estimated Agent Operations: 500,000+ monthly autonomous tasks`,
           </h1>
 
           <p className="text-lg sm:text-xl text-foreground-muted leading-relaxed font-normal mb-8">
-            For three decades, enterprise software has been passive—silent databases waiting for humans to click buttons, re-enter numbers, and manually copy data across screens.
+            For too long, enterprise software has been passive—silent databases waiting for humans to click buttons, re-enter numbers, and manually copy data across screens.
           </p>
 
           <p className="text-base sm:text-lg text-foreground leading-relaxed font-medium surface-container-accent border border-primary/25 p-6 rounded-2xl max-w-3xl mx-auto">

@@ -353,7 +353,7 @@ export const EcosystemArchitectureExplorer: React.FC<EcosystemArchitectureExplor
             <div className="flex items-center gap-3 flex-wrap">
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                SOC2 Type II Aligned
+                Audit logging
               </span>
               <span>•</span>
               <span className="flex items-center gap-1.5">

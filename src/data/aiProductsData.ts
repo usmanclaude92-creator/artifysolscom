@@ -54,7 +54,7 @@ export const AI_PRODUCT_CATEGORIES: ProductCategoryOption[] = [
     id: 'custom-ai-solutions',
     label: 'Custom AI Solutions',
     count: 2,
-    description: 'Domain-tailored Small Language Models, bespoke agent swarms, and SOC2 governance.',
+    description: 'Domain-tailored Small Language Models, bespoke agent swarms, and governance controls.',
   },
 ];
 
@@ -72,7 +72,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: 'Flagship Platform',
     status: 'general-availability',
     rating: 4.98,
-    uptime: '99.99%',
     problem: {
       title: 'Human Teams Trapped in Repetitive Cross-System Copy-Pasting',
       summary: 'Enterprise teams spend 40%+ of their working hours manually reconciling data across disconnected ERPs, CRMs, email inboxes, and spreadsheets.',
@@ -116,7 +115,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         title: 'Autonomous Self-Correction',
         description: 'When an API throws an exception or schema mismatch, validator agents retry with alternative parsing strategies.',
         icon: 'ShieldCheck',
-        metric: '99.4% Autonomous Recovery',
+        metric: 'Autonomous Recovery',
       },
     ],
     benefits: [
@@ -126,7 +125,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         value: '85% Time Saved',
       },
       {
-        title: 'Zero SLA Misses',
+        title: 'Proactive Deadline Tracking',
         description: 'Agents process inbound events 24/7/365 with deterministic sub-second queue response times.',
         value: '< 3s Event Latency',
       },
@@ -137,7 +136,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
       },
       {
         title: 'Complete Regulatory Traceability',
-        description: 'Every step is tracked in an immutable execution log for SOC2, HIPAA, and ISO27001 compliance.',
+        description: 'Every step is tracked in an execution log that your auditors can review.',
         value: '100% Audit Readiness',
       },
     ],
@@ -216,7 +215,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     metrics: [
       { label: 'Autonomous Resolution Rate', value: '94.2%' },
       { label: 'Average Execution Time', value: '1.8s' },
-      { label: 'System Uptime SLA', value: '99.99%' },
       { label: 'Annual Hours Recovered', value: '4,200+' },
     ],
     demoCapabilities: ['Live Swarm Simulation', 'Multi-Agent Debate Viewer', 'Instant Payload Verifier'],
@@ -238,7 +236,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: 'Enterprise Intelligence',
     status: 'general-availability',
     rating: 4.96,
-    uptime: '99.98%',
     problem: {
       title: 'Institutional Knowledge Lost in Massive Document Silos',
       summary: 'Knowledge workers waste an average of 9.3 hours per week searching for information scattered across Google Drive, SharePoint, Notion, and Jira.',
@@ -253,7 +250,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
       title: 'Hybrid Multi-Stage Vector Graph with Strict Document RBAC',
       summary: 'Artify Neural RAG combines BM25 keyword matching, dense vector embeddings, and cross-encoder re-ranking with document-level security.',
       points: [
-        'Multi-Vector Hybrid Retrieval: Pinpoint exact clauses in 1,000-page contracts with 99.8% precision.',
+        'Multi-Vector Hybrid Retrieval: Pinpoint exact clauses in 1,000-page contracts.',
         'Source-Grounded Citations: Every answer highlights the exact paragraph, timestamp, or table queried.',
         'Zero Data Leakage: Integrates with Active Directory & Okta so users only search files they have permissions to view.',
         'Real-Time Incremental Indexing: File changes in Drive or SharePoint are vectorized within 500ms.',
@@ -270,7 +267,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         title: 'Cross-Encoder Re-Ranking',
         description: 'Ranks top 50 retrieved candidate chunks to surface the mathematically most relevant context.',
         icon: 'Sparkles',
-        metric: '99.8% Precision @ 5',
+        metric: 'Precision @ 5',
       },
       {
         title: 'Role-Based Document Filtering',
@@ -380,10 +377,8 @@ export const AI_PRODUCTS: AiProductItem[] = [
     ],
     connectedSystems: ['Google Drive', 'SharePoint', 'Confluence', 'Notion', 'Zendesk', 'GitHub', 'S3 / GCS', 'Box', 'Local File Servers'],
     metrics: [
-      { label: 'Retrieval Accuracy (P@5)', value: '99.8%' },
       { label: 'Average Query Latency', value: '< 650ms' },
       { label: 'Document Formats Supported', value: '60+' },
-      { label: 'Hallucination Mitigation', value: '99.98%' },
     ],
     demoCapabilities: ['Live Document Ingestion Test', 'Multi-Source Cross-Citation', 'Permission ACL Inspector'],
     cta: {
@@ -404,7 +399,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: 'Real-Time Backbone',
     status: 'general-availability',
     rating: 4.97,
-    uptime: '99.999%',
     problem: {
       title: 'Legacy Enterprise Stacks Choked by Brittle Middleware',
       summary: 'Custom point-to-point integrations break whenever an endpoint upgrades, creating costly IT backlogs and siloed business units.',
@@ -442,7 +436,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         title: 'Self-Healing Retry Loops',
         description: 'Analyzes third-party API rate limits and status codes to safely reschedule transaction bursts.',
         icon: 'RefreshCw',
-        metric: '99.999% Message Delivery',
+        metric: 'Message Delivery',
       },
       {
         title: 'Zero-Trust Payload Cryptography',
@@ -463,7 +457,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         value: 'Real-Time Sync',
       },
       {
-        title: '99.999% Carrier-Grade Reliability',
+        title: 'Reliable Message Delivery',
         description: 'Distributed fault-tolerant clusters survive cloud regional outages without data loss.',
         value: 'Zero Message Loss',
       },
@@ -548,7 +542,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     metrics: [
       { label: 'Max Throughput per Node', value: '250k events/sec' },
       { label: 'P99 Latency', value: '< 8.4ms' },
-      { label: 'Uptime Reliability', value: '99.999%' },
       { label: 'Auto-Recovered Schema Drift', value: '100%' },
     ],
     demoCapabilities: ['Live Real-Time Event Simulator', 'Schema Morphing Visualizer', 'Dead-Letter Auto-Healer'],
@@ -570,7 +563,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: 'Executive BI',
     status: 'general-availability',
     rating: 4.95,
-    uptime: '99.97%',
     problem: {
       title: 'Executives Starved for Timely Insights by Dashboard Backlogs',
       summary: 'Data analytics teams spend 70% of their bandwidth modifying minor Tableau/PowerBI filters rather than driving strategic strategy.',
@@ -596,7 +588,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         title: 'Zero-Hallucination Text-to-SQL',
         description: 'Synthesizes enterprise-grade SQL queries with visible execution plans and transparent data lineage.',
         icon: 'Code',
-        metric: '99.6% First-Try SQL Accuracy',
+        metric: 'First-Try SQL Accuracy',
       },
       {
         title: 'Auto-Generated Reactive Visuals',
@@ -712,7 +704,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     ],
     connectedSystems: ['Snowflake', 'BigQuery', 'PostgreSQL', 'Salesforce Data Cloud', 'Google Sheets', 'NetSuite', 'Stripe Sigma'],
     metrics: [
-      { label: 'Text-to-SQL Precision', value: '99.6%' },
       { label: 'Average Query Execution', value: '1.2s' },
       { label: 'Data Sources Supported', value: '35+' },
       { label: 'Ad-hoc Ticket Reduction', value: '-82%' },
@@ -736,7 +727,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: '24/7 Omnichannel',
     status: 'general-availability',
     rating: 4.98,
-    uptime: '99.99%',
     problem: {
       title: 'Customers Frustrated by Static Chatbots & Long Queue Times',
       summary: '84% of consumers report negative experiences with traditional menu-driven chatbots that cannot actually solve their problems.',
@@ -902,7 +892,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: 'Multimodal Vision',
     status: 'general-availability',
     rating: 4.96,
-    uptime: '99.98%',
     problem: {
       title: 'Visual Assets and Physical Audits Trapped in Manual Review',
       summary: 'Engineers, inspectors, and estimators spend thousands of hours manually counting elements on blueprints or inspecting physical defects.',
@@ -919,7 +908,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
       points: [
         'Blueprint Spec & Quantity Takeoff: Extracts every door, window, conduit, and fixture from PDF drawings into Excel in seconds.',
         'Edge Defect Detection: Analyzes 60 FPS manufacturing video to flag 0.1mm micro-fractures.',
-        'Handwritten Document Reconstruction: Transcribes crumpled receipts, clinical charts, and field logs with 99.7% accuracy.',
+        'Handwritten Document Reconstruction: Transcribes crumpled receipts, clinical charts, and field logs.',
         'Site Safety Surveillance: Flags missing PPE, restricted zone breaches, and spill hazards in real time.',
       ],
     },
@@ -928,7 +917,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         title: 'High-Resolution Blueprint Parser',
         description: 'Deconstructs vector and raster architectural drawings, outputting structured Bill of Materials (BOM).',
         icon: 'Layers',
-        metric: '99.4% Extraction Precision',
+        metric: 'Extraction Precision',
       },
       {
         title: '60 FPS Real-Time Edge Processing',
@@ -958,7 +947,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
       {
         title: 'Zero Production Line Escapes',
         description: 'Catch defective components before they leave the factory floor, avoiding costly product recalls.',
-        value: '99.98% Defect Capture',
+        value: 'Defect Capture',
       },
       {
         title: '100% Safety Compliance Audit',
@@ -975,7 +964,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
       {
         industry: 'Construction & Engineering',
         scenario: 'Automated Quantity Takeoff from PDF Blueprints',
-        outcome: 'Counts 4,500 electrical fixtures and pipe lengths across 80 sheets in 3 minutes with 99.8% accuracy.',
+        outcome: 'Counts electrical fixtures and pipe lengths across large drawing sets.',
         timeToValue: '3 Days to Production',
       },
       {
@@ -1044,10 +1033,8 @@ export const AI_PRODUCTS: AiProductItem[] = [
     ],
     connectedSystems: ['Procore', 'Autodesk Construction Cloud', 'PlanGrid', 'SAP S/4HANA', 'Siemens MindSphere', 'AWS S3', 'Azure Blob'],
     metrics: [
-      { label: 'Symbol Extraction Accuracy', value: '99.4%' },
       { label: 'Takeoff Processing Speed', value: '3s / Sheet' },
       { label: 'Inspection Frame Rate', value: 'Up to 60 FPS' },
-      { label: 'Defect Catch Rate', value: '99.98%' },
     ],
     demoCapabilities: ['Blueprint Takeoff Scanner', 'Defect Heatmap Simulator', 'OCR Spec Extractor'],
     cta: {
@@ -1068,7 +1055,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     badge: 'Enterprise Security',
     status: 'general-availability',
     rating: 4.99,
-    uptime: '99.999%',
     problem: {
       title: 'Enterprise AI Adoption Blocked by Security and Regulatory Fears',
       summary: 'Chief Information Security Officers (CISOs) are forced to block employee AI usage due to risks of data leakage and unmonitored shadow AI.',
@@ -1086,7 +1072,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         'Dynamic PII Masking: Detects SSNs, names, addresses, and credit cards, replacing them with reversible surrogate tokens.',
         'Adversarial Jailbreak Shield: Neutralizes indirect prompt injections, system prompt extraction, and jailbreak attempts.',
         'Real-Time Model Drift Telemetry: Monitors latency, toxicity, output variance, and cost across all deployed models.',
-        'SOC2 / HIPAA / EU AI Act Reports: One-click export of compliance dossiers for external auditor sign-off.',
+        'Audit Reports: One-click export of audit documentation for external reviewers.',
       ],
     },
     features: [
@@ -1128,7 +1114,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
       },
       {
         title: 'Guaranteed Regulatory Compliance',
-        description: 'Stay ahead of EU AI Act, HIPAA, SOC2 Type II, and ISO 42001 regulations automatically.',
+        description: 'Track your own compliance obligations in one place.',
         value: 'Audit-Ready Always',
       },
       {
@@ -1140,7 +1126,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
     useCases: [
       {
         industry: 'Healthcare & Life Sciences',
-        scenario: 'HIPAA-Compliant Patient Record Processing',
+        scenario: 'Patient Record Processing',
         outcome: 'Sanitizes patient health records before passing to diagnostic AI models with 100% PHI redaction.',
         timeToValue: '3 Days to Production',
       },
@@ -1211,9 +1197,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     connectedSystems: ['Okta', 'Azure Active Directory', 'AWS IAM', 'Datadog', 'Splunk', 'CrowdStrike', 'Palo Alto Networks', 'OpenAI', 'Anthropic', 'Google Vertex'],
     metrics: [
       { label: 'Proxy Inspection Latency', value: '< 12ms' },
-      { label: 'PII Detection Rate', value: '99.99%' },
-      { label: 'Jailbreak Attack Block Rate', value: '99.8%' },
-      { label: 'Compliance Standards Covered', value: 'SOC2, HIPAA, EU AI Act, ISO42001' },
     ],
     demoCapabilities: ['Live PII Tokenizer Demo', 'Prompt Injection Defense Arena', 'Compliance Dossier Generator'],
     cta: {
@@ -1228,13 +1211,12 @@ export const AI_PRODUCTS: AiProductItem[] = [
     category: 'custom-ai-solutions',
     categoryLabel: 'Custom AI Solutions & Model Engineering',
     tagline: 'Bespoke Domain-Specific Model Fine-Tuning & Deployment Platform',
-    shortDescription: 'Custom AI architecture tailored to your unique operational logic, private proprietary data, and internal proprietary workflows with guaranteed SLA.',
+    shortDescription: 'Custom AI architecture tailored to your unique operational logic, private proprietary data, and internal proprietary workflows.',
     longDescription: 'Artify CustomForge™ is our high-touch AI engineering platform. When off-the-shelf models are too generic, too expensive, or legally prohibited from accessing your proprietary data, CustomForge engineers bespoke Small Language Models (SLMs), fine-tunes domain weights, and delivers private on-premise AI systems built exclusively for your business.',
     icon: 'Terminal',
     badge: 'Bespoke Engineering',
     status: 'general-availability',
     rating: 4.99,
-    uptime: '99.99%',
     problem: {
       title: 'Off-The-Shelf AI Models Fail to Understand Domain-Specific Nuances',
       summary: 'Public LLMs are trained on general internet data and fail to perform proprietary engineering calculations, specific insurance formulas, or niche legal tasks.',
@@ -1260,7 +1242,7 @@ export const AI_PRODUCTS: AiProductItem[] = [
         title: 'Bespoke Weight Fine-Tuning',
         description: 'Full fine-tuning and LoRA/QLoRA parameter-efficient adaptation on proprietary corporate datasets.',
         icon: 'Cpu',
-        metric: '99.8% Domain Task Accuracy',
+        metric: 'Domain Task Accuracy',
       },
       {
         title: '10x Faster Inference Latency',
@@ -1375,7 +1357,6 @@ export const AI_PRODUCTS: AiProductItem[] = [
     ],
     connectedSystems: ['Private AWS VPC', 'Google Cloud Platform', 'Microsoft Azure Confidential Compute', 'On-Premise NVIDIA DGX', 'Kubernetes'],
     metrics: [
-      { label: 'Domain Task Accuracy', value: '99.8%' },
       { label: 'Inference Speed', value: '180 tokens/sec' },
       { label: 'Cost Reduction vs Frontier APIs', value: '88% – 93%' },
       { label: 'Model Weights Ownership', value: '100% Client-Owned' },

@@ -103,7 +103,7 @@ export const AboutPartnerAccessSection: React.FC<AboutPartnerAccessSectionProps>
 
             <div className="pt-4 border-t border-border flex items-center gap-2 text-xs font-semibold text-primary">
               <Lock className="w-4 h-4 text-primary" />
-              <span>SOC2 Type II Aligned</span>
+              <span>Audit logging on every request</span>
             </div>
           </div>
 
@@ -122,13 +122,13 @@ export const AboutPartnerAccessSection: React.FC<AboutPartnerAccessSectionProps>
                 How to Request Credentials
               </h3>
               <p className="text-xs sm:text-sm leading-relaxed mb-4 text-foreground-secondary">
-                Prospective enterprise partners and authorized operators must request credentials through our <strong>Strategic Contact Brief</strong> form. Verification is typically completed within 24 business hours.
+                Prospective enterprise partners and authorized operators must request credentials through our <strong>Strategic Contact Brief</strong> form. We review each request personally.
               </p>
             </div>
 
             <div className="pt-4 border-t border-border flex items-center gap-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               <Clock className="w-4 h-4 text-emerald-500" />
-              <span>24hr Domain Verification SLA</span>
+              <span>Each request is reviewed by our team</span>
             </div>
           </div>
         </div>

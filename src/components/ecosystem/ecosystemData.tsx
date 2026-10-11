@@ -161,7 +161,7 @@ export const ECOSYSTEM_MODULES: EcosystemModule[] = [
     icon: FileCheck2,
     summary: 'Cognitive parser extracting unstructured invoices, bills of lading, contracts, and permits.',
     capabilities: ['Multi-language OCR & extraction', 'Semantic clause validation', 'Table & line-item parsing', 'Direct ledger entry generation'],
-    autonomousActions: 'Parses complex multi-page financial PDFs and auto-populates ERP records with 99.8% precision.',
+    autonomousActions: 'Parses complex multi-page financial PDFs and auto-populates ERP records.',
     integratesWith: ['Finance', 'Procurement', 'Legal'],
     status: 'Cognitive Engine',
   },

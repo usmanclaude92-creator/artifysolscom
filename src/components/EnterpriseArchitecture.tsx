@@ -64,8 +64,8 @@ export const EnterpriseArchitecture: React.FC<{ onNavigateToContact?: () => void
       tagline: 'Private VPCs, Kubernetes clusters, hybrid on-premises & zero-trust networks',
       icon: Cloud,
       components: ['Private Cloud (GCP, AWS, Azure)', 'On-Premises Hybrid Deployment Ready', 'Docker & Automated Kubernetes Clusters', 'Zero-Trust Network Architecture', 'Continuous Automated Backup & Recovery'],
-      description: 'Engineered for 99.99% high availability, sub-10ms intra-region latency, and full customer data sovereignty with zero third-party model training on your proprietary data.',
-      security: 'SOC2 Compliant Architecture, Zero-Trust Ingress & Egress',
+      description: 'Designed for high availability and customer data sovereignty, with no third-party model training on your proprietary data.',
+      security: 'Zero-Trust Ingress & Egress',
     },
   ];
 

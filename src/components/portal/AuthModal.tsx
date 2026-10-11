@@ -662,7 +662,7 @@ export const AuthModal: React.FC<{ theme?: 'dark' | 'light' }> = ({ theme: propT
           }`}>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className={`w-3.5 h-3.5 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
-              <span>SOC2 Type II & HIPAA Certified Infrastructure</span>
+              <span>Secure client sign-in</span>
             </span>
             <span className={`font-mono-code text-[10px] ${isLight ? 'text-slate-400' : 'text-zinc-500'}`}>256-Bit SSL Encrypted</span>
           </div>

@@ -35,7 +35,7 @@ export const ENTERPRISE_SOLUTION_CATEGORIES: SolutionCategory[] = [
     color: '#10B981',
     description: 'Transform financial operations from a backward-looking compliance burden into a real-time strategic command center with continuous auditing and liquidity modeling.',
     modules: ['General Ledger & Multi-Entity Consolidation', 'Accounts Payable & 3-Way Auto-Match', 'Accounts Receivable & Collection Intelligence', 'Treasury & Cash Flow Projections', 'Tax Compliance & Statutory Filing'],
-    metrics: '99.4% Touchless Reconciliation',
+    metrics: 'Touchless Reconciliation',
     outcomes: ['Close monthly books in 2 days instead of 18 days', 'Zero duplicate invoice disbursements with automated sentinel', 'Real-time multi-currency consolidated balance sheets'],
   },
   {

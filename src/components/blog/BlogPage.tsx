@@ -883,7 +883,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
             </h2>
 
             <p className="text-xs sm:text-sm text-violet-100 leading-relaxed">
-              Join 12,000+ enterprise CTOs, engineering directors, and AI architects receiving our curated breakdowns on agentic workflows, model benchmarks, and security guardrails.
+              Get our curated breakdowns on agentic workflows, model benchmarks, and security guardrails.
             </p>
 
             {newsletterSubscribed ? (

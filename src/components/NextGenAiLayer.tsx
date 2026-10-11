@@ -43,7 +43,7 @@ export const NextGenAiLayer: React.FC<{ onOpenConsultant?: () => void }> = ({ on
       description: 'Ingests messy scanned vendor invoices, complex legal contracts, packing slips, customs clearances, and bank guarantees.',
       example: 'Parses a 14-page multi-currency supplier contract, identifies penalty clauses, and matches line-item rates to ERP purchase order.',
       speed: '1.4s parsing time',
-      accuracy: '99.85% verified precision',
+      accuracy: 'Checked against source records',
     },
     {
       id: 'finance-ai',

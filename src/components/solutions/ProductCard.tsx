@@ -79,16 +79,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               >
                 {product.categoryLabel}
               </span>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span
-                  className={`text-xs font-medium ${
-                    isLight ? 'text-slate-500' : 'text-zinc-400'
-                  }`}
-                >
-                  Uptime {product.uptime}
-                </span>
-              </div>
             </div>
           </div>
 

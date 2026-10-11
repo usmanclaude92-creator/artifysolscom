@@ -121,7 +121,6 @@ const LAYERS: LayerItem[] = [
       capabilities: ['Deterministic Logic', 'Automated SLA Escalation', 'Policy Verification', 'Audit Trail Ledger'],
     },
     metrics: [
-      { value: '99.4%', label: 'Zero-Exception Processing' },
       { value: '0', label: 'Untracked Bottlenecks' },
       { value: '100%', label: 'Immutable Auditability' },
     ],
@@ -196,11 +195,10 @@ const LAYERS: LayerItem[] = [
     },
     metrics: [
       { value: '120+', label: 'Pre-Engineered Connectors' },
-      { value: '99.99%', label: 'Engineered SLA Uptime' },
       { value: 'Zero', label: 'Forced Monolith Rewrites' },
     ],
     entities: ['SAP / NetSuite ERP', 'Salesforce / HubSpot CRM', 'Custom SQL Warehouses', 'Stripe Vaults', 'Legacy Mainframes'],
-    telemetryStream: { label: 'Core System Health', rate: '99.999% SLA', protocol: 'mTLS Mesh' },
+    telemetryStream: { label: 'Core System Health', rate: 'Continuous monitoring', protocol: 'mTLS Mesh' },
   },
   {
     id: 'layer-ai',
@@ -271,7 +269,6 @@ const LAYERS: LayerItem[] = [
     metrics: [
       { value: '< 10ms', label: 'Bus Transit Latency' },
       { value: '100%', label: 'Cryptographic Verification' },
-      { value: '99.999%', label: 'Delivery Guarantee' },
     ],
     entities: ['Kafka Event Mesh', 'Secure Webhook Ingress', 'Real-Time WebSockets', 'Zero-Trust Gateways', 'Audit Event Sinks'],
     telemetryStream: { label: 'Event Mesh Throughput', rate: '250k msgs/sec', protocol: 'Zero-Copy Quorum' },
