@@ -17,6 +17,7 @@ import {
   Building2,
   Bot,
   Search,
+  Home,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -140,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </picture>
         </a>
 
-        {/* Desktop Primary Navigation (Core Belief | Our Ecosystem | Solutions | Industries | Insights | Updates) */}
+        {/* Desktop Primary Navigation (Home | Our Core Belief | Ecosystem | Our Solutions | Industries | Updates | Insights) */}
         <nav
           aria-label="Main Navigation"
           className={`hidden md:flex items-center gap-1 lg:gap-1.5 xl:gap-2 border rounded-full px-2.5 sm:px-3 lg:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
@@ -149,6 +150,24 @@ export const Navbar: React.FC<NavbarProps> = ({
               : 'bg-[#0d0d14]/80 border-white/[0.08] text-zinc-300'
           }`}
         >
+          {/* 0. Home (icon) */}
+          <a
+            href="/"
+            onClick={(e) => handleRouteClick(e, onNavigateToHome)}
+            id="nav-link-home"
+            aria-label="Home"
+            title="Home"
+            className={`flex items-center justify-center w-8 h-8 rounded-full transition-all ${
+              activeRoute === 'home'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            <Home className="w-4 h-4" aria-hidden="true" />
+          </a>
+
           {/* 1. Core Belief (About Artify page) */}
           <a
             href="/about"
@@ -162,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Core Belief
+            Our Core Belief
           </a>
 
           {/* 2. Our Ecosystem */}
@@ -178,7 +197,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Our Ecosystem
+            Ecosystem
           </a>
 
           {/* 3. Solutions */}
@@ -198,7 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
             }`}
           >
-            Solutions
+            Our Solutions
           </a>
 
           {/* 4. Industries */}
@@ -217,7 +236,23 @@ export const Navbar: React.FC<NavbarProps> = ({
             Industries
           </a>
 
-          {/* 5. Insights */}
+          {/* 5. Updates */}
+          <a
+            href="/updates"
+            onClick={(e) => handleRouteClick(e, onNavigateToUpdates || onNavigateToBlog)}
+            id="nav-link-updates"
+            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              activeRoute === 'updates'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            Updates
+          </a>
+
+          {/* 6. Insights */}
           <a
             href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
@@ -232,22 +267,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <span>Insights</span>
             <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
-          </a>
-
-          {/* 6. Updates */}
-          <a
-            href="/updates"
-            onClick={(e) => handleRouteClick(e, onNavigateToUpdates || onNavigateToBlog)}
-            id="nav-link-updates"
-            className={`text-xs lg:text-[13px] font-medium px-2.5 lg:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'updates'
-                ? 'bg-violet-600 text-white shadow-sm'
-                : isLight
-                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
-            }`}
-          >
-            Updates
           </a>
         </nav>
 
