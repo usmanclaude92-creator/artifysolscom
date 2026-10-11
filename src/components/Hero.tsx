@@ -134,6 +134,17 @@ export const Hero: React.FC<HeroProps> = ({
                   className="hero-devices w-full h-auto select-none"
                 />
               </picture>
+              <picture>
+                <source srcSet="/hero-platforms.webp" type="image/webp" />
+                <img
+                  src="/hero-platforms.png"
+                  alt="Works on macOS, Windows, Android and iOS"
+                  width={484}
+                  height={59}
+                  draggable={false}
+                  className="hero-platforms -mt-2 sm:-mt-4 ml-[18%] w-[300px] sm:w-[380px] max-w-[80%] h-auto select-none"
+                />
+              </picture>
             </motion.div>
           </div>
         </div>

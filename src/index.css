@@ -2105,3 +2105,10 @@ main[data-home-layout='true'] section:not(#hero) > .relative.z-10 {
 }
 /* Dark theme: invert the light artwork (screens, floor, wave) and rotate the hue back so blues stay blue */
 .theme-dark .hero-devices { filter: invert(0.93) hue-rotate(180deg) saturate(1.15) brightness(0.95) contrast(1.05); }
+
+/* Platforms strip under the hero devices: soft edges, same dark-theme treatment */
+.hero-platforms {
+  -webkit-mask-image: radial-gradient(ellipse 62% 90% at 50% 50%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 90% at 50% 50%, #000 60%, transparent 100%);
+}
+.theme-dark .hero-platforms { filter: invert(0.93) hue-rotate(180deg) saturate(1.15) brightness(0.95) contrast(1.05); }
