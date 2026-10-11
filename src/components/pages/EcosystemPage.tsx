@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { updatePageSeo } from '../../utils/seo';
 import { EcosystemExplorer } from '../ecosystem/EcosystemExplorer';
+import { NexusOrbit } from '../NexusOrbit';
 
 interface EcosystemPageProps {
   onNavigateToContact: () => void;
@@ -192,40 +193,8 @@ export const EcosystemPage: React.FC<EcosystemPageProps> = ({ onNavigateToContac
             </div>
           </div>
 
-          {/* Interface / connection visual */}
-          <div className="lg:col-span-5" aria-hidden="true">
-            <div className="relative rounded-2xl surface-card border border-card-border shadow-xl p-4 sm:p-5">
-              <div className="flex items-center gap-1.5 pb-3 mb-3 border-b border-border">
-                <span className="w-2.5 h-2.5 rounded-full bg-rose-400/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
-                <span className="ml-3 text-[10px] font-mono-code text-foreground-muted uppercase tracking-wider">Business ecosystem · connected view</span>
-              </div>
-              <svg viewBox="0 0 400 260" className="w-full h-auto" role="img" aria-label="Diagram of connected business areas">
-                <g stroke="currentColor" className="text-primary/40" strokeWidth="1.2" fill="none">
-                  <path d="M200 130 L70 50" /><path d="M200 130 L330 50" /><path d="M200 130 L60 130" />
-                  <path d="M200 130 L340 130" /><path d="M200 130 L90 215" /><path d="M200 130 L310 215" />
-                </g>
-                <circle cx="200" cy="130" r="38" className="fill-primary/10 stroke-primary" strokeWidth="1.5" />
-                <text x="200" y="127" textAnchor="middle" className="fill-current text-foreground" fontSize="10" fontWeight="700">YOUR</text>
-                <text x="200" y="141" textAnchor="middle" className="fill-current text-foreground" fontSize="10" fontWeight="700">BUSINESS</text>
-                {[
-                  ['People', 70, 50], ['Processes', 330, 50], ['Data', 60, 130],
-                  ['Systems', 340, 130], ['AI', 90, 215], ['Decisions', 310, 215],
-                ].map(([label, x, y]) => (
-                  <g key={label as string}>
-                    <rect x={(x as number) - 38} y={(y as number) - 14} width="76" height="28" rx="8" className="fill-current text-secondary stroke-primary/30" strokeWidth="1" />
-                    <text x={x as number} y={(y as number) + 4} textAnchor="middle" className="fill-current text-foreground" fontSize="10" fontWeight="600">{label as string}</text>
-                  </g>
-                ))}
-              </svg>
-              <div className="grid grid-cols-3 gap-2 mt-3">
-                {['Shared records', 'Role-based access', 'Audit trail'].map((t) => (
-                  <div key={t} className="text-[10px] font-mono-code text-center px-2 py-1.5 rounded-lg surface-card-subtle border border-border text-foreground-muted">{t}</div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* Nexus orbit: the same interactive visual as the home page */}
+          <NexusOrbit className="lg:col-span-5" />
         </div>
       </section>
 
