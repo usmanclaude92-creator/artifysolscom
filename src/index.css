@@ -2095,3 +2095,13 @@ main[data-home-layout='true'] section:not(#hero) > .relative.z-10 {
     min-height: 0;
   }
 }
+
+/* Hero device image: soft edges so its light background blends into the page */
+.hero-devices {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 16%, #000 100%), linear-gradient(to bottom, transparent 0%, #000 12%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 16%, #000 100%), linear-gradient(to bottom, transparent 0%, #000 12%, #000 80%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+/* Dark theme: invert the light artwork (screens, floor, wave) and rotate the hue back so blues stay blue */
+.theme-dark .hero-devices { filter: invert(0.93) hue-rotate(180deg) saturate(1.15) brightness(0.95) contrast(1.05); }

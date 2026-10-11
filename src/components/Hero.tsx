@@ -2,8 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 
-import { NexusOrbit } from './NexusOrbit';
-
 interface HeroProps {
   onOpenSolutionBuilder: () => void;
   onOpenConsultant: () => void;
@@ -33,7 +31,7 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Left Column: Brand Message & Hero Copy */}
           <motion.div
-            className="lg:col-span-8 flex flex-col items-start text-left"
+            className="lg:col-span-6 flex flex-col items-start text-left relative z-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -117,8 +115,27 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
           </motion.div>
 
-          {/* Right Column: Interactive Neural Ecosystem Visual */}
-          <NexusOrbit className="lg:col-span-4" />
+          {/* Right: platform shown across laptop, tablet and phone. A large layer on desktop (text stays on top), a normal block on mobile. */}
+          <div className="relative w-full lg:absolute lg:right-0 lg:top-[22%] lg:w-[57%] 2xl:w-[53%] lg:z-0 lg:pointer-events-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <picture>
+                <source srcSet="/hero-devices.webp" type="image/webp" />
+                <img
+                  src="/hero-devices.jpg"
+                  alt="The Artify platform running on a laptop, a tablet and a phone"
+                  width={1483}
+                  height={670}
+                  fetchPriority="high"
+                  draggable={false}
+                  className="hero-devices w-full h-auto select-none"
+                />
+              </picture>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
