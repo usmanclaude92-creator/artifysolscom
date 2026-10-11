@@ -10,6 +10,35 @@ interface HeroProps {
 }
 
 
+const DevicesPicture: React.FC<{ className: string }> = ({ className }) => (
+  <picture>
+    <source srcSet="/hero-devices.webp" type="image/webp" />
+    <img
+      src="/hero-devices.jpg"
+      alt="The Artify platform running on a laptop, a tablet and a phone"
+      width={1483}
+      height={670}
+      fetchPriority="high"
+      draggable={false}
+      className={className}
+    />
+  </picture>
+);
+
+const PlatformsPicture: React.FC<{ className: string }> = ({ className }) => (
+  <picture>
+    <source srcSet="/hero-platforms.webp" type="image/webp" />
+    <img
+      src="/hero-platforms.png"
+      alt="Works on macOS, Windows, Android and iOS"
+      width={484}
+      height={59}
+      draggable={false}
+      className={className}
+    />
+  </picture>
+);
+
 export const Hero: React.FC<HeroProps> = ({
   onOpenSolutionBuilder,
   onOpenConsultant,
@@ -56,6 +85,12 @@ export const Hero: React.FC<HeroProps> = ({
             <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl lg:max-w-none mb-3.5 sm:mb-6">
               Fully Customized and Adaptive Eco-System designed around your Business enhanced by Next-generation AI, Intelligent Automation and connected Technology.
             </p>
+
+            {/* Phones and tablets: the platform image right after the intro, full width */}
+            <div className="lg:hidden self-stretch -mx-3.5 sm:-mx-6 mb-5 sm:mb-8">
+              <DevicesPicture className="hero-devices-m w-full h-auto select-none" />
+              <PlatformsPicture className="hero-platforms-m -mt-1 mx-auto w-[270px] sm:w-[340px] max-w-[78%] h-auto select-none" />
+            </div>
 
             {/* Core Capability Callout */}
             <div className="relative w-fit max-w-full p-3 sm:p-5 rounded-xl sm:rounded-2xl surface-card-subtle border border-primary/25 shadow-lg mb-5 sm:mb-8 backdrop-blur-sm">
@@ -116,35 +151,14 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.div>
 
           {/* Right: platform shown across laptop, tablet and phone. A large layer on desktop (text stays on top), a normal block on mobile. */}
-          <div className="relative w-full lg:absolute lg:right-0 lg:top-[22%] lg:w-[57%] 2xl:w-[53%] lg:z-0 lg:pointer-events-none">
+          <div className="hidden lg:block lg:absolute lg:right-0 lg:top-[22%] lg:w-[57%] 2xl:w-[53%] lg:z-0 lg:pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              <picture>
-                <source srcSet="/hero-devices.webp" type="image/webp" />
-                <img
-                  src="/hero-devices.jpg"
-                  alt="The Artify platform running on a laptop, a tablet and a phone"
-                  width={1483}
-                  height={670}
-                  fetchPriority="high"
-                  draggable={false}
-                  className="hero-devices w-full h-auto select-none"
-                />
-              </picture>
-              <picture>
-                <source srcSet="/hero-platforms.webp" type="image/webp" />
-                <img
-                  src="/hero-platforms.png"
-                  alt="Works on macOS, Windows, Android and iOS"
-                  width={484}
-                  height={59}
-                  draggable={false}
-                  className="hero-platforms -mt-2 sm:-mt-4 ml-[18%] w-[300px] sm:w-[380px] max-w-[80%] h-auto select-none"
-                />
-              </picture>
+              <DevicesPicture className="hero-devices w-full h-auto select-none" />
+              <PlatformsPicture className="hero-platforms -mt-4 ml-[18%] w-[380px] max-w-[80%] h-auto select-none" />
             </motion.div>
           </div>
         </div>
