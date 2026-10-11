@@ -141,10 +141,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </picture>
         </a>
 
-        {/* Desktop Primary Navigation (Home | Our Core Belief | Ecosystem | Our Solutions | Industries | Updates | Insights) */}
+        {/* Desktop Primary Navigation (Home | Our Core Belief | Ecosystem | Our Solutions | Industries | Insights | Contact Us) */}
         <nav
           aria-label="Main Navigation"
-          className={`hidden xl:flex min-w-0 items-center gap-1.5 2xl:gap-2 border rounded-full px-3 2xl:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
+          className={`hidden min-[1300px]:flex min-w-0 items-center gap-1.5 2xl:gap-2 border rounded-full px-3 2xl:px-4 py-1.5 backdrop-blur-md shadow-inner transition-all duration-200 ${
             isLight
               ? 'bg-slate-100/90 border-slate-200/90 text-slate-800'
               : 'bg-[#0d0d14]/80 border-white/[0.08] text-zinc-300'
@@ -236,23 +236,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             Industries
           </a>
 
-          {/* 5. Updates */}
-          <a
-            href="/updates"
-            onClick={(e) => handleRouteClick(e, onNavigateToUpdates || onNavigateToBlog)}
-            id="nav-link-updates"
-            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
-              activeRoute === 'updates'
-                ? 'bg-violet-600 text-white shadow-sm'
-                : isLight
-                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
-                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
-            }`}
-          >
-            Updates
-          </a>
-
-          {/* 6. Insights */}
+          {/* 5. Insights */}
           <a
             href="/blog"
             onClick={(e) => handleRouteClick(e, onNavigateToBlog)}
@@ -267,6 +251,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <span>Insights</span>
             <span className="hidden xl:block w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
+          </a>
+
+          {/* 6. Contact Us */}
+          <a
+            href="/contact"
+            onClick={(e) => handleRouteClick(e, onNavigateToContact)}
+            id="nav-link-contact"
+            className={`text-xs xl:text-[13px] font-medium px-2.5 xl:px-3 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              activeRoute === 'contact'
+                ? 'bg-violet-600 text-white shadow-sm'
+                : isLight
+                ? 'text-slate-700 hover:text-slate-950 hover:bg-slate-200/70'
+                : 'text-zinc-300 hover:text-white hover:bg-white/[0.08]'
+            }`}
+          >
+            Contact Us
           </a>
         </nav>
 
@@ -432,11 +432,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           )}
 
-          {/* Menu button for tablet / small laptop widths (768px to 1279px), where the full menu bar does not fit */}
+          {/* Menu button for tablet / small laptop widths (768px to 1299px), where the full menu bar does not fit */}
           <button
             onClick={() => setSideMenuOpen(true)}
             id="tablet-hamburger-btn"
-            className={`xl:hidden p-2 rounded-lg border transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500/40 ${
+            className={`min-[1300px]:hidden p-2 rounded-lg border transition-all active:scale-95 focus:outline-none focus:ring-2 focus:ring-violet-500/40 ${
               isLight
                 ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800'
                 : 'bg-[#131318] hover:bg-[#1c1c24] border-white/[0.08] text-zinc-200 hover:text-white'
@@ -521,9 +521,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Hamburger-Style Side Navigation Drawer (< 1280px) */}
+      {/* Hamburger-Style Side Navigation Drawer (< 1300px) */}
       {sideMenuOpen && (
-        <div className="xl:hidden fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
+        <div className="min-[1300px]:hidden fixed inset-0 z-50 overflow-hidden animate-in fade-in duration-200">
           <div
             className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
             onClick={() => setSideMenuOpen(false)}
