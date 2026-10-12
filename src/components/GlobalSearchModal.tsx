@@ -20,7 +20,6 @@ import {
   Workflow,
   LayoutDashboard,
 } from 'lucide-react';
-import { ENTERPRISE_SOLUTIONS } from '../data/solutionsCatalogData';
 import { useIndustries } from '../lib/useIndustries';
 import { publicApi, mapPostToBlogPost, PublicProduct } from '../lib/publicApi';
 import { BlogPost } from '../types';
@@ -214,8 +213,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         id: `prod-${prod.slug}`,
         title: prod.name,
         subtitle: prod.shortDescription || prod.description || '',
-        category: 'product',
-        categoryLabel: prod.type === 'SERVICE' ? 'Enterprise Service' : 'AI Product & Agent',
+        category: prod.type === 'SOLUTION' ? 'solution' : 'product',
+        categoryLabel: prod.type === 'SERVICE' ? 'Enterprise Service' : prod.type === 'SOLUTION' ? 'Enterprise Solution' : 'AI Product & Agent',
         icon: Cpu,
         badge: prod.type,
         route: `/ai-solutions/${prod.slug}`,
@@ -227,24 +226,6 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           } else {
             onNavigateToRoute('product-detail', `/ai-solutions/${prod.slug}`);
           }
-        },
-      });
-    });
-
-    // 3. Enterprise Solutions Catalog
-    ENTERPRISE_SOLUTIONS.forEach((sol) => {
-      items.push({
-        id: `sol-${sol.id}`,
-        title: sol.title,
-        subtitle: sol.tagline,
-        category: 'solution',
-        categoryLabel: 'Enterprise Solution',
-        icon: Layers,
-        badge: sol.categoryLabel || 'ENTERPRISE',
-        route: '/solutions',
-        action: () => {
-          onClose();
-          onNavigateToRoute('solutions-catalog', '/solutions');
         },
       });
     });
