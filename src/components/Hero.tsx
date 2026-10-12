@@ -161,7 +161,10 @@ export const Hero: React.FC<HeroProps> = ({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
-              <DevicesPicture className="hero-devices w-full h-auto select-none" />
+              {/* the artwork has a 10% fade margin on its right: widen by that much so the artwork keeps its size */}
+              <div className="w-[110.1%] max-w-none">
+                <DevicesPicture className="hero-devices w-full h-auto select-none" />
+              </div>
               <PlatformsPicture className="hero-platforms -mt-4 mx-auto w-[380px] max-w-[80%] h-auto select-none" />
               <HeroMetrics className="mt-8 max-w-xl mx-auto" />
             </motion.div>
