@@ -16,7 +16,7 @@ const DevicesPicture: React.FC<{ className: string }> = ({ className }) => (
     <img
       src="/hero-devices.jpg"
       alt="The Artify platform running on a laptop, a tablet and a phone"
-      width={1483}
+      width={1633}
       height={670}
       fetchPriority="high"
       draggable={false}
