@@ -20,7 +20,7 @@ import {
   Layers,
   TrendingUp,
 } from 'lucide-react';
-import { INDUSTRIES_DATA } from '../data/solutionsData';
+import { useIndustries } from '../lib/useIndustries';
 import { Industry } from '../types';
 
 interface IndustryExplorerProps {
@@ -32,6 +32,7 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
   onOpenSolutionBuilder,
   onNavigateToContact,
 }) => {
+  const { industries, loading } = useIndustries();
   const [selectedIndustryId, setSelectedIndustryId] = useState<string>('finance');
 
   const getIndustryIcon = (iconName: string) => {
@@ -53,8 +54,7 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
     }
   };
 
-  const selectedIndustry =
-    INDUSTRIES_DATA.find((ind) => ind.id === selectedIndustryId) || INDUSTRIES_DATA[0];
+  const selectedIndustry = industries.find((ind) => ind.id === selectedIndustryId) || industries[0]!;
 
   const IconComponent = getIndustryIcon(selectedIndustry.icon);
 
@@ -80,8 +80,8 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
         </div>
 
         {/* Industry Chips / Carousel */}
-        <div className="flex flex-wrap gap-2.5 mb-12 pb-2">
-          {INDUSTRIES_DATA.map((ind) => {
+        <div className="flex flex-wrap gap-2.5 mb-12 pb-2" aria-busy={loading}>
+          {industries.map((ind) => {
             const IndIcon = getIndustryIcon(ind.icon);
             const isSelected = selectedIndustryId === ind.id;
 
@@ -128,11 +128,14 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
                   {selectedIndustry.tagline}
                 </p>
 
-                <p className="text-sm text-zinc-300 leading-relaxed mb-6">
-                  {selectedIndustry.description}
-                </p>
+                {selectedIndustry.description && (
+                  <p className="text-sm text-zinc-300 leading-relaxed mb-6">
+                    {selectedIndustry.description}
+                  </p>
+                )}
 
                 {/* Core Agents */}
+                {selectedIndustry.coreAgents.length > 0 && (
                 <div className="mb-6">
                   <span className="text-[11px] font-bold text-zinc-400 font-mono-code uppercase tracking-wider block mb-3">
                     DEPLOYED DOMAIN AGENTS
@@ -149,8 +152,10 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
                     ))}
                   </div>
                 </div>
+                )}
 
                 {/* Connected Systems */}
+                {selectedIndustry.connectedSystems.length > 0 && (
                 <div className="mb-6">
                   <span className="text-[11px] font-bold text-zinc-400 font-mono-code uppercase tracking-wider block mb-3">
                     CONNECTED ECOSYSTEM
@@ -166,9 +171,11 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
                     ))}
                   </div>
                 </div>
+                )}
               </div>
 
               {/* Metrics */}
+              {selectedIndustry.metrics.length > 0 && (
               <div className="grid grid-cols-3 gap-3 pt-6 border-t border-white/[0.08]">
                 {selectedIndustry.metrics.map((m, i) => (
                   <div key={i} className="p-2.5 rounded-lg bg-white/[0.02]">
@@ -177,10 +184,12 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
                   </div>
                 ))}
               </div>
+              )}
             </div>
 
             {/* Right Col: High-Impact Autonomous Workflows */}
             <div className="lg:col-span-7 flex flex-col justify-between">
+              {selectedIndustry.keyWorkflows.length > 0 ? (
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-bold text-zinc-300 font-mono-code uppercase tracking-wider">
@@ -213,6 +222,11 @@ export const IndustryExplorer: React.FC<IndustryExplorerProps> = ({
                   ))}
                 </div>
               </div>
+              ) : (
+              <div className="mb-8 text-sm text-zinc-300 leading-relaxed">
+                Tell us how your {selectedIndustry.name} operation runs today and we will design the AI workflows around it.
+              </div>
+              )}
 
               {/* Bottom CTA bar */}
               <div className="p-4 rounded-xl bg-violet-950/30 border border-violet-800/40 flex flex-col sm:flex-row items-center justify-between gap-4">

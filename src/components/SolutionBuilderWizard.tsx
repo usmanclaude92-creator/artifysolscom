@@ -14,7 +14,7 @@ import {
   Send,
   Zap,
 } from 'lucide-react';
-import { INDUSTRIES_DATA } from '../data/solutionsData';
+import { useIndustries } from '../lib/useIndustries';
 
 interface SolutionBuilderWizardProps {
   isOpen: boolean;
@@ -32,7 +32,11 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
   theme,
 }) => {
   const [step, setStep] = useState(1);
+  const { industries } = useIndustries();
   const [selectedIndustry, setSelectedIndustry] = useState(initialIndustryId || 'finance');
+  React.useEffect(() => {
+    if (industries.length > 0 && !industries.some((i) => i.id === selectedIndustry)) setSelectedIndustry(industries[0]!.id);
+  }, [industries, selectedIndustry]);
   const [selectedCapabilities, setSelectedCapabilities] = useState<string[]>([
     'autonomous-agents',
     'intelligent-automation',
@@ -158,7 +162,7 @@ export const SolutionBuilderWizard: React.FC<SolutionBuilderWizardProps> = ({
                   Target Industry
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {INDUSTRIES_DATA.map((ind) => (
+                  {industries.map((ind) => (
                     <button
                       key={ind.id}
                       type="button"

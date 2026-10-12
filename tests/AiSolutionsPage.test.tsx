@@ -1,12 +1,12 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { AiSolutionsPage } from '../src/components/solutions/AiSolutionsPage';
 import { publicApi } from '../src/lib/publicApi';
 
 vi.mock('../src/lib/publicApi', async () => {
   const actual = await vi.importActual<typeof import('../src/lib/publicApi')>('../src/lib/publicApi');
-  return { ...actual, publicApi: { ...actual.publicApi, listProducts: vi.fn() } };
+  return { ...actual, publicApi: { ...actual.publicApi, listProducts: vi.fn(), listProductCategories: vi.fn(), listIndustries: vi.fn() } };
 });
 
 const noop = () => {};
@@ -14,6 +14,8 @@ const noop = () => {};
 describe('AiSolutionsPage', () => {
   beforeEach(() => {
     vi.mocked(publicApi.listProducts).mockReset();
+    vi.mocked(publicApi.listProductCategories).mockReset().mockResolvedValue([]);
+    vi.mocked(publicApi.listIndustries).mockReset().mockResolvedValue([]);
   });
 
   it('renders real ACTIVE products from the catalog API, never a fabricated list', async () => {
@@ -84,5 +86,18 @@ describe('AiSolutionsPage', () => {
       expect(screen.getByText('Zero-Touch Close')).toBeInTheDocument();
       expect(screen.queryByText('Real Product Name')).not.toBeInTheDocument();
     });
+  });
+
+  it('offers the categories and industries from the Control Center and filters the catalog by them', async () => {
+    vi.mocked(publicApi.listProducts).mockResolvedValue({ products: [], total: 0 });
+    vi.mocked(publicApi.listProductCategories).mockResolvedValue([{ slug: 'security', name: 'Security & Sovereignty', description: null }]);
+    vi.mocked(publicApi.listIndustries).mockResolvedValue([{ slug: 'aviation', name: 'Aviation', description: null }]);
+
+    render(<AiSolutionsPage onSelectProduct={noop} onOpenConsultant={noop} onOpenSolutionBuilder={noop} onNavigateToContact={noop} />);
+
+    fireEvent.change(await screen.findByLabelText('Filter by category'), { target: { value: 'security' } });
+    await waitFor(() => expect(publicApi.listProducts).toHaveBeenLastCalledWith(expect.objectContaining({ categorySlug: 'security' })));
+    fireEvent.change(screen.getByLabelText('Filter by industry'), { target: { value: 'aviation' } });
+    await waitFor(() => expect(publicApi.listProducts).toHaveBeenLastCalledWith(expect.objectContaining({ categorySlug: 'security', industrySlug: 'aviation' })));
   });
 });
