@@ -2115,8 +2115,9 @@ main[data-home-layout='true'] section:not(#hero) > .relative.z-10 {
 
 /* Phones and tablets: full-width image, only a light fade at the edges so the devices stay fully visible */
 .hero-devices-m {
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 8%, #000 84%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 8%, #000 84%, transparent 100%);
+  /* no fade on the right edge: the phone on the right must stay fully visible */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 100%), linear-gradient(to bottom, transparent 0%, #000 8%, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 100%), linear-gradient(to bottom, transparent 0%, #000 8%, #000 84%, transparent 100%);
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
 }
