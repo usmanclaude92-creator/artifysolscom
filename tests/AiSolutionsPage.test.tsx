@@ -100,4 +100,20 @@ describe('AiSolutionsPage', () => {
     fireEvent.change(screen.getByLabelText('Filter by industry'), { target: { value: 'aviation' } });
     await waitFor(() => expect(publicApi.listProducts).toHaveBeenLastCalledWith(expect.objectContaining({ categorySlug: 'security', industrySlug: 'aviation' })));
   });
+
+  it('shows the feature image on a catalog card when the product has one, and none otherwise', async () => {
+    const base = { code: 'X', type: 'SOLUTION' as const, shortDescription: 'd', description: 'd', isFeatured: false, displayOrder: 0 };
+    vi.mocked(publicApi.listProducts).mockResolvedValue({
+      products: [
+        { ...base, slug: 'with-image', name: 'With Image', featuredMedia: { url: 'https://cdn.example/banner.png', altText: null, caption: null, width: 1200, height: 630 } },
+        { ...base, slug: 'no-image', name: 'No Image', featuredMedia: null },
+      ],
+      pagination: { page: 1, limit: 20, total: 2, totalPages: 1 },
+    } as never);
+    const { container } = render(<AiSolutionsPage onSelectProduct={noop} onOpenConsultant={noop} onOpenSolutionBuilder={noop} onNavigateToContact={noop} />);
+    await screen.findByText('With Image');
+    const imgs = container.querySelectorAll('img');
+    expect(imgs).toHaveLength(1);
+    expect(imgs[0]!.getAttribute('src')).toBe('https://cdn.example/banner.png');
+  });
 });

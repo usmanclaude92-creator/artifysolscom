@@ -213,6 +213,16 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
               }`}
             >
               <div>
+                {product.featuredMedia?.url && (
+                  <div className="-mx-6 -mt-6 mb-4 aspect-[1200/630] overflow-hidden rounded-t-2xl bg-slate-100/10">
+                    <img
+                      src={product.featuredMedia.url}
+                      alt={product.featuredMedia.altText ?? product.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[10px] font-mono-code uppercase px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">
                     {product.type === 'PRODUCT' ? 'Product' : product.type === 'SERVICE' ? 'Service' : 'Solution'}
