@@ -306,46 +306,6 @@ export const BlogPage: React.FC<BlogPageProps> = ({
       } selection:bg-violet-600 selection:text-white transition-colors duration-300`}
       id="artify-blog-page"
     >
-      {/* Blog Page Sub-Header Bar (Positions cleanly underneath global Navbar) */}
-      <header
-        className={`sticky top-[66px] sm:top-[72px] z-30 border-b backdrop-blur-xl transition-colors duration-200 ${
-          isLight
-            ? 'bg-white/90 border-slate-200 shadow-sm'
-            : 'bg-[#050505]/90 border-white/[0.08] shadow-2xl shadow-black/80'
-        }`}
-      >
-        <div className="w-full px-6 lg:px-[8%] py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <button
-              onClick={onBackToHome}
-              id="blog-back-to-home-btn"
-              className={`flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${
-                isLight
-                  ? 'bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-800'
-                  : 'bg-white/[0.05] hover:bg-white/[0.1] border-white/[0.08] text-zinc-300 hover:text-white'
-              }`}
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Home</span>
-            </button>
-
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
-                <BookOpen className="w-3.5 h-3.5" />
-              </div>
-              <span
-                className={`text-xs sm:text-sm font-bold font-display tracking-tight ${
-                  isLight ? 'text-slate-900' : 'text-white'
-                }`}
-              >
-                Intelligence Dispatch & Research
-              </span>
-            </div>
-          </div>
-
-        </div>
-      </header>
-
       {/* Main Blog Body Container */}
       <main className="w-full px-6 lg:px-[8%] py-10 space-y-12">
         {/* Hero Section Banner */}

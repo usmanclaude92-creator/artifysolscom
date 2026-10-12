@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Home,
   ChevronRight,
   ArrowLeft,
-  Copy,
-  Check,
   Layers,
   Sparkles,
   Bot,
@@ -63,7 +61,6 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
   className = '',
 }) => {
   const isLight = theme === 'light';
-  const [copied, setCopied] = useState(false);
 
   // If on home landing page and no custom crumbs, breadcrumbs are not displayed
   if (activeRoute === 'home' && !customCrumbs) {
@@ -305,15 +302,6 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
 
   const crumbs = getCrumbs();
 
-  const handleCopyPath = () => {
-    if (typeof window !== 'undefined') {
-      playHoverSound(0.04);
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   const handleBack = () => {
     playHoverSound(0.04);
     if (crumbs.length >= 2) {
@@ -430,36 +418,6 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
           </ol>
         </div>
 
-        {/* Right: Path Telemetry & Quick Link Sharing */}
-        <div className="hidden sm:flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleCopyPath}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-mono transition-all active:scale-95 cursor-pointer ${
-              copied
-                ? isLight
-                  ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                  : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-                : isLight
-                ? 'bg-slate-100/80 hover:bg-slate-200 border-slate-200 text-slate-600 hover:text-slate-900'
-                : 'bg-white/[0.03] hover:bg-white/[0.08] border-white/[0.08] text-zinc-400 hover:text-zinc-200'
-            }`}
-            title="Copy path to clipboard"
-            aria-label="Copy page link"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3 h-3 text-emerald-500" />
-                <span>Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3 h-3 text-zinc-400" />
-                <span className="hidden md:inline">Share Path</span>
-              </>
-            )}
-          </button>
-        </div>
       </div>
     </nav>
   );
