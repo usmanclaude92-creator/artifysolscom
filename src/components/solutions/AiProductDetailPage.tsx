@@ -3,6 +3,7 @@ import { ArrowLeft, Layers, CheckCircle2, Sparkles, ArrowRight } from 'lucide-re
 import { publicApi, PublicProduct, PublicProductModule } from '../../lib/publicApi';
 import { updatePageSeo } from '../../utils/seo';
 import { PublicForm } from '../forms/PublicForm';
+import { resolveProductPageStyle } from './productStyles';
 
 const TYPE_LABEL: Record<PublicProduct['type'], string> = { PRODUCT: 'Product', SERVICE: 'Service', SOLUTION: 'Solution' };
 
@@ -21,6 +22,7 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
   onBackToSolutions,
   onSelectProduct,
   onNavigateToContact,
+  onOpenConsultant,
   theme = 'dark',
 }) => {
   const isLight = theme === 'light';
@@ -102,6 +104,30 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
           <p className="text-xs">This product may be unpublished or no longer available.</p>
         </div>
       </div>
+    );
+  }
+
+  const StyledPage = resolveProductPageStyle(product.pageStyle);
+  if (StyledPage) {
+    return (
+      <StyledPage
+        product={product}
+        modules={modules}
+        onSelectProduct={onSelectProduct}
+        onNavigateToContact={onNavigateToContact}
+        onOpenConsultant={onOpenConsultant}
+        renderBack={(tone) => (
+          <button
+            onClick={onBackToSolutions}
+            className={`flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all mb-8 ${
+              tone === 'onDark' ? 'bg-white/10 hover:bg-white/20 border-white/25 text-white' : 'bg-surface-subtle hover:bg-surface-hover border-border text-foreground'
+            }`}
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Catalog</span>
+          </button>
+        )}
+      />
     );
   }
 

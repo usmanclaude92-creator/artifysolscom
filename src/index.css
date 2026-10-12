@@ -2126,3 +2126,13 @@ main[data-home-layout='true'] section:not(#hero) > .relative.z-10 {
 }
 .theme-dark .hero-devices-m,
 .theme-dark .hero-platforms-m { filter: invert(0.93) hue-rotate(180deg) saturate(1.15) brightness(0.95) contrast(1.05); }
+
+/* Product page styles: text on a dark brand surface stays light in BOTH themes
+   (the light theme otherwise remaps text-white to near-black). */
+.on-brand,
+.on-brand *:not(svg):not(path):not(.keep-color) {
+  color: #ffffff !important;
+}
+.on-brand .brand-muted {
+  color: #ede9fe !important;
+}
