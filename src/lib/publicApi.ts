@@ -146,6 +146,8 @@ export interface PublicProduct {
   displayOrder: number;
   category?: PublicProductCategory | null;
   featuredMedia?: PublicMedia | null;
+  /** Layout chosen in the Control Center (classic when unset). */
+  pageStyle?: string;
   benefits?: string[];
   features?: string[];
   businessProblem?: string | null;
