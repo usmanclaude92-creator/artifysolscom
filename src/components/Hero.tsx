@@ -66,18 +66,18 @@ export const Hero: React.FC<HeroProps> = ({
   return (
     <section
       id="hero"
-      className="relative min-h-[90vh] sm:min-h-[92vh] pt-20 sm:pt-28 lg:pt-32 pb-4 sm:pb-8 lg:pb-10 flex items-center justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
+      className="relative min-h-[90vh] sm:min-h-[92vh] pt-20 sm:pt-28 lg:pt-32 pb-4 sm:pb-8 lg:pb-10 flex items-center lg:items-start justify-center overflow-hidden bg-background bg-grid-pattern transition-colors duration-200"
     >
       {/* Glow aura */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-violet-700/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-sky-600/10 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="w-full px-3.5 sm:px-6 lg:pl-[4.5%] lg:pr-[10%] relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center lg:items-start">
           
           {/* Left Column: Brand Message & Hero Copy */}
           <motion.div
-            className="lg:col-span-6 flex flex-col items-start text-left relative z-10"
+            className="lg:col-span-12 lg:max-w-[45vw] flex flex-col items-start text-left relative z-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -89,11 +89,11 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Main Headline - beautifully scaled for mobile to prevent line-wrapping clutter */}
-            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.1] md:leading-[1.08] mb-3 sm:mb-5 font-display">
-              <span className="block sm:inline whitespace-nowrap sm:whitespace-normal">
+            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl lg:text-[clamp(1.5rem,3.05vw,3.75rem)] font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.1] md:leading-[1.08] mb-3 sm:mb-5 font-display">
+              <span className="block sm:inline whitespace-nowrap sm:whitespace-normal lg:whitespace-nowrap">
                 Your Business is Unique.
               </span>{' '}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500 pb-1 sm:pb-[6px] whitespace-nowrap sm:whitespace-normal">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-violet-500 via-indigo-500 to-sky-500 pb-1 sm:pb-[6px] whitespace-nowrap sm:whitespace-normal lg:whitespace-nowrap">
                 Your Software Should Be Too.
               </span>
             </h1>
