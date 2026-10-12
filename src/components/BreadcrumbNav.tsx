@@ -134,12 +134,6 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
             icon: Layers,
           },
           {
-            label: 'AI Solutions',
-            href: '/ai-solutions',
-            onClick: onNavigateToAiSolutions,
-            icon: Sparkles,
-          },
-          {
             label: productName,
             icon: Bot,
             isCurrent: true,
