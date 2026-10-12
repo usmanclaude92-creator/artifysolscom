@@ -39,6 +39,23 @@ const PlatformsPicture: React.FC<{ className: string }> = ({ className }) => (
   </picture>
 );
 
+const HeroMetrics: React.FC<{ className?: string }> = ({ className = '' }) => (
+  <div className={`grid grid-cols-3 gap-2 sm:gap-6 pt-6 sm:pt-10 border-t border-border w-full ${className}`}>
+    <div>
+      <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground font-display">100%</div>
+      <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Custom Engineered</div>
+    </div>
+    <div>
+      <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-primary font-display">24/7</div>
+      <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Autonomous Execution</div>
+    </div>
+    <div>
+      <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-sky-500 font-display">0-Legacy</div>
+      <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Zero-Lockin Architecture</div>
+    </div>
+  </div>
+);
+
 export const Hero: React.FC<HeroProps> = ({
   onOpenSolutionBuilder,
   onOpenConsultant,
@@ -55,7 +72,7 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-violet-700/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-10 right-1/4 w-[450px] h-[450px] bg-sky-600/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="w-full px-3.5 sm:px-6 lg:px-[10%] relative z-10">
+      <div className="w-full px-3.5 sm:px-6 lg:pl-[4.5%] lg:pr-[10%] relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center">
           
           {/* Left Column: Brand Message & Hero Copy */}
@@ -133,32 +150,20 @@ export const Hero: React.FC<HeroProps> = ({
               </button>
             </div>
 
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-6 pt-6 sm:pt-10 mt-6 sm:mt-10 border-t border-border w-full max-w-xl">
-              <div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground font-display">100%</div>
-                <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Custom Engineered</div>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-primary font-display">24/7</div>
-                <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Autonomous Execution</div>
-              </div>
-              <div>
-                <div className="text-xl sm:text-2xl md:text-3xl font-extrabold text-sky-500 font-display">0-Legacy</div>
-                <div className="text-[10px] sm:text-xs text-foreground-muted font-medium">Zero-Lockin Architecture</div>
-              </div>
-            </div>
+            {/* Quick Metrics Bar: under the left copy on phones/tablets; on desktop it sits under the devices, centred on the same axis */}
+            <div className="lg:hidden w-full max-w-xl mt-6 sm:mt-10"><HeroMetrics /></div>
           </motion.div>
 
           {/* Right: platform shown across laptop, tablet and phone. A large layer on desktop (text stays on top), a normal block on mobile. */}
-          <div className="hidden lg:block lg:absolute lg:right-0 lg:top-[22%] lg:w-[57%] 2xl:w-[53%] lg:z-0 lg:pointer-events-none">
+          <div className="hidden lg:block lg:absolute lg:right-[2%] lg:top-[49px] lg:w-[46%] lg:z-0 lg:pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
               <DevicesPicture className="hero-devices w-full h-auto select-none" />
-              <PlatformsPicture className="hero-platforms -mt-4 ml-[18%] w-[380px] max-w-[80%] h-auto select-none" />
+              <PlatformsPicture className="hero-platforms -mt-4 mx-auto w-[380px] max-w-[80%] h-auto select-none" />
+              <HeroMetrics className="mt-8 max-w-xl mx-auto" />
             </motion.div>
           </div>
         </div>
