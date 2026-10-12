@@ -270,8 +270,8 @@ export const StoryStyle: React.FC<ProductStyleProps> = (p) => {
       body: <div className="flex flex-wrap gap-2">{product.features.map((f, i) => <span key={i} className="px-3.5 py-2 rounded-full bg-primary/10 border border-primary/25 text-primary text-[13px] font-semibold">{f}</span>)}</div>,
     });
   return (
-    <PageShell className="lg:grid lg:grid-cols-[44%_56%]">
-      <div className={`${BRAND_GRADIENT} on-brand relative overflow-hidden pt-28 pb-10 px-5 sm:px-8 lg:pl-[12%] lg:pr-[7%] lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto`}>
+    <PageShell className="pt-[58px] md:pt-[68px] lg:grid lg:grid-cols-[44%_56%]">
+      <div className={`${BRAND_GRADIENT} on-brand relative overflow-hidden pt-10 pb-10 px-5 sm:px-8 lg:pl-[12%] lg:pr-[7%] lg:sticky lg:top-[131px] lg:h-[calc(100vh-131px)] lg:overflow-y-auto`}>
         <div className="pointer-events-none absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full bg-violet-400/30 blur-[90px]" />
         <div className="relative space-y-5">
           {p.renderBack('onDark')}
@@ -287,7 +287,7 @@ export const StoryStyle: React.FC<ProductStyleProps> = (p) => {
           </div>
         </div>
       </div>
-      <div className="px-5 sm:px-8 lg:px-[6%] py-12 lg:pt-28 lg:pb-16 min-w-0">
+      <div className="px-5 sm:px-8 lg:px-[6%] py-12 lg:pt-12 lg:pb-16 min-w-0">
         {steps.map((s, i) => (
           <section key={s.n} className={`grid grid-cols-[44px_1fr] sm:grid-cols-[54px_1fr] gap-4 sm:gap-5 py-9 ${i === 0 ? 'pt-0' : ''} border-b border-border`}>
             <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary font-mono-code font-extrabold text-sm grid place-items-center">{s.n}</div>
@@ -364,8 +364,8 @@ export const TabbedStyle: React.FC<ProductStyleProps> = (p) => {
   ];
   const [tab, setTab] = useState<TabKey>('overview');
   return (
-    <PageShell className="pb-24">
-      <section className={`${BRAND_GRADIENT} on-brand relative overflow-hidden pt-28 pb-28`}>
+    <PageShell className="pt-[58px] md:pt-[68px] pb-24">
+      <section className={`${BRAND_GRADIENT} on-brand relative overflow-hidden pt-10 pb-28`}>
         <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.12)_1px,transparent_1px)] [background-size:44px_44px] [mask-image:linear-gradient(180deg,#000,transparent)]" />
         <Gutter className="relative">
           {p.renderBack('onDark')}
@@ -492,11 +492,11 @@ export const WorkflowStyle: React.FC<ProductStyleProps> = (p) => {
 export const CinematicStyle: React.FC<ProductStyleProps> = (p) => {
   const { product } = p;
   return (
-    <PageShell>
-      <section className={`relative min-h-[620px] lg:min-h-[720px] flex items-end overflow-hidden ${product.featuredMedia ? '' : BRAND_GRADIENT}`} style={product.featuredMedia ? { backgroundColor: '#020617' } : undefined}>
+    <PageShell className="pt-[58px] md:pt-[68px]">
+      <section className={`relative min-h-[560px] lg:min-h-[640px] flex items-end overflow-hidden ${product.featuredMedia ? '' : BRAND_GRADIENT}`} style={product.featuredMedia ? { backgroundColor: '#020617' } : undefined}>
         {product.featuredMedia && <img src={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className="absolute inset-0 w-full h-full object-cover" />}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(2,6,23,0.6) 0%, rgba(2,6,23,0.4) 35%, rgba(2,6,23,0.95) 100%)' }} />
-        <Gutter className="relative w-full pt-28 pb-14">
+        <Gutter className="relative w-full pt-10 pb-14">
           {p.renderBack('onDark')}
           <div className="max-w-3xl space-y-5 on-brand">
             <ProductTags product={product} glass />

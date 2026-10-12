@@ -77,7 +77,7 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Left Column: Brand Message & Hero Copy */}
           <motion.div
-            className="lg:col-span-12 lg:max-w-[47vw] flex flex-col items-start text-left relative z-10"
+            className="lg:col-span-12 lg:max-w-[50vw] flex flex-col items-start text-left relative z-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -89,7 +89,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Main Headline - beautifully scaled for mobile to prevent line-wrapping clutter */}
-            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl lg:text-[clamp(1.6rem,3.35vw,4.1rem)] font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.15] md:leading-[1.15] lg:leading-[1.3] mb-3 sm:mb-5 font-display">
+            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl lg:text-[clamp(1.7rem,3.6vw,4.4rem)] font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.15] md:leading-[1.15] lg:leading-[1.4] mb-3 sm:mb-6 font-display">
               <span className="block sm:inline whitespace-nowrap sm:whitespace-normal lg:whitespace-nowrap">
                 Your Business is Unique.
               </span>{' '}
@@ -99,7 +99,7 @@ export const Hero: React.FC<HeroProps> = ({
             </h1>
 
             {/* Supporting Copy */}
-            <p className="text-xs sm:text-base lg:text-lg text-foreground-muted font-normal leading-relaxed max-w-2xl lg:max-w-none mb-3.5 sm:mb-6">
+            <p className="text-xs sm:text-base lg:text-xl text-foreground-muted font-normal leading-relaxed lg:leading-[1.85] max-w-2xl lg:max-w-none mb-3.5 sm:mb-7">
               Fully Customized and Adaptive Eco-System designed around your Business enhanced by Next-generation AI, Intelligent Automation and connected Technology.
             </p>
 
@@ -155,7 +155,7 @@ export const Hero: React.FC<HeroProps> = ({
           </motion.div>
 
           {/* Right: platform shown across laptop, tablet and phone. A large layer on desktop (text stays on top), a normal block on mobile. */}
-          <div className="hidden lg:block lg:absolute lg:right-[2%] lg:top-[49px] lg:w-[46%] lg:z-0 lg:pointer-events-none">
+          <div className="hidden lg:block lg:absolute lg:right-[1%] lg:top-[49px] lg:w-[44%] lg:z-0 lg:pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
