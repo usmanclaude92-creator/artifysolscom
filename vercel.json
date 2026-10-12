@@ -2,6 +2,9 @@
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "functions": {
+    "api/index.ts": { "includeFiles": "dist/app-shell.html" }
+  },
   "headers": [
     {
       "source": "/assets/(.*)",
