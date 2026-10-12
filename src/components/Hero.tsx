@@ -77,7 +77,7 @@ export const Hero: React.FC<HeroProps> = ({
           
           {/* Left Column: Brand Message & Hero Copy */}
           <motion.div
-            className="lg:col-span-12 lg:max-w-[45vw] flex flex-col items-start text-left relative z-10"
+            className="lg:col-span-12 lg:max-w-[47vw] flex flex-col items-start text-left relative z-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -89,7 +89,7 @@ export const Hero: React.FC<HeroProps> = ({
             </div>
 
             {/* Main Headline - beautifully scaled for mobile to prevent line-wrapping clutter */}
-            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl lg:text-[clamp(1.5rem,3.05vw,3.75rem)] font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.1] md:leading-[1.08] mb-3 sm:mb-5 font-display">
+            <h1 className="text-[clamp(1.15rem,5.1vw,1.65rem)] sm:text-4xl md:text-5xl lg:text-[clamp(1.6rem,3.35vw,4.1rem)] font-extrabold tracking-tight text-foreground leading-[1.2] sm:leading-[1.15] md:leading-[1.15] lg:leading-[1.3] mb-3 sm:mb-5 font-display">
               <span className="block sm:inline whitespace-nowrap sm:whitespace-normal lg:whitespace-nowrap">
                 Your Business is Unique.
               </span>{' '}
