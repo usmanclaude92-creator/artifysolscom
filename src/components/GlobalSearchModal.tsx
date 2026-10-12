@@ -21,7 +21,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { ENTERPRISE_SOLUTIONS } from '../data/solutionsCatalogData';
-import { INDUSTRIES_DATA } from '../data/solutionsData';
+import { useIndustries } from '../lib/useIndustries';
 import { publicApi, mapPostToBlogPost, PublicProduct } from '../lib/publicApi';
 import { BlogPost } from '../types';
 import { safeGetLocalStorage, safeSetLocalStorage } from '../utils/storage';
@@ -66,6 +66,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   theme,
 }) => {
   const isLight = theme === 'light';
+  const { industries } = useIndustries();
   const [query, setQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<SearchCategoryFilter>('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -249,7 +250,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     });
 
     // 4. Industry Verticals
-    INDUSTRIES_DATA.forEach((ind) => {
+    industries.forEach((ind) => {
       items.push({
         id: `ind-${ind.id}`,
         title: ind.name,
@@ -294,6 +295,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
     onOpenAuditSpec,
     onSelectProduct,
     products,
+    industries,
     blogPosts,
   ]);
 

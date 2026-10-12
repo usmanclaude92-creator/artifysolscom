@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Sparkles, Search, ArrowRight, Layers, CheckCircle2 } from 'lucide-react';
-import { publicApi, PublicProduct } from '../../lib/publicApi';
+import { publicApi, PublicProduct, PublicProductCategory, PublicIndustry } from '../../lib/publicApi';
 import { updatePageSeo, generateDynamicKeywords } from '../../utils/seo';
 
 interface AiSolutionsPageProps {
@@ -27,13 +27,25 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  // Categories and industries come from the Control Center, so new ones appear here without a site change.
+  const [categories, setCategories] = useState<PublicProductCategory[]>([]);
+  const [industries, setIndustries] = useState<PublicIndustry[]>([]);
+  const [categorySlug, setCategorySlug] = useState('');
+  const [industrySlug, setIndustrySlug] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    publicApi.listProductCategories().then((rows) => { if (!cancelled) setCategories(rows); }).catch(() => undefined);
+    publicApi.listIndustries().then((rows) => { if (!cancelled) setIndustries(rows); }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
     setLoadError(null);
     publicApi
-      .listProducts({ limit: 50 })
+      .listProducts({ limit: 50, ...(categorySlug ? { categorySlug } : {}), ...(industrySlug ? { industrySlug } : {}) })
       .then(({ products: rows }) => {
         if (!cancelled) setProducts(rows);
       })
@@ -46,7 +58,7 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [categorySlug, industrySlug]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -133,6 +145,37 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
         </div>
       </div>
 
+      {(categories.length > 0 || industries.length > 0) && (
+        <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          {categories.length > 0 && (
+            <select
+              aria-label="Filter by category"
+              value={categorySlug}
+              onChange={(e) => setCategorySlug(e.target.value)}
+              className={`rounded-xl px-3.5 py-2 text-xs border focus:outline-none focus:border-violet-500 ${isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-[#12121a] border-white/[0.1] text-white'}`}
+            >
+              <option value="">All categories</option>
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>{c.name}</option>
+              ))}
+            </select>
+          )}
+          {industries.length > 0 && (
+            <select
+              aria-label="Filter by industry"
+              value={industrySlug}
+              onChange={(e) => setIndustrySlug(e.target.value)}
+              className={`rounded-xl px-3.5 py-2 text-xs border focus:outline-none focus:border-violet-500 ${isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-[#12121a] border-white/[0.1] text-white'}`}
+            >
+              <option value="">All industries</option>
+              {industries.map((i) => (
+                <option key={i.slug} value={i.slug}>{i.name}</option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
+
       {isLoading && (
         <div className={`p-10 text-center rounded-2xl border text-xs ${isLight ? 'bg-white border-slate-200 text-slate-500' : 'bg-[#0e0e16] border-white/[0.08] text-zinc-400'}`}>
           Loading catalog…
@@ -149,10 +192,10 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
         <div className={`p-12 text-center rounded-2xl border ${isLight ? 'bg-white border-slate-200 text-slate-700' : 'bg-[#0e0e16] border-white/[0.08] text-zinc-400'}`}>
           <Layers className="w-8 h-8 text-violet-400 mx-auto mb-3 opacity-60" />
           <h3 className={`text-base font-bold mb-1 ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            {products.length === 0 ? 'No products published yet' : 'No matches for your filters'}
+            {products.length === 0 && !categorySlug && !industrySlug ? 'No products published yet' : 'No matches for your filters'}
           </h3>
           <p className="text-xs max-w-sm mx-auto">
-            {products.length === 0 ? 'Check back soon.' : 'Try a different search term or category.'}
+            {products.length === 0 && !categorySlug && !industrySlug ? 'Check back soon.' : 'Try a different search term, category or industry.'}
           </p>
         </div>
       )}

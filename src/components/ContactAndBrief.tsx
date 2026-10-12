@@ -15,7 +15,7 @@ import {
   ArrowRight,
   Layers,
 } from 'lucide-react';
-import { INDUSTRIES_DATA } from '../data/solutionsData';
+import { useIndustries } from '../lib/useIndustries';
 import { ProjectBriefSubmission } from '../types';
 import { publicApi } from '../lib/publicApi';
 import { ApiClientError } from '../lib/apiClient';
@@ -26,6 +26,7 @@ interface ContactAndBriefProps {
 }
 
 export const ContactAndBrief: React.FC<ContactAndBriefProps> = ({ prefilledBrief }) => {
+  const { industries } = useIndustries();
   const [formData, setFormData] = useState<ProjectBriefSubmission>({
     name: '',
     company: '',
@@ -36,6 +37,12 @@ export const ContactAndBrief: React.FC<ContactAndBriefProps> = ({ prefilledBrief
     currentTools: '',
     timeline: '1-2 Months',
   });
+  useEffect(() => {
+    if (industries.length > 0 && !industries.some((i) => i.name === formData.industry)) {
+      setFormData((prev) => (industries.some((i) => i.name === prev.industry) ? prev : { ...prev, industry: industries[0]!.name }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [industries]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
@@ -57,7 +64,7 @@ export const ContactAndBrief: React.FC<ContactAndBriefProps> = ({ prefilledBrief
         }));
       } else {
         const industryName =
-          INDUSTRIES_DATA.find((ind) => ind.id === prefilledBrief.industry)?.name ||
+          industries.find((ind) => ind.id === prefilledBrief.industry)?.name ||
           'Finance & Accounting';
 
         const desc = `Configured via Solution Wizard:
@@ -303,7 +310,7 @@ Connected Systems: ${(prefilledBrief.integrations || []).join(', ')}`;
                         id="contact-form-industry"
                         className="w-full surface-input rounded-xl px-4 py-2.5 text-xs focus:outline-none"
                       >
-                        {INDUSTRIES_DATA.map((ind) => (
+                        {industries.map((ind) => (
                           <option key={ind.id} value={ind.name}>
                             {ind.name}
                           </option>
