@@ -4,11 +4,34 @@ import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
 import { renderSeoForPath, injectMetaIntoHtml, stripHeroShell, addCatalogHints, CATALOG_PATHS } from "../src/utils/ssrMeta.js";
+import { buildCspReportOnly, summarizeCspReports, CSP_REPORT_PATH } from "../src/utils/csp.js";
 import { renderLegalHtml } from "../src/legal/renderLegalHtml.js";
 import { handleLandingPage, handleLandingPreview, handleLandingSubmit, type LandingContext, type LandingResponse } from "../src/landing/landingHandlers.js";
 
 const app = express();
+app.disable("x-powered-by");
+
+// CSP violation reports (the policy is Report-Only for now). Logged as one JSON line each; bodies are capped and trimmed.
+app.post(
+  CSP_REPORT_PATH,
+  express.json({ type: ["application/csp-report", "application/reports+json", "application/json"], limit: "10kb" }),
+  (req, res) => {
+    try {
+      for (const r of summarizeCspReports(req.body)) if (r.directive || r.blocked) console.warn(JSON.stringify({ cspReport: r }));
+    } catch {
+      /* a malformed report is not worth an error */
+    }
+    res.status(204).end();
+  },
+  // unparseable or oversize report: nothing useful to log, and no stack trace for a hostile client to fill the logs with
+  (_err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    res.status(400).end();
+  }
+);
+
 app.use(express.json());
+
+
 
 function getBaseUrl(req: express.Request): string {
   const protocol = req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http");
@@ -205,6 +228,12 @@ async function fetchShell(baseUrl: string): Promise<string> {
   throw last;
 }
 
+let cspCache: { template: string; csp: string } | null = null;
+function cspFor(template: string): string {
+  if (!cspCache || cspCache.template !== template) cspCache = { template, csp: buildCspReportOnly(template) };
+  return cspCache.csp;
+}
+
 async function getIndexHtmlTemplate(baseUrl: string): Promise<string> {
   if (cachedIndexHtml) return cachedIndexHtml;
   const disk = await readShellFromDisk();
@@ -291,6 +320,7 @@ app.get("*", async (req, res, next) => {
     const finalHtml = CATALOG_PATHS.includes(req.path) ? addCatalogHints(withMeta, process.env.PLATFORM_API_BASE_URL) : withMeta;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Content-Security-Policy-Report-Only", cspFor(template));
     res.setHeader("Cache-Control", "public, max-age=0, s-maxage=600, stale-while-revalidate=86400");
     res.status(result.status).send(finalHtml);
   } catch (err) {
