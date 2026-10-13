@@ -59,6 +59,17 @@
       }
     </script>
 
+    <!-- Hero image: discoverable from the HTML so it downloads in parallel with the app code -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      fetchpriority="high"
+      href="/hero-devices.webp"
+      imagesrcset="/hero-devices-800.webp 800w, /hero-devices.webp 1633w"
+      imagesizes="(max-width: 1023px) 100vw, 44vw"
+    />
+
     <!-- Preconnect to Google Font Servers -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

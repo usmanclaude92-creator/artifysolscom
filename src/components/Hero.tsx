@@ -12,7 +12,11 @@ interface HeroProps {
 
 const DevicesPicture: React.FC<{ className: string }> = ({ className }) => (
   <picture>
-    <source srcSet="/hero-devices.webp" type="image/webp" />
+    <source
+      srcSet="/hero-devices-800.webp 800w, /hero-devices.webp 1633w"
+      sizes="(max-width: 1023px) 100vw, 44vw"
+      type="image/webp"
+    />
     <img
       src="/hero-devices.jpg"
       alt="The Artify platform running on a laptop, a tablet and a phone"
