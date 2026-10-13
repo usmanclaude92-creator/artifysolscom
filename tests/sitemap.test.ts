@@ -70,3 +70,37 @@ describe('getSitemapUrlList pagination', () => {
     expect(entries.some((e) => e.type === 'core')).toBe(true);
   });
 });
+
+describe('getSitemapUrlList contents', () => {
+  const stubApi = (categories: unknown[] = [{ slug: 'dummy-ai-strategy', name: 'AI Strategy (Test)' }]) => {
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('/public/categories')) return { ok: true, json: async () => ({ success: true, data: { categories } }) };
+      const key = url.includes('/public/posts') ? 'posts' : url.includes('/public/products') ? 'products' : url.includes('/public/case-studies') ? 'caseStudies' : 'pages';
+      return { ok: true, json: async () => ({ success: true, data: { [key]: [] }, meta: { pagination: { page: 1, limit: 50, total: 0, totalPages: 1 } } }) };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    return fetchMock;
+  };
+
+  it('never lists query-string URLs, even when the API has blog categories', async () => {
+    stubApi();
+    const entries = await getSitemapUrlList('https://artifysols.com', 'https://api.example.com/api/v1');
+    expect(entries.filter((e) => e.loc.includes('?'))).toEqual([]);
+    expect(entries.some((e) => e.type === 'category')).toBe(false);
+  });
+
+  it('does not fetch blog categories at all', async () => {
+    const fetchMock = stubApi();
+    await getSitemapUrlList('https://artifysols.com', 'https://api.example.com/api/v1');
+    expect(fetchMock.mock.calls.some(([u]) => String(u).includes('/public/categories'))).toBe(false);
+  });
+
+  it('lists /industries and omits /solutions (its rendered canonical is /ai-solutions)', async () => {
+    stubApi();
+    const locs = (await getSitemapUrlList('https://artifysols.com', 'https://api.example.com/api/v1')).map((e) => e.loc);
+    expect(locs).toContain('https://artifysols.com/industries');
+    expect(locs).not.toContain('https://artifysols.com/solutions');
+    expect(locs).toContain('https://artifysols.com/ai-solutions');
+  });
+});
+
