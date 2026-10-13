@@ -395,6 +395,24 @@ export function stripHeroShell(html: string): string {
     .replace(/<!--hero-css:start-->[\s\S]*?<noscript>([\s\S]*?)<\/noscript><!--hero-css:end-->/, '$1');
 }
 
+/** Catalog routes load /public/products on mount; the hints let the browser connect and fetch it while the app code downloads. */
+export const CATALOG_PATHS = ['/solutions', '/ai-solutions', '/solutions-catalog'];
+
+export function addCatalogHints(html: string, apiBase: string | null | undefined): string {
+  if (!apiBase) return html;
+  let origin: string;
+  try {
+    origin = new URL(apiBase).origin;
+  } catch {
+    return html;
+  }
+  // credentials "include" in apiClient => use-credentials, so the preloaded response is the one fetch() reuses
+  const hints =
+    `<link rel="preconnect" href="${escapeHtmlAttr(origin)}" crossorigin="use-credentials" />` +
+    `<link rel="preload" as="fetch" crossorigin="use-credentials" href="${escapeHtmlAttr(`${apiBase.replace(/\/+$/, '')}/public/products?limit=50`)}" />`;
+  return html.includes('</head>') ? html.replace('</head>', () => `${hints}</head>`) : html;
+}
+
 function escapeHtmlAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }

@@ -102,7 +102,9 @@ async function singleApiRequest<T>(path: string, options: ApiRequestOptions = {}
   const baseUrl = resolveBaseUrl();
   const url = `${baseUrl}${path.startsWith("/") ? path : `/${path}`}`;
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  // Content-Type only when there is a body: a header-less GET is a CORS "simple" request, so the browser skips the
+  // OPTIONS preflight (a full round trip to the API's origin before every first read).
+  const headers: Record<string, string> = options.body !== undefined ? { "Content-Type": "application/json" } : {};
   const token = authTokenGetter?.();
   if (token) headers.Authorization = `Bearer ${token}`;
 
