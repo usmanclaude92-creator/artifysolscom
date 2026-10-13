@@ -5,6 +5,19 @@
   "functions": {
     "api/index.ts": { "includeFiles": "dist/app-shell.html" }
   },
+  "images": {
+    "sizes": [400, 640, 828, 1080, 1280, 1600],
+    "qualities": [75],
+    "formats": ["image/webp"],
+    "minimumCacheTTL": 2592000,
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "^cfkymotcnccgvkpmcevp\\.supabase\\.co$",
+        "pathname": "^/storage/v1/object/public/artify-media/.*$"
+      }
+    ]
+  },
   "headers": [
     {
       "source": "/assets/(.*)",

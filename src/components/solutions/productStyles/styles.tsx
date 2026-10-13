@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MediaImg } from '../../MediaImg';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import {
   BRAND_GRADIENT,
@@ -494,7 +495,7 @@ export const CinematicStyle: React.FC<ProductStyleProps> = (p) => {
   return (
     <PageShell className="pt-[58px] md:pt-[68px]">
       <section className={`relative min-h-[560px] lg:min-h-[640px] flex items-end overflow-hidden ${product.featuredMedia ? '' : BRAND_GRADIENT}`} style={product.featuredMedia ? { backgroundColor: '#020617' } : undefined}>
-        {product.featuredMedia && <img src={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className="absolute inset-0 w-full h-full object-cover" />}
+        {product.featuredMedia && <MediaImg url={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className="absolute inset-0 w-full h-full object-cover" sizes="100vw" priority />}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(2,6,23,0.6) 0%, rgba(2,6,23,0.4) 35%, rgba(2,6,23,0.95) 100%)' }} />
         <Gutter className="relative w-full pt-10 pb-14">
           {p.renderBack('onDark')}
