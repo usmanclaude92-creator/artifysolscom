@@ -89,6 +89,7 @@ describe('discoverability', () => {
     expect(urls.some((u) => u.includes('data-deletion-status'))).toBe(false);
   });
   it('are not treated as CMS pages by the SSR router', () => {
-    for (const p of ['/privacy', '/terms', '/data-deletion', '/data-deletion-status']) expect(resolveSsrRoute(p).kind).toBe('other');
+    for (const p of ['/privacy', '/terms', '/data-deletion']) expect(resolveSsrRoute(p).kind).toBe('other');
+    expect(resolveSsrRoute('/data-deletion-status').kind).toBe('static-page');
   });
 });

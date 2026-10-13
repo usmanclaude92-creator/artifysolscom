@@ -5,6 +5,7 @@ import { TechnologyStack } from '../TechnologyStack';
 import { AboutPartnerAccessSection } from '../AboutPartnerAccessSection';
 import { PartnerAccessModal } from '../PartnerAccessModal';
 import { updatePageSeo } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 
 interface AboutPageProps {
   onNavigateToContact: (brief?: any) => void;
@@ -21,11 +22,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({
   const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
 
   React.useEffect(() => {
-    updatePageSeo({
-      title: 'About Artify Solutions - We Believe Software Should Think',
-      description: 'Learn about Artify Solutions, our AI engineering philosophy, enterprise security standards, multi-agent frameworks, partner access policies, and leadership vision.',
-      canonicalUrl: 'https://artifysols.com/about',
-    });
+    updatePageSeo(staticPageSeo('/about'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 

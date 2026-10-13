@@ -2,6 +2,7 @@ import React from 'react';
 import { Sparkles, Mail, Phone, MapPin, Bot, Cpu, ShieldCheck } from 'lucide-react';
 import { ContactAndBrief } from '../ContactAndBrief';
 import { updatePageSeo } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 
 interface ContactPageProps {
   prefilledBrief?: any;
@@ -17,11 +18,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({
   const isLight = theme === 'light';
 
   React.useEffect(() => {
-    updatePageSeo({
-      title: 'Contact Artify Solutions - Architecture Assessment & Brief Dispatcher',
-      description: 'Submit your AI operational brief or schedule an enterprise architecture review with the Artify Solutions engineering team.',
-      canonicalUrl: 'https://artifysols.com/contact',
-    });
+    updatePageSeo(staticPageSeo('/contact'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 

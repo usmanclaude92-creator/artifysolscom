@@ -14,6 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { updatePageSeo } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 
 interface ServicesPageProps {
   onOpenConsultant: () => void;
@@ -33,11 +34,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({
   const isLight = theme === 'light';
 
   React.useEffect(() => {
-    updatePageSeo({
-      title: 'Enterprise AI Services & Architecture Engineering',
-      description: 'Custom AI strategy, autonomous agent development, enterprise RAG vector systems, and mission-critical legacy system integration services.',
-      canonicalUrl: 'https://artifysols.com/services',
-    });
+    updatePageSeo(staticPageSeo('/services'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
