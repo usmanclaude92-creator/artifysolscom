@@ -20,7 +20,7 @@
 import { generateBlogPostSeo, type SeoConfig } from './seo.js';
 import { resolveApiBaseUrl } from './sitemap.js';
 import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi.js';
-import { hasStaticRouteMeta, staticPageSeo, formatPageTitle } from './routeMeta.js';
+import { hasStaticRouteMeta, staticPageSeo, formatPageTitle, composeTitle } from './routeMeta.js';
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
 const SITE_NAME = 'Artify Solutions';
@@ -110,7 +110,7 @@ export function buildCmsPageMeta(page: PublicPage, baseUrl: string, canonicalPat
   const canonicalUrl = `${baseUrl}${canonicalPath}`;
   const description = seo.metaDescription || page.excerpt || plainTextExcerpt(page.body || '') || page.title;
   return {
-    title: seo.metaTitle || `${page.title} | ${SITE_NAME}`,
+    title: seo.metaTitle || composeTitle(page.title),
     description,
     canonicalUrl,
     ogType: 'website',
@@ -137,7 +137,7 @@ export function buildPostMeta(post: PublicPost, baseUrl: string): SeoConfig {
 export function buildProductMeta(product: PublicProduct, baseUrl: string): SeoConfig {
   const canonicalUrl = `${baseUrl}/ai-solutions/${product.slug}`;
   return {
-    title: `${product.name} | ${SITE_NAME}`,
+    title: composeTitle(product.name),
     description: product.shortDescription,
     canonicalUrl,
     ogType: 'website',
@@ -160,7 +160,7 @@ export function buildCaseStudyMeta(caseStudy: PublicCaseStudy, baseUrl: string):
   const canonicalUrl = `${baseUrl}/case-studies/${caseStudy.slug}`;
   const description = seo.metaDescription || caseStudy.excerpt || plainTextExcerpt(caseStudy.body || '') || caseStudy.title;
   return {
-    title: seo.metaTitle || `${caseStudy.title} | ${SITE_NAME} Case Studies`,
+    title: seo.metaTitle || composeTitle(caseStudy.title, [`${SITE_NAME} Case Studies`, SITE_NAME]),
     description,
     canonicalUrl,
     ogType: 'article',

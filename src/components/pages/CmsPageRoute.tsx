@@ -13,6 +13,7 @@
  * comments/reactions/ratings/table-of-contents) — a Page is static content
  * (an About variant, a policy doc, a one-off landing page), not an article.
  */
+import { composeTitle } from '../../utils/routeMeta';
 import { MediaImg } from '../MediaImg';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
@@ -127,7 +128,7 @@ export const CmsPageRoute: React.FC<CmsPageRouteProps> = ({ slug, theme, onNavig
     const seo = (page.seo || {}) as { metaTitle?: string; metaDescription?: string; ogImage?: string };
     const canonicalUrl = typeof window !== 'undefined' ? `${window.location.origin}/${page.slug}` : `https://artifysols.com/${page.slug}`;
     const cleanup = updatePageSeo({
-      title: seo.metaTitle || `${page.title} | Artify Solutions`,
+      title: seo.metaTitle || composeTitle(page.title),
       description: seo.metaDescription || plainTextExcerpt(page.body || '') || page.title,
       canonicalUrl,
       ogType: 'website',

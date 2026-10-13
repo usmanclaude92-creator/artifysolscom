@@ -10,6 +10,7 @@
  * existing illustrative /case-studies index (CaseStudiesPage.tsx), which
  * keeps rendering exactly as before.
  */
+import { composeTitle } from '../../utils/routeMeta';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { FileQuestion, ArrowLeft, Quote, CheckCircle2 } from 'lucide-react';
@@ -114,7 +115,7 @@ export const CaseStudyDetailPage: React.FC<CaseStudyDetailPageProps> = ({ slug, 
     const canonicalUrl = typeof window !== 'undefined' ? `${window.location.origin}/case-studies/${caseStudy.slug}` : `https://artifysols.com/case-studies/${caseStudy.slug}`;
     const description = seo.metaDescription || caseStudy.excerpt || plainTextExcerpt(caseStudy.body || '') || caseStudy.title;
     const cleanup = updatePageSeo({
-      title: seo.metaTitle || `${caseStudy.title} | Artify Solutions Case Studies`,
+      title: seo.metaTitle || composeTitle(caseStudy.title, ['Artify Solutions Case Studies', 'Artify Solutions']),
       description,
       canonicalUrl,
       ogType: 'article',
