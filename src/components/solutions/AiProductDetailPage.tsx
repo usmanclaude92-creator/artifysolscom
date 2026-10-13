@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { MediaImg } from '../MediaImg';
 import { ArrowLeft, Layers, CheckCircle2, Sparkles, ArrowRight } from 'lucide-react';
 import { publicApi, PublicProduct, PublicProductModule } from '../../lib/publicApi';
 import { updatePageSeo } from '../../utils/seo';
@@ -164,7 +165,7 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
 
       {product.featuredMedia && (
         <div className="max-w-5xl mb-10 rounded-2xl overflow-hidden aspect-[21/9]">
-          <img src={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className="w-full h-full object-cover" />
+          <MediaImg url={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className="w-full h-full object-cover" sizes="(max-width: 1024px) 100vw, 1024px" priority />
         </div>
       )}
 

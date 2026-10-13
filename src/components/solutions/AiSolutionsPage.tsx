@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Sparkles, Search, ArrowRight, Layers, CheckCircle2 } from 'lucide-react';
 import { publicApi, PublicProduct, PublicProductCategory, PublicIndustry } from '../../lib/publicApi';
 import { updatePageSeo, generateDynamicKeywords } from '../../utils/seo';
+import { MediaImg } from '../MediaImg';
 import { staticPageSeo } from '../../utils/routeMeta';
 
 interface AiSolutionsPageProps {
@@ -214,10 +215,11 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
               <div>
                 {product.featuredMedia?.url && (
                   <div className="-mx-6 -mt-6 mb-4 aspect-[1200/630] overflow-hidden rounded-t-2xl bg-slate-100/10">
-                    <img
-                      src={product.featuredMedia.url}
+                    <MediaImg
+                      url={product.featuredMedia.url}
                       alt={product.featuredMedia.altText ?? product.name}
-                      loading="lazy"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                      lazy
                       className="w-full h-full object-cover"
                     />
                   </div>

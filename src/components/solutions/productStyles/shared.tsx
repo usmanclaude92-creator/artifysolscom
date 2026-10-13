@@ -1,4 +1,5 @@
 import React from 'react';
+import { MediaImg } from '../../MediaImg';
 import { ArrowRight, CheckCircle2, Layers, Sparkles } from 'lucide-react';
 import type { PublicProduct, PublicProductModule } from '../../../lib/publicApi';
 import { PublicForm } from '../../forms/PublicForm';
@@ -98,7 +99,7 @@ export const HeroActions: React.FC<{ props: ProductStyleProps; onDark?: boolean 
 export const Media: React.FC<{ product: PublicProduct; className?: string; imgClassName?: string }> = ({ product, className = '', imgClassName = '' }) =>
   product.featuredMedia ? (
     <div className={className}>
-      <img src={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className={`w-full h-auto block ${imgClassName}`} />
+      <MediaImg url={product.featuredMedia.url} alt={product.featuredMedia.altText ?? product.name} className={`w-full h-auto block ${imgClassName}`} sizes="(max-width: 1024px) 100vw, 1024px" />
     </div>
   ) : null;
 

@@ -13,6 +13,7 @@
  * comments/reactions/ratings/table-of-contents) — a Page is static content
  * (an About variant, a policy doc, a one-off landing page), not an article.
  */
+import { MediaImg } from '../MediaImg';
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { FileQuestion, ArrowLeft } from 'lucide-react';
@@ -179,10 +180,12 @@ export const CmsPageRoute: React.FC<CmsPageRouteProps> = ({ slug, theme, onNavig
         >
           {page.featuredMedia && (
             <div className="w-full aspect-[21/9] rounded-2xl overflow-hidden mb-8">
-              <img
-                src={page.featuredMedia.url}
+              <MediaImg
+                url={page.featuredMedia.url}
                 alt={page.featuredMedia.altText ?? page.title}
+                sizes="(max-width: 1024px) 100vw, 1024px"
                 className="w-full h-full object-cover"
+                priority
               />
             </div>
           )}
