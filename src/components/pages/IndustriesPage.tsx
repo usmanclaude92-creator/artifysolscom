@@ -2,6 +2,7 @@ import React from 'react';
 import { Sparkles, ArrowRight, Building2, Cpu, CheckCircle2, Bot } from 'lucide-react';
 import { IndustryExplorer } from '../IndustryExplorer';
 import { updatePageSeo } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 
 interface IndustriesPageProps {
   onOpenSolutionBuilder: (industryId?: string) => void;
@@ -17,11 +18,7 @@ export const IndustriesPage: React.FC<IndustriesPageProps> = ({
   const isLight = theme === 'light';
 
   React.useEffect(() => {
-    updatePageSeo({
-      title: 'Industry AI Solutions - Verticals & Domain Architectures',
-      description: 'Explore Artify Solutions domain-specific AI workflows across Finance, Healthcare, Construction, Legal, Logistics, Real Estate, Manufacturing, and Retail.',
-      canonicalUrl: 'https://artifysols.com/industries',
-    });
+    updatePageSeo(staticPageSeo('/industries'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 

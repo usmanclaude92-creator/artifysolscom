@@ -20,6 +20,7 @@
 import { generateBlogPostSeo, type SeoConfig } from './seo.js';
 import { resolveApiBaseUrl } from './sitemap.js';
 import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi.js';
+import { hasStaticRouteMeta, staticPageSeo, formatPageTitle } from './routeMeta.js';
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
 const SITE_NAME = 'Artify Solutions';
@@ -227,6 +228,7 @@ export function buildAccountActionMeta(baseUrl: string, path: string): SeoConfig
 export type SsrRoute =
   | { kind: 'account-action'; path: string }
   | { kind: 'home' }
+  | { kind: 'static-page'; path: string }
   | { kind: 'ecosystem' }
   | { kind: 'blog-archive' }
   | { kind: 'blog-post'; slug: string }
@@ -244,6 +246,7 @@ export type SsrRoute =
 export function resolveSsrRoute(pathname: string): SsrRoute {
   const path = (pathname || '/').replace(/\/+$/, '') || '/';
   if (path === '/') return { kind: 'home' };
+  if (hasStaticRouteMeta(path)) return { kind: 'static-page', path };
   if (path === '/ecosystem') return { kind: 'ecosystem' };
   if (path === '/verify-email' || path === '/reset-password') return { kind: 'account-action', path };
   if (path === '/blog') return { kind: 'blog-archive' };
@@ -328,6 +331,11 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
 
   if (route.kind === 'account-action') {
     return { meta: buildAccountActionMeta(baseUrl, route.path), status: 200, redirect: null };
+  }
+
+  if (route.kind === 'static-page') {
+    const seo = staticPageSeo(route.path, baseUrl);
+    return { meta: { ...seo, title: formatPageTitle(seo.title) }, status: 200, redirect: null };
   }
 
   if (route.kind === 'ecosystem') {

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Sparkles, Search, ArrowRight, Layers, CheckCircle2 } from 'lucide-react';
 import { publicApi, PublicProduct, PublicProductCategory, PublicIndustry } from '../../lib/publicApi';
 import { updatePageSeo, generateDynamicKeywords } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 
 interface AiSolutionsPageProps {
   onSelectProduct: (product: { slug: string }) => void;
@@ -76,15 +77,13 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
 
   useEffect(() => {
     const cleanup = updatePageSeo({
-      title: 'AI Solutions & Product Catalog | Artify Solutions',
-      description: 'Explore the Artify Solutions product and service catalog.',
+      ...staticPageSeo('/ai-solutions'),
       keywords: generateDynamicKeywords({
         type: 'product',
         title: 'Artify Solutions Product Catalog',
         customKeywords: ['Artify Solutions Products', 'Artify Solutions Services'],
         tags: [],
       }),
-      canonicalUrl: typeof window !== 'undefined' ? `${window.location.origin}/ai-solutions` : 'https://artifysols.com/ai-solutions',
       ogType: 'website',
       twitterCard: 'summary_large_image',
     });

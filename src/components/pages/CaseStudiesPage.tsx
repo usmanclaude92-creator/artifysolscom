@@ -3,6 +3,7 @@ import { Sparkles, ArrowRight, BookOpen, Layers, CheckCircle2, TrendingUp, Award
 import { CaseStudiesSection } from '../CaseStudiesSection';
 import { ListSkeleton } from '../ListSkeleton';
 import { updatePageSeo } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 import { publicApi, PublicCaseStudy } from '../../lib/publicApi';
 
 interface CaseStudiesPageProps {
@@ -110,11 +111,7 @@ export const CaseStudiesPage: React.FC<CaseStudiesPageProps> = ({
   const isLight = theme === 'light';
 
   React.useEffect(() => {
-    updatePageSeo({
-      title: 'Enterprise AI Case Studies & Transformation Blueprints',
-      description: 'Discover how global enterprises deploy Artify autonomous agent swarms and neural RAG systems to eliminate manual bottlenecks.',
-      canonicalUrl: 'https://artifysols.com/case-studies',
-    });
+    updatePageSeo(staticPageSeo('/case-studies'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 

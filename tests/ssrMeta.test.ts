@@ -45,11 +45,12 @@ describe('resolveSsrRoute', () => {
     expect(resolveSsrRoute('/about-us')).toEqual({ kind: 'cms-page', slug: 'about-us' });
   });
 
-  it('treats reserved marketing routes and multi-segment paths as "other" (no SSR override)', () => {
-    expect(resolveSsrRoute('/about')).toEqual({ kind: 'other' });
-    expect(resolveSsrRoute('/contact')).toEqual({ kind: 'other' });
-    expect(resolveSsrRoute('/solutions')).toEqual({ kind: 'other' });
-    expect(resolveSsrRoute('/ai-solutions')).toEqual({ kind: 'other' });
+  it('resolves the static marketing routes to their own head and other reserved/multi-segment paths to "other"', () => {
+    expect(resolveSsrRoute('/about')).toEqual({ kind: 'static-page', path: '/about' });
+    expect(resolveSsrRoute('/contact')).toEqual({ kind: 'static-page', path: '/contact' });
+    expect(resolveSsrRoute('/solutions')).toEqual({ kind: 'static-page', path: '/solutions' });
+    expect(resolveSsrRoute('/ai-solutions')).toEqual({ kind: 'static-page', path: '/ai-solutions' });
+    expect(resolveSsrRoute('/privacy')).toEqual({ kind: 'other' });
     expect(resolveSsrRoute('/some/deep/path')).toEqual({ kind: 'other' });
   });
 });
@@ -341,7 +342,7 @@ describe('renderSeoForPath (orchestrator, mocked network)', () => {
   });
 
   it('leaves metadata untouched for a route this module does not override', async () => {
-    const result = await renderSeoForPath('/about', BASE_URL, 'https://api.example.com/api/v1');
+    const result = await renderSeoForPath('/privacy', BASE_URL, 'https://api.example.com/api/v1');
     expect(result.meta).toBeNull();
     expect(result.status).toBe(200);
     expect(global.fetch).not.toHaveBeenCalled();

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Lock, FileText, Trash2, Search, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { updatePageSeo } from '../../utils/seo';
+import { staticPageSeo } from '../../utils/routeMeta';
 import { apiClient } from '../../lib/apiClient.js';
 import { LEGAL_DOCS, OWNER_MARKER, type LegalType } from './legalContent';
 
@@ -79,11 +80,10 @@ export const LegalPage: React.FC<LegalPageProps> = ({ type, theme = 'dark' }) =>
   const title = isStatus ? 'Data Deletion Request Status' : doc!.title;
 
   React.useEffect(() => {
-    updatePageSeo({
+    updatePageSeo(isStatus ? staticPageSeo('/data-deletion-status') : {
       title: `${title} | Artify Solutions`,
-      description: isStatus ? 'Check the status of a data deletion request using your confirmation code.' : doc!.seoDescription,
-      canonicalUrl: `https://artifysols.com${isStatus ? '/data-deletion-status' : doc!.path}`,
-      ...(isStatus ? { robots: 'noindex, nofollow' } : {}),
+      description: doc!.seoDescription,
+      canonicalUrl: `https://artifysols.com${doc!.path}`,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [type]);

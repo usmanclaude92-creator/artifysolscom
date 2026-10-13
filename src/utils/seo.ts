@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import type { BlogPost, AiProductItem } from '../types';
+import { formatPageTitle } from './routeMeta.js';
 
 export interface SeoProductDetails {
   brand?: string;
@@ -467,9 +468,7 @@ export function updatePageSeo(config: SeoConfig): () => void {
   const originalTitle = document.title;
 
   // 1. Format & Set Document Title
-  const formattedTitle = config.title.includes(DEFAULT_SITE_NAME)
-    ? config.title
-    : `${config.title} | ${DEFAULT_SITE_NAME} - Enterprise AI Products & Autonomous Systems`;
+  const formattedTitle = formatPageTitle(config.title);
   document.title = formattedTitle;
 
   // 2. Canonical URL & Base URL
