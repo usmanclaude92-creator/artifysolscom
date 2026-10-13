@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
-import { renderSeoForPath, injectMetaIntoHtml } from "../src/utils/ssrMeta.js";
+import { renderSeoForPath, injectMetaIntoHtml, stripHeroShell } from "../src/utils/ssrMeta.js";
 import { renderLegalHtml } from "../src/legal/renderLegalHtml.js";
 import { handleLandingPage, handleLandingPreview, handleLandingSubmit, type LandingContext, type LandingResponse } from "../src/landing/landingHandlers.js";
 
@@ -285,7 +285,8 @@ app.get("*", async (req, res, next) => {
   }
 
   try {
-    const html = await getIndexHtmlTemplate(baseUrl);
+    const template = await getIndexHtmlTemplate(baseUrl);
+    const html = result.heroShell ? template : stripHeroShell(template);
     const finalHtml = result.meta ? injectMetaIntoHtml(html, result.meta, { statusIsError: result.status >= 400 }) : html;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");

@@ -59,6 +59,7 @@
       }
     </script>
 
+    <!--hero-critical-css-->
     <!-- Hero image: discoverable from the HTML so it downloads in parallel with the app code -->
     <link
       rel="preload"
@@ -96,7 +97,21 @@
     </style>
   </head>
   <body class="bg-[#F8FAFC] text-slate-900 selection:bg-[#7C3AED]/30 selection:text-[#EDE9FE] antialiased overflow-x-hidden">
-    <div id="root"></div>
+    <div id="root"><!--hero-shell:start--><!--hero-shell:end--></div>
+    <script>
+      /* Pick the saved theme before first paint so the prerendered hero never flashes the wrong one. */
+      try {
+        if (localStorage.getItem('artify_theme') === 'dark') {
+          var de = document.documentElement, bd = document.body;
+          de.classList.replace('theme-light', 'theme-dark');
+          var sh = document.querySelector('[data-hero-shell]');
+          if (sh) {
+            sh.classList.remove('theme-light', 'bg-[#F8FAFC]', 'text-slate-900');
+            sh.classList.add('theme-dark', 'bg-[#050505]', 'text-[#F5F5F5]');
+          }
+        }
+      } catch (e) {}
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

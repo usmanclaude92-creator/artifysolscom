@@ -12,7 +12,6 @@ import {
   Shield,
   Zap,
 } from 'lucide-react';
-import { getAiProductBySlug } from '../data/aiProductsData';
 import { playHoverSound } from '../utils/soundEffects';
 
 export interface BreadcrumbCrumb {
@@ -61,6 +60,19 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
   className = '',
 }) => {
   const isLight = theme === 'light';
+
+  // The built-in product list is large and only needed to name a product breadcrumb, so it loads on demand.
+  const [productName, setProductName] = React.useState<{ slug: string; name?: string } | null>(null);
+  React.useEffect(() => {
+    if (activeRoute !== 'product-detail' || !productSlug) return;
+    let cancelled = false;
+    void import('../data/aiProductsData').then((m) => {
+      if (!cancelled) setProductName({ slug: productSlug, name: m.getAiProductBySlug(productSlug)?.name });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeRoute, productSlug]);
 
   // If on home landing page and no custom crumbs, breadcrumbs are not displayed
   if (activeRoute === 'home' && !customCrumbs) {
@@ -112,9 +124,9 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
         ];
 
       case 'product-detail': {
-        const product = productSlug ? getAiProductBySlug(productSlug) : undefined;
-        const productName =
-          product?.name ||
+        const knownName = productName && productName.slug === productSlug ? productName.name : undefined;
+        const resolvedName =
+          knownName ||
           (productSlug
             ? productSlug
                 .split('-')
@@ -131,7 +143,7 @@ export const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({
             icon: Layers,
           },
           {
-            label: productName,
+            label: resolvedName,
             icon: Bot,
             isCurrent: true,
           },

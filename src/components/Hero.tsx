@@ -1,6 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
+import { HERO_INSTANT } from '../lib/heroShell';
 
 interface HeroProps {
   onOpenSolutionBuilder: () => void;
@@ -80,9 +81,9 @@ export const Hero: React.FC<HeroProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 lg:gap-8 items-center lg:items-start">
           
           {/* Left Column: Brand Message & Hero Copy */}
-          <motion.div
+          <m.div
             className="lg:col-span-12 lg:max-w-[50vw] flex flex-col items-start text-left relative z-10"
-            initial={{ opacity: 0, y: 30 }}
+            initial={HERO_INSTANT ? false : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
@@ -156,12 +157,12 @@ export const Hero: React.FC<HeroProps> = ({
 
             {/* Quick Metrics Bar: under the left copy on phones/tablets; on desktop it sits under the devices, centred on the same axis */}
             <div className="lg:hidden w-full max-w-xl mt-6 sm:mt-10"><HeroMetrics /></div>
-          </motion.div>
+          </m.div>
 
           {/* Right: platform shown across laptop, tablet and phone. A large layer on desktop (text stays on top), a normal block on mobile. */}
           <div className="hidden lg:block lg:absolute lg:right-[1%] lg:top-[49px] lg:w-[44%] lg:z-0 lg:pointer-events-none">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.97 }}
+            <m.div
+              initial={HERO_INSTANT ? false : { opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -171,7 +172,7 @@ export const Hero: React.FC<HeroProps> = ({
               </div>
               <PlatformsPicture className="hero-platforms -mt-4 mx-auto w-[380px] max-w-[80%] h-auto select-none" />
               <HeroMetrics className="mt-8 max-w-xl mx-auto" />
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </div>

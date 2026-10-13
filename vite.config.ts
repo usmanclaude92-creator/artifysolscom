@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import fs from 'node:fs';
 import {defineConfig} from 'vite';
+import { heroShellPlugin } from './vite-plugins/heroShell';
 
 /**
  * Vercel serves a real file at "/" straight from the filesystem and never
@@ -26,7 +27,7 @@ function renameShellForSsr() {
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss(), renameShellForSsr()],
+    plugins: [react(), tailwindcss(), renameShellForSsr(), heroShellPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

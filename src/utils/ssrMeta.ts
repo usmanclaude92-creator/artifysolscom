@@ -268,6 +268,8 @@ export interface SsrResult {
   status: number;
   /** A real redirect to perform server-side instead of rendering anything. */
   redirect: { toPath: string; statusCode: number } | null;
+  /** True only for the built-in homepage (not a CMS homepage override): the prerendered hero stays in the document. */
+  heroShell?: boolean;
 }
 
 /**
@@ -316,7 +318,7 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
     if (!homepage) {
       // No CMS homepage: the static shell's own tags would show on a shared link, so apply the Site Identity defaults instead.
       const defaults = await fetchSiteIdentityDefaults(apiBase);
-      return { meta: buildSiteIdentityMeta(defaults, baseUrl), status: 200, redirect: null };
+      return { meta: buildSiteIdentityMeta(defaults, baseUrl), status: 200, redirect: null, heroShell: true };
     }
     const meta = buildCmsPageMeta(homepage, baseUrl, '/');
     if (!meta.ogImage) {
@@ -382,6 +384,15 @@ export async function renderSeoForPath(pathname: string, baseUrl: string, explic
   // every path returned 200 before this file existed, a classic "soft
   // 404" that both confuses crawlers and silently hides broken links.
   return { meta: { title: '404 — Not Found', description: 'This page could not be found.', robots: 'noindex, nofollow' }, status: 404, redirect: null };
+}
+
+/** Removes the prerendered hero (and its inlined CSS) from the HTML shell: it belongs to the built-in homepage only. */
+export function stripHeroShell(html: string): string {
+  return html
+    .replace(/<!--hero-shell:start-->[\s\S]*?<!--hero-shell:end-->/, '<!--hero-shell:start--><!--hero-shell:end-->')
+    .replace(/<style id="hero-critical">[\s\S]*?<\/style>/, '')
+    // other routes have no prerendered content to show early, so the stylesheet goes back to blocking the first paint
+    .replace(/<!--hero-css:start-->[\s\S]*?<noscript>([\s\S]*?)<\/noscript><!--hero-css:end-->/, '$1');
 }
 
 function escapeHtmlAttr(value: string): string {
