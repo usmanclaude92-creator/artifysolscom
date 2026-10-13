@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { composeTitle } from '../../utils/routeMeta';
 import { MediaImg } from '../MediaImg';
 import { ArrowLeft, Layers, CheckCircle2, Sparkles, ArrowRight } from 'lucide-react';
 import { publicApi, PublicProduct, PublicProductModule } from '../../lib/publicApi';
@@ -58,7 +59,7 @@ export const AiProductDetailPage: React.FC<AiProductDetailPageProps> = ({
   useEffect(() => {
     if (!product) return;
     const cleanup = updatePageSeo({
-      title: product.seo?.metaTitle || `${product.name} | Artify Solutions`,
+      title: product.seo?.metaTitle || composeTitle(product.name),
       description: product.seo?.metaDescription || product.shortDescription,
       canonicalUrl: typeof window !== 'undefined' ? `${window.location.origin}/ai-solutions/${product.slug}` : `https://artifysols.com/ai-solutions/${product.slug}`,
       ogType: 'website',

@@ -17,7 +17,7 @@ export const LEGAL_LAST_UPDATED = '9 October 2026';
 
 const PRIVACY: LegalDoc = {
   title: 'Privacy Policy',
-  seoDescription: 'How Artify Solutions collects, uses, stores and deletes personal data on its website and in its Control Center, including data received from Facebook and Instagram.',
+  seoDescription: 'How Artify Solutions collects, uses, stores and deletes personal data on its website and Control Center, including Facebook and Instagram data.',
   path: '/privacy',
   effective: LEGAL_LAST_UPDATED,
   intro: [
@@ -128,7 +128,7 @@ const PRIVACY: LegalDoc = {
 
 const TERMS: LegalDoc = {
   title: 'Terms of Service',
-  seoDescription: 'The terms that apply when you use the Artify Solutions website and the Artify Control Center.',
+  seoDescription: 'The terms that apply when you use the Artify Solutions website, products and Control Center, including acceptable use and limits of liability.',
   path: '/terms',
   effective: LEGAL_LAST_UPDATED,
   intro: [
