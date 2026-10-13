@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
-import { renderSeoForPath, injectMetaIntoHtml, stripHeroShell } from "../src/utils/ssrMeta.js";
+import { renderSeoForPath, injectMetaIntoHtml, stripHeroShell, addCatalogHints, CATALOG_PATHS } from "../src/utils/ssrMeta.js";
 import { renderLegalHtml } from "../src/legal/renderLegalHtml.js";
 import { handleLandingPage, handleLandingPreview, handleLandingSubmit, type LandingContext, type LandingResponse } from "../src/landing/landingHandlers.js";
 
@@ -287,7 +287,8 @@ app.get("*", async (req, res, next) => {
   try {
     const template = await getIndexHtmlTemplate(baseUrl);
     const html = result.heroShell ? template : stripHeroShell(template);
-    const finalHtml = result.meta ? injectMetaIntoHtml(html, result.meta, { statusIsError: result.status >= 400 }) : html;
+    const withMeta = result.meta ? injectMetaIntoHtml(html, result.meta, { statusIsError: result.status >= 400 }) : html;
+    const finalHtml = CATALOG_PATHS.includes(req.path) ? addCatalogHints(withMeta, process.env.PLATFORM_API_BASE_URL) : withMeta;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Cache-Control", "public, max-age=0, s-maxage=600, stale-while-revalidate=86400");

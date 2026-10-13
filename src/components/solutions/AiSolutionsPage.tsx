@@ -3,6 +3,7 @@ import { Sparkles, Search, ArrowRight, Layers, CheckCircle2 } from 'lucide-react
 import { publicApi, PublicProduct, PublicProductCategory, PublicIndustry } from '../../lib/publicApi';
 import { updatePageSeo, generateDynamicKeywords } from '../../utils/seo';
 import { MediaImg } from '../MediaImg';
+import { ListSkeleton } from '../ListSkeleton';
 import { staticPageSeo } from '../../utils/routeMeta';
 
 interface AiSolutionsPageProps {
@@ -177,9 +178,7 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
       )}
 
       {isLoading && (
-        <div className={`p-10 text-center rounded-2xl border text-xs ${isLight ? 'bg-white border-slate-200 text-slate-500' : 'bg-[#0e0e16] border-white/[0.08] text-zinc-400'}`}>
-          Loading catalog…
-        </div>
+        <ListSkeleton count={3} isLight={isLight} minHeight={300} label="Loading catalog" />
       )}
 
       {!isLoading && loadError && (
