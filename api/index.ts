@@ -36,7 +36,7 @@ app.get(["/robots.txt", "/api/robots.txt"], (req, res) => {
     const baseUrl = getBaseUrl(req);
     const robots = generateRobotsTxt(baseUrl);
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800");
     res.status(200).send(robots);
   } catch (err: any) {
     console.error("Error generating robots.txt:", err);
@@ -290,7 +290,7 @@ app.get("*", async (req, res, next) => {
     const finalHtml = result.meta ? injectMetaIntoHtml(html, result.meta, { statusIsError: result.status >= 400 }) : html;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.setHeader("Cache-Control", "public, max-age=0, s-maxage=60, stale-while-revalidate=300");
+    res.setHeader("Cache-Control", "public, max-age=0, s-maxage=600, stale-while-revalidate=86400");
     res.status(result.status).send(finalHtml);
   } catch (err) {
     // Fetching the deployment's own static index.html failed — a genuine

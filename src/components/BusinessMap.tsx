@@ -580,9 +580,9 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
                           <span aria-hidden="true" className="text-zinc-500">·</span>
                           <span>{layer.badge}</span>
                         </div>
-                        <h4 className="text-xl sm:text-2xl font-bold font-display text-foreground">
+                        <h3 className="text-xl sm:text-2xl font-bold font-display text-foreground">
                           {layer.name}
-                        </h4>
+                        </h3>
                       </div>
                     </div>
 
@@ -626,9 +626,9 @@ export const BusinessMap: React.FC<BusinessMapProps> = ({
 
                   {/* Headline & Summary */}
                   <div className="mb-6">
-                    <h5 className="text-base sm:text-lg font-bold text-foreground mb-2">
+                    <h4 className="text-base sm:text-lg font-bold text-foreground mb-2">
                       {layer.headline}
-                    </h5>
+                    </h4>
                     <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-slate-600' : 'text-zinc-400'}`}>
                       {layer.summary}
                     </p>

@@ -1441,6 +1441,20 @@ body.theme-light *::-webkit-scrollbar-thumb:active {
   color: #64748B !important;
 }
 
+/* Accent text one shade darker on light surfaces so small labels meet 4.5:1 contrast (dark theme keeps the lighter shades) */
+.theme-light .text-violet-500 {
+  color: #7C3AED !important;
+}
+
+.theme-light .text-red-500 {
+  color: #DC2626 !important;
+}
+
+.theme-light .text-emerald-600,
+.theme-light .text-emerald-300 {
+  color: #047857 !important;
+}
+
 /* 9. Text Gradients & Vibrant Badges */
 .theme-light .text-transparent {
   color: transparent !important;
