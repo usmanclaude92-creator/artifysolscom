@@ -81,6 +81,7 @@ export const BeforeAfterSlider: React.FC = () => {
                 value={sliderPos}
                 onChange={(e) => setSliderPos(Number(e.target.value))}
                 id="before-after-range-slider"
+                aria-label="Compare before and after"
                 className="w-full accent-primary cursor-pointer h-2 bg-secondary rounded-lg"
               />
               <span className="text-[10px] font-mono-code text-primary font-bold">After</span>
