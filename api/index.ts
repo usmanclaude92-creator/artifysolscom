@@ -1,4 +1,6 @@
 import express from "express";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
 import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
 import { renderSeoForPath, injectMetaIntoHtml } from "../src/utils/ssrMeta.js";
@@ -167,18 +169,51 @@ Keep your response punchy, precise, and professional. Avoid buzzwords and clich√
 
 let cachedIndexHtml: string | null = null;
 
+// The shell ships inside the function bundle (vercel.json `functions.includeFiles`), so a cold start reads it from disk instead of
+// making an HTTP request to its own site, which was an extra failure point (and returned a login page on SSO-protected hosts).
+async function readShellFromDisk(): Promise<string | null> {
+  for (const p of [path.join(process.cwd(), "dist", "app-shell.html"), path.join(process.cwd(), "app-shell.html")]) {
+    try {
+      const html = await readFile(p, "utf8");
+      if (html.includes('id="root"')) return html;
+    } catch {
+      /* try the next location */
+    }
+  }
+  return null;
+}
+
+// Fallback only: fetch the shell from this deployment, with a timeout and retries.
+async function fetchShell(baseUrl: string): Promise<string> {
+  let last: unknown;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(`${baseUrl}/app-shell.html`, { signal: AbortSignal.timeout(4000) });
+      if (res.ok) {
+        const html = await res.text();
+        // Never cache or serve anything that isn't the real app shell (e.g. a deployment-protection login page).
+        if (html.includes('id="root"')) return html;
+        last = new Error("app-shell.html did not contain the app root");
+      } else {
+        last = new Error(`Could not load app shell (${res.status})`);
+      }
+    } catch (err) {
+      last = err;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 150 * 2 ** attempt));
+  }
+  throw last;
+}
+
 async function getIndexHtmlTemplate(baseUrl: string): Promise<string> {
   if (cachedIndexHtml) return cachedIndexHtml;
-  const res = await fetch(`${baseUrl}/app-shell.html`);
-  if (!res.ok) throw new Error(`Could not load app shell (${res.status})`);
-  const html = await res.text();
-  // Never cache or serve anything that isn't the real app shell (e.g. a deployment-protection login page).
-  if (!html.includes('id="root"')) throw new Error("app-shell.html did not contain the app root");
+  const disk = await readShellFromDisk();
   // A fresh function instance only ever serves one deployment's assets,
   // so caching for the lifetime of the instance is safe (a new deploy
   // always gets a new instance).
-  cachedIndexHtml = html;
-  return html;
+  cachedIndexHtml = disk ?? (await fetchShell(baseUrl));
+  console.info(JSON.stringify({ shell: disk ? "disk" : "network" })); // once per cold start: shows which path was used
+  return cachedIndexHtml;
 }
 
 // Marketing landing pages (Step 12): server-rendered HTML at /lp/<slug>, private draft previews at /lp-preview/<token>, and the
