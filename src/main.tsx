@@ -1,4 +1,5 @@
 import {StrictMode} from 'react';
+import { LazyMotion, domAnimation } from 'framer-motion';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
@@ -11,11 +12,30 @@ window.addEventListener('vite:preloadError', (event) => {
   if (reloadOnceForLoadFailure()) event.preventDefault();
 });
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </StrictMode>,
-);
+const mount = () =>
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <LazyMotion features={domAnimation}>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </LazyMotion>
+    </StrictMode>,
+  );
+
+// "/" ships a prerendered hero and loads the full stylesheet without blocking it. React replaces that hero and adds the
+// navbar and sections, so wait for the stylesheet first (bounded) rather than rendering unstyled content.
+const appCss = document.getElementById('app-css') as HTMLLinkElement | null;
+if (appCss && appCss.media === 'print') {
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    mount();
+  };
+  appCss.addEventListener('load', start, { once: true });
+  window.setTimeout(start, 4000);
+} else {
+  mount();
+}
 

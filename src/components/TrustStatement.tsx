@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { XCircle, CheckCircle2, ShieldAlert, Sparkles, Sliders, ArrowRight, RefreshCw, Cpu, Layers } from 'lucide-react';
 
 export const TrustStatement: React.FC = () => {
@@ -11,7 +11,7 @@ export const TrustStatement: React.FC = () => {
       <div className="w-full px-[5%] max-w-7xl mx-auto relative z-10">
         
         {/* Section Header */}
-        <motion.div
+        <m.div
           className="text-center max-w-4xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -44,13 +44,13 @@ export const TrustStatement: React.FC = () => {
               </span>
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* 2-Column Direct Paradigm Contrast with subtle framer-motion whileInView animation */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           
           {/* Legacy / Rigid Paradigm (The Problem Card) */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -101,10 +101,10 @@ export const TrustStatement: React.FC = () => {
             <div className="mt-8 pt-4 border-t border-border text-xs font-mono-code text-foreground-muted">
               Result: Operational friction, frustrated employees, and frozen innovation.
             </div>
-          </motion.div>
+          </m.div>
 
           {/* The Artify Adaptive Paradigm (The Solution Card) */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -155,7 +155,7 @@ export const TrustStatement: React.FC = () => {
             <div className="mt-8 pt-4 border-t border-primary/20 text-xs font-mono-code text-primary font-semibold flex items-center justify-between">
               <span>Result: Unconstrained enterprise agility, sovereign data, and lasting competitive velocity.</span>
             </div>
-          </motion.div>
+          </m.div>
 
         </div>
 

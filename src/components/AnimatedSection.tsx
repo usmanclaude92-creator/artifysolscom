@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, useScroll, useSpring, type Variants } from 'framer-motion';
+import { m, useScroll, useSpring, type Variants } from 'framer-motion';
 
 export type AnimationVariant =
   | 'fade-up'
@@ -21,6 +21,8 @@ export interface AnimatedSectionProps {
   amount?: number | 'some' | 'all';
   once?: boolean;
   style?: React.CSSProperties;
+  /** Render in the final state straight away (no entry animation). */
+  instant?: boolean;
 }
 
 const getVariants = (variant: AnimationVariant, distance: number): Variants => {
@@ -84,15 +86,16 @@ export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
   amount = 0.08,
   once = true,
   style,
+  instant = false,
 }) => {
   const variants = getVariants(variant, distance);
 
   return (
-    <motion.div
+    <m.div
       id={id}
       className={`w-full ${className}`}
       style={style}
-      initial="hidden"
+      initial={instant ? false : 'hidden'}
       whileInView="visible"
       viewport={{ once, amount }}
       variants={variants}
@@ -103,7 +106,7 @@ export const AnimatedSection: React.FC<AnimatedSectionProps> = ({
       }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -125,7 +128,7 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
   once = true,
 }) => {
   return (
-    <motion.div
+    <m.div
       className={className}
       initial="hidden"
       whileInView="visible"
@@ -142,7 +145,7 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
       }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -158,7 +161,7 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
   distance = 24,
 }) => {
   return (
-    <motion.div
+    <m.div
       className={className}
       variants={{
         hidden: { opacity: 0, y: distance },
@@ -173,7 +176,7 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
       }}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 };
 
@@ -190,7 +193,7 @@ export const ScrollProgressBar: React.FC = () => {
   });
 
   return (
-    <motion.div
+    <m.div
       className="fixed top-0 left-0 right-0 h-[2.5px] bg-gradient-to-r from-violet-500 via-indigo-400 to-sky-400 z-50 origin-left pointer-events-none"
       style={{ scaleX }}
     />

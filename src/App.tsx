@@ -19,9 +19,7 @@ import { Footer } from './components/Footer';
 import { Deferred } from './components/Deferred';
 import { BreadcrumbNav } from './components/BreadcrumbNav';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { AuthModal } from './components/portal/AuthModal';
 import { BlogPreviewSection } from './components/BlogPreviewSection';
-import { PremiumThemesModal } from './components/PremiumThemesModal';
 import { PREMIUM_THEMES } from './data/premiumThemesData';
 import { Bot, Sparkles, ArrowRight, MessageSquare, Zap, Cpu, Layers } from 'lucide-react';
 import { playHoverSound } from './utils/soundEffects';
@@ -30,17 +28,19 @@ import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
 import { publicApi, PublicPage } from './lib/publicApi';
 import { analytics } from './lib/analytics';
+import { HERO_INSTANT } from './lib/heroShell';
 import {
   AnimatedSection,
   StaggerContainer,
   StaggerItem,
   ScrollProgressBar,
 } from './components/AnimatedSection';
-import { motion } from 'framer-motion';
 
 // Code-splitting: the home route is the only one eagerly bundled. Every other
 // route, the client portal (which pulls in the chart library) and the modal
 // overlays are fetched on demand, keeping them out of the initial payload.
+const AuthModal = lazy(() => import('./components/portal/AuthModal').then((m) => ({ default: m.AuthModal })));
+const PremiumThemesModal = lazy(() => import('./components/PremiumThemesModal').then((m) => ({ default: m.PremiumThemesModal })));
 const BusinessMap = lazy(() => import('./components/BusinessMap').then((m) => ({ default: m.BusinessMap })));
 const AdaptiveEcosystem = lazy(() => import('./components/AdaptiveEcosystem').then((m) => ({ default: m.AdaptiveEcosystem })));
 const NextGenAiLayer = lazy(() => import('./components/NextGenAiLayer').then((m) => ({ default: m.NextGenAiLayer })));
@@ -605,7 +605,11 @@ function MainAppContent() {
             <ClientPortal theme={theme} onToggleTheme={handleToggleTheme} />
           </Suspense>
         </LoadFailureBoundary>
-        {isAuthModalOpen && <AuthModal theme={theme} />}
+        {isAuthModalOpen && (
+          <Suspense fallback={null}>
+            <AuthModal theme={theme} />
+          </Suspense>
+        )}
       </div>
     );
   }
@@ -797,7 +801,7 @@ function MainAppContent() {
         {activeRoute === 'home' && !dynamicHomepage && (
           <>
             {/* 1. Hero: Adaptive Software & Intelligent Ecosystems */}
-            <AnimatedSection variant="fade" duration={0.8}>
+            <AnimatedSection variant="fade" duration={0.8} instant={HERO_INSTANT}>
               <Hero
                 onOpenSolutionBuilder={() => handleOpenSolutionBuilder()}
                 onOpenConsultant={() => setIsConsultantOpen(true)}
@@ -1054,8 +1058,12 @@ function MainAppContent() {
       </Suspense>
       </LoadFailureBoundary>
 
-      {/* Auth Modal */}
-      <AuthModal theme={theme} />
+      {/* Auth Modal (loaded on first open) */}
+      {isAuthModalOpen && (
+        <Suspense fallback={null}>
+          <AuthModal theme={theme} />
+        </Suspense>
+      )}
 
       {/* Floating Quick Action Launcher */}
       <div
