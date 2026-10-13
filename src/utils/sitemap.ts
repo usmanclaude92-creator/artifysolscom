@@ -30,11 +30,6 @@ interface RemoteProduct {
   shortDescription: string;
 }
 
-interface RemoteCategory {
-  slug: string;
-  name: string;
-}
-
 // Phase 11 (Case Studies + Content Relationships) — mirrors RemotePost's
 // own shape for the same sitemap entry pattern.
 interface RemoteCaseStudy {
@@ -125,34 +120,30 @@ async function fetchAllPages<T>(base: string, path: string, itemsKey: string, ma
 async function fetchPublicData(apiBaseUrl?: string): Promise<{
   posts: RemotePost[];
   products: RemoteProduct[];
-  categories: RemoteCategory[];
   caseStudies: RemoteCaseStudy[];
   landingPages: RemoteLandingPage[];
 }> {
   const base = resolveApiBaseUrl(apiBaseUrl);
-  if (!base) return { posts: [], products: [], categories: [], caseStudies: [], landingPages: [] };
+  if (!base) return { posts: [], products: [], caseStudies: [], landingPages: [] };
 
   try {
-    const [posts, products, categoriesRes, caseStudies, landingPages] = await Promise.all([
+    const [posts, products, caseStudies, landingPages] = await Promise.all([
       fetchAllPages<RemotePost>(base, '/public/posts', 'posts'),
       fetchAllPages<RemoteProduct>(base, '/public/products', 'products'),
-      fetch(`${base}/public/categories`),
       fetchAllPages<RemoteCaseStudy>(base, '/public/case-studies', 'caseStudies'),
       // Its own failure (older API, outage) must never drop the rest of the sitemap: it just contributes no entries.
       fetchLandingPages(base),
     ]);
-    const categoriesBody = await categoriesRes.json();
     return {
       posts,
       products,
-      categories: categoriesRes.ok && categoriesBody.success ? categoriesBody.data.categories : [],
       caseStudies,
       landingPages,
     };
   } catch {
     // Honest degrade — sitemap just omits dynamic entries rather than
     // fabricating URLs for content that may not exist.
-    return { posts: [], products: [], categories: [], caseStudies: [], landingPages: [] };
+    return { posts: [], products: [], caseStudies: [], landingPages: [] };
   }
 }
 
@@ -174,7 +165,7 @@ async function fetchLandingPages(base: string): Promise<RemoteLandingPage[]> {
  */
 export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: string): Promise<SitemapUrlEntry[]> {
   const baseUrl = (customBaseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL)).replace(/\/+$/, '');
-  const { posts, products, categories, caseStudies, landingPages } = await fetchPublicData(apiBaseUrl);
+  const { posts, products, caseStudies, landingPages } = await fetchPublicData(apiBaseUrl);
   const currentDate = formatSitemapDate();
 
   const entries: SitemapUrlEntry[] = [];
@@ -182,11 +173,11 @@ export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: str
   // 1. Core Top-Level Landing Pages
   entries.push(
     { loc: `${baseUrl}/`, lastmod: currentDate, changefreq: 'daily', priority: 1.0, type: 'core', title: 'Artify Solutions' },
-    { loc: `${baseUrl}/solutions`, lastmod: currentDate, changefreq: 'daily', priority: 0.95, type: 'core', title: 'Solutions Catalog' },
     { loc: `${baseUrl}/ai-solutions`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'AI Solutions' },
     { loc: `${baseUrl}/blog`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'Blog' },
     { loc: `${baseUrl}/case-studies`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Case Studies' },
     { loc: `${baseUrl}/services`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Services' },
+    { loc: `${baseUrl}/industries`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Industries' },
     { loc: `${baseUrl}/ecosystem`, lastmod: currentDate, changefreq: 'monthly', priority: 0.85, type: 'core', title: 'Our Ecosystem' },
     { loc: `${baseUrl}/about`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'About' },
     { loc: `${baseUrl}/contact`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' },
@@ -243,19 +234,6 @@ export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: str
       priority: 0.7,
       type: 'landing',
       title: lp.slug,
-    });
-  });
-
-  // 4. Blog Category Hubs
-  categories.forEach((cat) => {
-    entries.push({
-      loc: `${baseUrl}/blog?category=${encodeURIComponent(cat.slug)}`,
-      lastmod: currentDate,
-      changefreq: 'weekly',
-      priority: 0.6,
-      type: 'category',
-      title: `${cat.name} Articles`,
-      category: cat.name,
     });
   });
 
