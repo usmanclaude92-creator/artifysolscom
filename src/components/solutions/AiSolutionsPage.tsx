@@ -112,7 +112,7 @@ export const AiSolutionsPage: React.FC<AiSolutionsPageProps> = ({
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {(['ALL', 'PRODUCT', 'SERVICE', 'SOLUTION'] as TypeFilter[]).map((t) => (
             <button
               key={t}

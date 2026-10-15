@@ -558,7 +558,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           </div>
 
           {/* Secondary Type Filters: All, Articles, News, Case Studies, Whitepapers */}
-          <div className="flex items-center gap-2 pt-1">
+          <div className="flex flex-wrap items-center gap-2 pt-1">
             <span
               className={`text-xs font-mono-code uppercase mr-1 ${
                 isLight ? 'text-slate-500' : 'text-zinc-500'
