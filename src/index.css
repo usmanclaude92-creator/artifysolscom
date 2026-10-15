@@ -1344,6 +1344,11 @@ body.theme-light *::-webkit-scrollbar-thumb:active {
   color: #0F172A !important;
 }
 
+/* Image overlays stay transparent in the light theme; the rules above would turn them into an opaque white layer over the picture. */
+.theme-light img + div[class*="from-black"][class*="from-black"] {
+  background: transparent !important;
+}
+
 /* 5. Modern Soft Modal Backdrop */
 .theme-light .fixed.inset-0.bg-black\/80,
 .theme-light .fixed.inset-0.bg-black\/70,
