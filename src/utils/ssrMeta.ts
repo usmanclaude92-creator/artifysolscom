@@ -137,8 +137,8 @@ export function buildPostMeta(post: PublicPost, baseUrl: string): SeoConfig {
 export function buildProductMeta(product: PublicProduct, baseUrl: string): SeoConfig {
   const canonicalUrl = `${baseUrl}/ai-solutions/${product.slug}`;
   return {
-    title: composeTitle(product.name),
-    description: product.shortDescription,
+    title: product.seo?.metaTitle || composeTitle(product.name),
+    description: product.seo?.metaDescription || product.shortDescription,
     canonicalUrl,
     ogType: 'website',
     ogTitle: product.name,
