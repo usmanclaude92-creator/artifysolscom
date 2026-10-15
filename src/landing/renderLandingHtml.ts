@@ -199,7 +199,7 @@ export function renderLandingHtml(page: LandingPageData, ctx: RenderContext): st
   const canonical = `${base}/lp/${page.slug}`;
   const heroBlock = page.blocks.find((b) => b.type === 'lp_hero');
   const heroMedia = heroBlock?.props.image?.mediaId ? page.media[heroBlock.props.image.mediaId] : undefined;
-  const ogImage = page.seo.ogImageUrl || heroMedia?.url || `${base}/og-banner.jpg`;
+  const ogImage = page.seo.ogImageUrl || heroMedia?.url || `${base}/og-home.jpg`;
   const robots = page.preview || page.seo.noindex ? 'noindex, nofollow' : 'index, follow';
   const desc = page.seo.description || '';
   const body = page.blocks

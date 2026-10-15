@@ -20,6 +20,7 @@
 import { generateBlogPostSeo, type SeoConfig } from './seo.js';
 import { resolveApiBaseUrl } from './sitemap.js';
 import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi.js';
+import { socialImageUrl } from '../lib/imageUrl.js';
 import { hasStaticRouteMeta, staticPageSeo, formatPageTitle, composeTitle } from './routeMeta.js';
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
@@ -141,8 +142,9 @@ export function buildProductMeta(product: PublicProduct, baseUrl: string): SeoCo
     description: product.seo?.metaDescription || product.shortDescription,
     canonicalUrl,
     ogType: 'website',
-    ogTitle: product.name,
-    ogDescription: product.shortDescription,
+    ogTitle: product.seo?.metaTitle || product.name,
+    ogDescription: product.seo?.metaDescription || product.shortDescription,
+    ogImage: product.seo?.ogImage || product.featuredMedia?.url,
     twitterCard: 'summary_large_image',
     jsonLd: {
       '@type': 'Product',
@@ -308,6 +310,15 @@ async function resolveRedirectChain(
 
 /** The orchestrator api/index.ts's catch-all handler calls for every HTML document request. */
 export async function renderSeoForPath(pathname: string, baseUrl: string, explicitApiBase?: string): Promise<SsrResult> {
+  const result = await renderRouteSeo(pathname, baseUrl, explicitApiBase);
+  if (result.meta?.ogImage) {
+    const image = socialImageUrl(result.meta.ogImage, baseUrl);
+    result.meta = { ...result.meta, ogImage: image, twitterImage: image };
+  }
+  return result;
+}
+
+async function renderRouteSeo(pathname: string, baseUrl: string, explicitApiBase?: string): Promise<SsrResult> {
   const route = resolveSsrRoute(pathname);
   const apiBase = resolveApiBaseUrl(explicitApiBase) || `${baseUrl}/api/v1`;
 

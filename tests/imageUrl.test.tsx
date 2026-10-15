@@ -50,3 +50,18 @@ describe('MediaImg', () => {
     expect(b!.getAttribute('loading')).toBe('lazy');
   });
 });
+
+describe('socialImageUrl', () => {
+  const base = 'https://artifysols.com';
+  const bucket = 'https://cfkymotcnccgvkpmcevp.supabase.co/storage/v1/object/public/artify-media/a/b.png';
+  it('routes bucket media through the optimizer at an allowed width', async () => {
+    const { socialImageUrl } = await import('../src/lib/imageUrl');
+    expect(socialImageUrl(bucket, base)).toBe(`${base}/_vercel/image?url=${encodeURIComponent(bucket)}&w=1280&q=75`);
+  });
+  it('makes relative URLs absolute and leaves other absolute URLs', async () => {
+    const { socialImageUrl } = await import('../src/lib/imageUrl');
+    expect(socialImageUrl('/og-home.jpg', base)).toBe(`${base}/og-home.jpg`);
+    expect(socialImageUrl('https://x.com/a.png', base)).toBe('https://x.com/a.png');
+    expect(socialImageUrl(undefined, base)).toBeUndefined();
+  });
+});

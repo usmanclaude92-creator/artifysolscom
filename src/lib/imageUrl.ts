@@ -26,3 +26,14 @@ export function optimizedImage(url: string): { src: string; srcSet?: string } {
     srcSet: IMAGE_WIDTHS.map((w) => `${viaVercel(url, w)} ${w}w`).join(', '),
   };
 }
+
+/**
+ * Absolute 1280px-wide URL for og:image / twitter:image. Crawlers need absolute URLs and small files, so Control Center
+ * media goes through the image optimizer; other URLs are only made absolute.
+ */
+export function socialImageUrl(url: string | undefined | null, baseUrl: string): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith(MEDIA_PREFIX)) return `${baseUrl}${viaVercel(url, 1280)}`;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+}
