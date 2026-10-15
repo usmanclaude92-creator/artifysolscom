@@ -60,7 +60,7 @@ export interface SeoConfig {
 const DEFAULT_BASE_URL = 'https://artifysols.com';
 const DEFAULT_SITE_NAME = 'Artify Solutions';
 const DEFAULT_TWITTER_HANDLE = '@artifysols';
-const DEFAULT_OG_IMAGE = `${DEFAULT_BASE_URL}/og-banner.jpg`;
+const DEFAULT_OG_IMAGE = `${DEFAULT_BASE_URL}/og-home.jpg`;
 const DEFAULT_ROBOTS = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
 
 // Category-to-search-intent keyword mapping dictionaries for enterprise discovery

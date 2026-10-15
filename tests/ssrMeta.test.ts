@@ -28,10 +28,10 @@ const STATIC_HTML = `<!doctype html>
     <meta property="og:title" content="Default OG title" />
     <meta property="og:description" content="Default OG description" />
     <meta property="og:url" content="https://artifysols.com/" />
-    <meta property="og:image" content="https://artifysols.com/og-banner.jpg" />
+    <meta property="og:image" content="https://artifysols.com/og-home.jpg" />
     <meta name="twitter:title" content="Default Twitter title" />
     <meta name="twitter:description" content="Default Twitter description" />
-    <meta name="twitter:image" content="https://artifysols.com/og-banner.jpg" />
+    <meta name="twitter:image" content="https://artifysols.com/og-home.jpg" />
   </head>
   <body><div id="root"></div></body>
 </html>`;
@@ -137,6 +137,17 @@ describe('buildPostMeta / buildProductMeta / buildBlogArchiveMeta', () => {
     const meta = buildProductMeta(product, BASE_URL);
     expect(meta.title).toBe('Custom SEO Title | Artify Solutions');
     expect(meta.description).toBe('The Control Center SEO description.');
+    expect(meta.ogTitle).toBe('Custom SEO Title | Artify Solutions');
+    expect(meta.ogDescription).toBe('The Control Center SEO description.');
+  });
+
+  it('uses the product featured image as the share thumbnail', () => {
+    const media = 'https://cfkymotcnccgvkpmcevp.supabase.co/storage/v1/object/public/artify-media/p/cover.png';
+    const product = {
+      slug: 'img-product', code: 'P3', name: 'Img Product', type: 'PRODUCT', shortDescription: 'D.', description: 'D.',
+      isFeatured: false, displayOrder: 1, featuredMedia: { url: media },
+    } as unknown as PublicProduct;
+    expect(buildProductMeta(product, BASE_URL).ogImage).toBe(media);
   });
 
   it('builds a real archive meta for the blog listing', () => {
@@ -232,6 +243,19 @@ describe('renderSeoForPath (orchestrator, mocked network)', () => {
 
   afterEach(() => {
     global.fetch = originalFetch;
+  });
+
+  it('shares a CMS page with its featured image as an absolute optimized thumbnail', async () => {
+    const media = 'https://cfkymotcnccgvkpmcevp.supabase.co/storage/v1/object/public/artify-media/p/feature.png';
+    const page = {
+      slug: 'about-us', title: 'About Us', body: '<p>x</p>', excerpt: 'Ex.', seo: {}, featuredMedia: { url: media },
+      editorBlocks: null, publishedAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
+    };
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true, json: async () => ({ success: true, data: { page } }) });
+    const { meta } = await renderSeoForPath('/about-us', BASE_URL, 'https://api.example.com/api/v1');
+    const expected = `${BASE_URL}/_vercel/image?url=${encodeURIComponent(media)}&w=1280&q=75`;
+    expect(meta?.ogImage).toBe(expected);
+    expect(meta?.twitterImage).toBe(expected);
   });
 
   it('returns real page metadata and 200 when the CMS page exists', async () => {
@@ -374,5 +398,26 @@ describe('account action pages', () => {
       expect(result.status).toBe(200);
       expect(result.meta?.robots).toBe('noindex, nofollow');
     }
+  });
+});
+
+describe('og defaults', () => {
+  it('ships a 1200x630 hero-based default image under 300 KB', async () => {
+    const fs = await import('fs');
+    const buf = fs.readFileSync('public/og-home.jpg');
+    expect(buf.length).toBeLessThan(300 * 1024);
+    let i = 2;
+    while (i < buf.length) {
+      if (buf[i] !== 0xff) break;
+      const m = buf[i + 1];
+      const len = buf.readUInt16BE(i + 2);
+      if (m === 0xc0 || m === 0xc2) {
+        expect(buf.readUInt16BE(i + 5)).toBe(630);
+        expect(buf.readUInt16BE(i + 7)).toBe(1200);
+        return;
+      }
+      i += 2 + len;
+    }
+    throw new Error('no SOF marker');
   });
 });
