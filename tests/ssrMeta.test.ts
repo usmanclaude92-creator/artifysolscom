@@ -122,6 +122,23 @@ describe('buildPostMeta / buildProductMeta / buildBlogArchiveMeta', () => {
     expect(meta.canonicalUrl).toBe('https://artifysols.com/ai-solutions/my-product');
   });
 
+  it('uses the product SEO title and description from the Control Center when set (matches the page itself)', () => {
+    const product: PublicProduct = {
+      slug: 'seo-product',
+      code: 'P2',
+      name: 'SEO Product',
+      type: 'PRODUCT',
+      shortDescription: 'A long visible description that should not be the meta description when an SEO one exists.',
+      description: 'Full description.',
+      isFeatured: false,
+      displayOrder: 1,
+      seo: { metaTitle: 'Custom SEO Title | Artify Solutions', metaDescription: 'The Control Center SEO description.' },
+    };
+    const meta = buildProductMeta(product, BASE_URL);
+    expect(meta.title).toBe('Custom SEO Title | Artify Solutions');
+    expect(meta.description).toBe('The Control Center SEO description.');
+  });
+
   it('builds a real archive meta for the blog listing', () => {
     const meta = buildBlogArchiveMeta(BASE_URL);
     expect(meta.canonicalUrl).toBe('https://artifysols.com/blog');
