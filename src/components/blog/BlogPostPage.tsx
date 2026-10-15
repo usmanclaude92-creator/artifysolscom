@@ -830,23 +830,13 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
               }`}
             >
               {post.coverImage ? (
-                <div className="relative aspect-[16/9] sm:aspect-[21/9] lg:aspect-[24/9] max-h-[580px] lg:max-h-[640px] w-full overflow-hidden">
+                <div className="relative w-full overflow-hidden">
                   <img
                     src={post.coverImage}
                     alt={post.title}
-                    className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02]"
+                    className="w-full h-auto max-h-[75vh] object-contain mx-auto transition-transform duration-700 group-hover:scale-[1.02]"
                     referrerPolicy="no-referrer"
                   />
-                  {/* Subtle gradient vignette overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-black/30 pointer-events-none" />
-
-                  {/* High-Tech Badge Strip on Image Bottom */}
-                  <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-8 right-4 sm:right-8 flex items-center justify-between pointer-events-none">
-                    <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-xs font-semibold text-white shadow-lg">
-                      <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-                      <span>{post.category} • Technical Intelligence</span>
-                    </div>
-                  </div>
                 </div>
               ) : (
                 <div
