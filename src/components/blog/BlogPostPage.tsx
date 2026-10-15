@@ -846,10 +846,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                       <Sparkles className="w-3.5 h-3.5 text-violet-400" />
                       <span>{post.category} • Technical Intelligence</span>
                     </div>
-
-                    <span className="hidden sm:inline-block text-xs font-mono-code text-zinc-200 bg-black/60 backdrop-blur-md border border-white/15 px-3 py-1 rounded-lg">
-                      90% Viewport Cover Showcase
-                    </span>
                   </div>
                 </div>
               ) : (
@@ -881,14 +877,14 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                 : 'bg-zinc-900/60 border-white/[0.08]'
             }`}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                 <Share2 className="w-3.5 h-3.5 text-violet-400" />
                 <span>Share Insight:</span>
               </span>
 
               {/* Social Share Buttons */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-1.5">
                 {/* Twitter / X */}
                 <button
                   type="button"
