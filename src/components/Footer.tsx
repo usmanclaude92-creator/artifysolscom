@@ -134,9 +134,6 @@ export const Footer: React.FC<FooterProps> = ({
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/25 font-medium">
                 Zero Rigid SaaS
               </span>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/25 font-medium">
-                SOC2 VPC Sovereign
-              </span>
               <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-mono-code bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 font-medium">
                 AI Agent Swarms
               </span>
@@ -208,7 +205,7 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Col 3: NAVIGATION */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="lg:col-span-3 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               NAVIGATION
             </h4>
@@ -330,7 +327,7 @@ export const Footer: React.FC<FooterProps> = ({
           </div>
 
           {/* Col 4: CLIENT & ADVISORY */}
-          <div className="lg:col-span-2 space-y-3.5">
+          <div className="lg:col-span-3 space-y-3.5">
             <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
               CLIENT & ADVISORY
             </h4>
@@ -454,31 +451,6 @@ export const Footer: React.FC<FooterProps> = ({
                 </li>
               )}
             </ul>
-          </div>
-
-          {/* Col 5: SYSTEM TELEMETRY */}
-          <div className="lg:col-span-2 space-y-3.5">
-            <h4 className="text-xs font-bold text-foreground uppercase font-mono-code tracking-wider">
-              SYSTEM TELEMETRY
-            </h4>
-            <div className="p-3.5 rounded-xl surface-card-subtle border border-border/80 space-y-2.5 text-[11px] font-mono-code">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
-                <span className="text-foreground font-semibold">Nodes: Active</span>
-              </div>
-              <div className="text-subtle-text flex items-center justify-between gap-1">
-                <span>Production SLA:</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">99.99%</span>
-              </div>
-              <div className="text-subtle-text flex items-center justify-between gap-1">
-                <span>Isolation:</span>
-                <span className="text-violet-600 dark:text-violet-400 font-bold">SOC2 VPC</span>
-              </div>
-              <div className="text-subtle-text flex items-center justify-between gap-1">
-                <span>Architecture:</span>
-                <span className="text-foreground font-bold">Adaptive</span>
-              </div>
-            </div>
           </div>
         </div>
 
