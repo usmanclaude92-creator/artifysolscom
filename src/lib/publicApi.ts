@@ -35,6 +35,14 @@ export interface PublicAuthor {
   avatarUrl: string | null;
 }
 
+export interface PublicPostComment {
+  id: string;
+  authorName: string;
+  authorRole: string | null;
+  body: string;
+  createdAt: string;
+}
+
 export interface PublicPost {
   slug: string;
   title: string;
@@ -47,6 +55,12 @@ export interface PublicPost {
   featuredMedia: PublicMedia | null;
   /** Real visits: distinct visitor sessions that opened the post. Absent on older API responses. */
   visits?: number;
+  /** Real reader engagement; absent on older API responses. */
+  likes?: number;
+  rating?: { average: number; count: number };
+  commentCount?: number;
+  /** Approved comments only (single-post response). */
+  comments?: PublicPostComment[];
   publishedAt: string | null;
   updatedAt: string;
 }
@@ -334,6 +348,19 @@ export const publicApi = {
     return { posts, total: posts.length };
   },
 
+  /** Reader engagement. Likes and ratings are one per browser (the random `clientId` below); comments wait for moderation. */
+  async setPostLike(slug: string, clientId: string, liked: boolean): Promise<{ likes: number; liked: boolean }> {
+    return apiClient.post<{ likes: number; liked: boolean }>(`/public/posts/${encodeURIComponent(slug)}/like`, { clientId, liked });
+  },
+
+  async setPostRating(slug: string, clientId: string, score: number): Promise<{ rating: { average: number; count: number }; score: number }> {
+    return apiClient.post<{ rating: { average: number; count: number }; score: number }>(`/public/posts/${encodeURIComponent(slug)}/rating`, { clientId, score });
+  },
+
+  async addPostComment(slug: string, input: { name: string; role?: string; body: string; website?: string }): Promise<{ status: 'pending' }> {
+    return apiClient.post<{ status: 'pending' }>(`/public/posts/${encodeURIComponent(slug)}/comments`, input);
+  },
+
   async getPostBySlug(slug: string): Promise<PublicPost> {
     const { post } = await apiClient.get<{ post: PublicPost }>(`/public/posts/${encodeURIComponent(slug)}`);
     return post;
@@ -488,7 +515,19 @@ export function mapPostToBlogPost(post: PublicPost): BlogPost {
     tags: post.tags.map((t) => t.name),
     coverImage: post.featuredMedia?.url,
     views: post.visits ?? 0,
-    likes: 0,
+    likes: post.likes ?? 0,
+    rating: post.rating?.average ?? 0,
+    ratingCount: post.rating?.count ?? 0,
+    commentsCount: post.commentCount ?? 0,
+    comments: (post.comments ?? []).map((c) => ({
+      id: c.id,
+      authorName: c.authorName,
+      authorRole: c.authorRole ?? undefined,
+      authorAvatar: c.authorName.trim().slice(0, 2).toUpperCase(),
+      date: new Date(c.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      content: c.body,
+      likes: 0,
+    })),
     status: 'published',
     lastModified: post.updatedAt,
     seo,

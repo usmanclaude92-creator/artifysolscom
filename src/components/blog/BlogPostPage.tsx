@@ -11,7 +11,6 @@ import {
   Linkedin,
   Copy,
   BookOpen,
-  Eye,
   Sparkles,
   Shield,
   Layers,
@@ -41,6 +40,7 @@ import { useAuth } from '../../context/AuthContext';
 import { generateSeoStructuredData } from '../../data/blogData';
 import { safeCopyToClipboard } from '../../utils/clipboard';
 import { MediaImg } from '../MediaImg';
+import { usePostEngagement, VisitsPill, RatingPill, LikeButton, RatingCard, AuthorCard, CommentsSection } from './PostEngagement';
 import { generateBlogPostSeo, generateBlogPostKeywords, updatePageSeo } from '../../utils/seo';
 
 // Crisp X / Twitter brand icon
@@ -131,9 +131,10 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSectionId, setActiveSectionId] = useState<string>('');
 
-  // No ratings backend yet: structured data carries a rating only when the post has real ones.
-  const currentRating = post.rating || 0;
-  const ratingCount = post.ratingCount || 0;
+  // Real reader engagement (visits, likes, ratings, approved comments) from the public API; starts at zero.
+  const eng = usePostEngagement(post);
+  const currentRating = eng.rating.average;
+  const ratingCount = eng.rating.count;
 
   // SEO Inspector modal / drawer
   const [showSeoInspector, setShowSeoInspector] = useState(false);
@@ -697,17 +698,11 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                 </div>
               </div>
 
-              {/* Stats: reading time and date (real values only) */}
+              {/* Stats: real visits and rating, reading time and date */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
-                {/* Visits: shown only when the platform has recorded real ones */}
-                {post.views > 0 && (
-                  <div className="flex items-center gap-1" title="Distinct visitors who opened this article">
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>
-                      {post.views.toLocaleString()} {post.views === 1 ? 'visit' : 'visits'}
-                    </span>
-                  </div>
-                )}
+                <VisitsPill visits={eng.visits} />
+
+                <RatingPill rating={eng.rating} />
 
                 {/* Read Time */}
                 <div className="flex items-center gap-1 text-zinc-400">
@@ -871,6 +866,8 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
 
             {/* Like & Bookmark Quick Actions */}
             <div className="flex items-center gap-2">
+              <LikeButton eng={eng} isLight={isLight} />
+
               <button
                 type="button"
                 onClick={() => setIsBookmarked(!isBookmarked)}
@@ -942,6 +939,10 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
               }`}
               dangerouslySetInnerHTML={{ __html: contentHtml }}
             />
+
+            <RatingCard eng={eng} isLight={isLight} />
+            <AuthorCard post={post} isLight={isLight} />
+            <CommentsSection eng={eng} isLight={isLight} />
           </div>
 
           {/* Sticky Right Sidebar (4 Columns on Desktop) */}
