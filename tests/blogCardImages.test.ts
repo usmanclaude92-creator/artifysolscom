@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const read = (f: string) => fs.readFileSync(path.resolve(process.cwd(), f), 'utf8');
 const imgClass = (src: string, srcAttr: string) => {
-  const i = src.indexOf(`src={${srcAttr}}`);
+  const i = src.indexOf(`url={${srcAttr}}`);
   expect(i).toBeGreaterThan(-1);
   return src.slice(i, src.indexOf('/>', i));
 };

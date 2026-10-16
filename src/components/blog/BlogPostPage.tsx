@@ -44,6 +44,7 @@ import { BlogPost, BlogCategory, BlogComment } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { generateSeoStructuredData } from '../../data/blogData';
 import { safeCopyToClipboard } from '../../utils/clipboard';
+import { MediaImg } from '../MediaImg';
 import { generateBlogPostSeo, generateBlogPostKeywords, updatePageSeo } from '../../utils/seo';
 
 // Crisp X / Twitter brand icon
@@ -831,11 +832,12 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
             >
               {post.coverImage ? (
                 <div className="relative w-full overflow-hidden">
-                  <img
-                    src={post.coverImage}
+                  <MediaImg
+                    url={post.coverImage}
                     alt={post.title}
                     className="w-full h-auto max-h-[75vh] object-contain mx-auto transition-transform duration-700 group-hover:scale-[1.02]"
-                    referrerPolicy="no-referrer"
+                    sizes="(max-width: 1024px) 100vw, 1280px"
+                    priority
                   />
                 </div>
               ) : (
@@ -1533,11 +1535,12 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                   {/* Related Post Cover Image Thumbnail */}
                   {relatedPost.coverImage ? (
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-zinc-900">
-                      <img
-                        src={relatedPost.coverImage}
+                      <MediaImg
+                        url={relatedPost.coverImage}
                         alt={relatedPost.title}
                         className="w-full h-full object-contain"
-                        referrerPolicy="no-referrer"
+                        sizes="(max-width: 640px) 100vw, 400px"
+                        lazy
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                       <span className="absolute bottom-2 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-violet-600 text-white shadow-sm">
