@@ -11,6 +11,7 @@ import {
   Linkedin,
   Copy,
   BookOpen,
+  Eye,
   Sparkles,
   Shield,
   Layers,
@@ -698,6 +699,16 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
 
               {/* Stats: reading time and date (real values only) */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+                {/* Visits: shown only when the platform has recorded real ones */}
+                {post.views > 0 && (
+                  <div className="flex items-center gap-1" title="Distinct visitors who opened this article">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>
+                      {post.views.toLocaleString()} {post.views === 1 ? 'visit' : 'visits'}
+                    </span>
+                  </div>
+                )}
+
                 {/* Read Time */}
                 <div className="flex items-center gap-1 text-zinc-400">
                   <Clock className="w-3.5 h-3.5" />

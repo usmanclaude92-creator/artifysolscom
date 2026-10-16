@@ -45,6 +45,8 @@ export interface PublicPost {
   tags: { slug: string; name: string }[];
   author: PublicAuthor | null;
   featuredMedia: PublicMedia | null;
+  /** Real visits: distinct visitor sessions that opened the post. Absent on older API responses. */
+  visits?: number;
   publishedAt: string | null;
   updatedAt: string;
 }
@@ -485,7 +487,7 @@ export function mapPostToBlogPost(post: PublicPost): BlogPost {
     readTime,
     tags: post.tags.map((t) => t.name),
     coverImage: post.featuredMedia?.url,
-    views: 0,
+    views: post.visits ?? 0,
     likes: 0,
     status: 'published',
     lastModified: post.updatedAt,
