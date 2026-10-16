@@ -4,10 +4,7 @@ import {
   ArrowLeft,
   Calendar,
   Clock,
-  Eye,
-  Star,
   Share2,
-  Heart,
   Bookmark,
   Check,
   Twitter,
@@ -18,12 +15,10 @@ import {
   Shield,
   Layers,
   ChevronRight,
-  MessageSquare,
   ExternalLink,
   Code2,
   Tag,
   Edit3,
-  CheckCircle2,
   Globe,
   ThumbsUp,
   Flame,
@@ -40,7 +35,7 @@ import {
   Moon,
   Home,
 } from 'lucide-react';
-import { BlogPost, BlogCategory, BlogComment } from '../../types';
+import { BlogPost, BlogCategory } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { generateSeoStructuredData } from '../../data/blogData';
 import { safeCopyToClipboard } from '../../utils/clipboard';
@@ -132,37 +127,12 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   // Interaction State
   const [copiedLink, setCopiedLink] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [likesCount, setLikesCount] = useState(post.likes || 0);
-  const [hasLiked, setHasLiked] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSectionId, setActiveSectionId] = useState<string>('');
 
-  // Rating State — honest defaults; there is no real ratings backend yet,
-  // so a fresh post starts at zero rather than a fabricated seed score.
-  const initialRating = post.rating || 0;
-  const initialRatingCount = post.ratingCount || 0;
-  const [currentRating, setCurrentRating] = useState<number>(initialRating);
-  const [ratingCount, setRatingCount] = useState<number>(initialRatingCount);
-  const [userRating, setUserRating] = useState<number>(post.userRating || 0);
-  const [hoverRating, setHoverRating] = useState<number>(0);
-  const [ratingSubmitted, setRatingSubmitted] = useState<boolean>(Boolean(post.userRating));
-
-  // Reactions state — session-local only, starts at zero (no real backend).
-  const [reactionCounts, setReactionCounts] = useState<{ [key: string]: number }>({
-    insightful: 0,
-    helpful: 0,
-    gamechanger: 0,
-  });
-  const [activeReactions, setActiveReactions] = useState<{ [key: string]: boolean }>({});
-
-  // Comments state — real comments only; there is no fabricated seed thread.
-  const [comments, setComments] = useState<BlogComment[]>(() => post.comments || []);
-  const [newCommentText, setNewCommentText] = useState('');
-  const [newCommentName, setNewCommentName] = useState(user?.name || '');
-  const [newCommentRole, setNewCommentRole] = useState(
-    user?.company ? `${user.roleName} @ ${user.company}` : 'Enterprise AI Leader'
-  );
-  const [commentSubmitted, setCommentSubmitted] = useState(false);
+  // No ratings backend yet: structured data carries a rating only when the post has real ones.
+  const currentRating = post.rating || 0;
+  const ratingCount = post.ratingCount || 0;
 
   // SEO Inspector modal / drawer
   const [showSeoInspector, setShowSeoInspector] = useState(false);
@@ -175,11 +145,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   // Scroll to top when post changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setLikesCount(post.likes || 0);
-    setHasLiked(false);
     setIsBookmarked(false);
-    setUserRating(post.userRating || 0);
-    setRatingSubmitted(Boolean(post.userRating));
     setShowSeoInspector(false);
   }, [post.id]);
 
@@ -291,53 +257,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
     } else {
       handleCopyLink();
     }
-  };
-
-  const handleLike = () => {
-    if (!hasLiked) {
-      setLikesCount((prev) => prev + 1);
-      setHasLiked(true);
-    }
-  };
-
-  const handleRate = (score: number) => {
-    setUserRating(score);
-    setRatingSubmitted(true);
-    const newTotal = ratingCount + 1;
-    const newAverage = Number(((currentRating * ratingCount + score) / newTotal).toFixed(1));
-    setCurrentRating(newAverage);
-    setRatingCount(newTotal);
-  };
-
-  const handleToggleReaction = (key: string) => {
-    setActiveReactions((prev) => {
-      const wasActive = Boolean(prev[key]);
-      setReactionCounts((counts) => ({
-        ...counts,
-        [key]: wasActive ? counts[key] - 1 : counts[key] + 1,
-      }));
-      return { ...prev, [key]: !wasActive };
-    });
-  };
-
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCommentText.trim()) return;
-
-    const newComment: BlogComment = {
-      id: `c-${Date.now()}`,
-      authorName: newCommentName.trim() || 'Enterprise Architect',
-      authorRole: newCommentRole.trim() || 'Verified Reader',
-      authorAvatar: (newCommentName.trim() || 'EA').substring(0, 2).toUpperCase(),
-      date: 'Just now',
-      content: newCommentText.trim(),
-      likes: 1,
-    };
-
-    setComments([newComment, ...comments]);
-    setNewCommentText('');
-    setCommentSubmitted(true);
-    setTimeout(() => setCommentSubmitted(false), 3000);
   };
 
   // Find related articles (same category or general)
@@ -772,38 +691,13 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
                     <span className={isLight ? 'text-slate-900' : 'text-white'}>
                       {post.author.name}
                     </span>
-                    <span title="Verified Author" className="inline-flex items-center">
-                      <CheckCircle2 className="w-4 h-4 text-violet-400" />
-                    </span>
                   </div>
                   <p className="text-xs text-zinc-400 font-medium">{post.author.role}</p>
                 </div>
               </div>
 
-              {/* Rich Stats: Visits, Ratings, Date, Reading Time */}
+              {/* Stats: reading time and date (real values only) */}
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
-                {/* Visits */}
-                <div
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-300"
-                  title="Total live article reads"
-                >
-                  <Eye className="w-3.5 h-3.5 text-violet-400" />
-                  <span className="font-mono-code font-bold">
-                    {(post.views || 4820).toLocaleString()}
-                  </span>
-                  <span className="text-zinc-400">visits</span>
-                </div>
-
-                {/* Rating */}
-                <div
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300"
-                  title="Community Rating"
-                >
-                  <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  <span className="font-mono-code font-bold">{currentRating}</span>
-                  <span className="text-zinc-400">({ratingCount})</span>
-                </div>
-
                 {/* Read Time */}
                 <div className="flex items-center gap-1 text-zinc-400">
                   <Clock className="w-3.5 h-3.5" />
@@ -968,22 +862,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={handleLike}
-                id="like-post-btn"
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
-                  hasLiked
-                    ? 'bg-rose-500/20 border-rose-500/40 text-rose-400 shadow-sm'
-                    : isLight
-                    ? 'bg-white border-slate-300 text-slate-700 hover:bg-rose-50 hover:text-rose-600'
-                    : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:bg-white/[0.08] hover:text-rose-400'
-                }`}
-              >
-                <Heart className={`w-3.5 h-3.5 ${hasLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                <span>{likesCount}</span>
-              </button>
-
-              <button
-                type="button"
                 onClick={() => setIsBookmarked(!isBookmarked)}
                 id="bookmark-post-btn"
                 title={isBookmarked ? 'Saved in reading list' : 'Bookmark this research'}
@@ -1053,291 +931,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
               }`}
               dangerouslySetInnerHTML={{ __html: contentHtml }}
             />
-
-            {/* Interactive Rating & Reader Feedback Widget */}
-            <section
-              id="article-rating-section"
-              className={`p-6 sm:p-8 rounded-2xl border transition-colors my-10 ${
-                isLight
-                  ? 'bg-white border-slate-200 shadow-sm'
-                  : 'bg-[#0c0c14] border-white/[0.08] shadow-lg'
-              }`}
-            >
-              <div className="text-center max-w-md mx-auto">
-                <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-3">
-                  <Star className="w-6 h-6 fill-amber-400 text-amber-400" />
-                </div>
-                <h3
-                  className={`text-xl font-bold font-display mb-1 ${
-                    isLight ? 'text-slate-900' : 'text-white'
-                  }`}
-                >
-                  Rate this Research Paper
-                </h3>
-                <p className="text-xs text-zinc-400 mb-4">
-                  Help our engineering research team prioritize high-impact enterprise topics.
-                </p>
-
-                {/* 5-Star Rating Buttons */}
-                <div className="flex items-center justify-center gap-2 mb-3">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => handleRate(star)}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      className="p-2 transition-transform hover:scale-125 focus:outline-none"
-                      title={`Rate ${star} out of 5 stars`}
-                    >
-                      <Star
-                        className={`w-7 h-7 transition-colors ${
-                          (hoverRating || userRating || 0) >= star
-                            ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'
-                            : isLight
-                            ? 'text-slate-300'
-                            : 'text-zinc-600'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-
-                {ratingSubmitted ? (
-                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 animate-in fade-in">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>
-                      Thank you! Your rating of {userRating}/5 was recorded ({currentRating} average
-                      across {ratingCount} readers).
-                    </span>
-                  </div>
-                ) : (
-                  <p className="text-xs text-zinc-500">
-                    Currently rated <strong className="text-amber-400">{currentRating} / 5.0</strong>{' '}
-                    by {ratingCount} enterprise architects
-                  </p>
-                )}
-
-                {/* Reaction Chips */}
-                <div className="flex flex-wrap items-center justify-center gap-2 mt-6 pt-6 border-t border-white/[0.06]">
-                  <button
-                    type="button"
-                    onClick={() => handleToggleReaction('insightful')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${
-                      activeReactions['insightful']
-                        ? 'bg-violet-600 text-white border-violet-600 shadow-md'
-                        : isLight
-                        ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
-                        : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:bg-white/[0.08]'
-                    }`}
-                  >
-                    <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Insightful</span>
-                    <span className="font-mono-code font-bold">{reactionCounts['insightful']}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleToggleReaction('helpful')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${
-                      activeReactions['helpful']
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                        : isLight
-                        ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
-                        : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:bg-white/[0.08]'
-                    }`}
-                  >
-                    <ThumbsUp className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Helpful</span>
-                    <span className="font-mono-code font-bold">{reactionCounts['helpful']}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleToggleReaction('gamechanger')}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${
-                      activeReactions['gamechanger']
-                        ? 'bg-rose-600 text-white border-rose-600 shadow-md'
-                        : isLight
-                        ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200'
-                        : 'bg-white/[0.04] border-white/[0.08] text-zinc-300 hover:bg-white/[0.08]'
-                    }`}
-                  >
-                    <Flame className="w-3.5 h-3.5 text-rose-400" />
-                    <span>Game Changer</span>
-                    <span className="font-mono-code font-bold">
-                      {reactionCounts['gamechanger']}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </section>
-
-            {/* Author Spotlight Box */}
-            <section
-              className={`p-6 sm:p-8 rounded-2xl border transition-colors ${
-                isLight
-                  ? 'bg-white border-slate-200 shadow-sm'
-                  : 'bg-[#0a0a10] border-white/[0.08]'
-              }`}
-            >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white font-bold font-display text-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                  {post.author.avatar || post.author.name.substring(0, 2).toUpperCase()}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <h3
-                      className={`text-lg font-bold font-display flex items-center gap-1.5 ${
-                        isLight ? 'text-slate-900' : 'text-white'
-                      }`}
-                    >
-                      <span>Written by {post.author.name}</span>
-                      <CheckCircle2 className="w-4 h-4 text-violet-400" />
-                    </h3>
-                  </div>
-                  <p className="text-xs text-violet-400 font-semibold mb-2">{post.author.role}</p>
-                  <p className="text-sm text-zinc-400 leading-relaxed mb-4">
-                    {post.author.bio ||
-                      'Pioneering distributed AI systems and deterministic enterprise workflows at Artify Solutions.'}
-                  </p>
-                  <div className="flex items-center gap-3 text-xs">
-                    <span className="text-zinc-500">Topics:</span>
-                    {(post.tags || []).slice(0, 3).map((tag, i) => (
-                      <span
-                        key={i}
-                        className={`px-2 py-0.5 rounded text-[11px] border ${
-                          isLight
-                            ? 'bg-slate-100 border-slate-200 text-slate-700'
-                            : 'bg-white/[0.04] border-white/[0.08] text-zinc-300'
-                        }`}
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Reader Discussion & Verified Comments Section */}
-            <section
-              id="comments-section"
-              className={`p-6 sm:p-8 rounded-2xl border transition-colors ${
-                isLight
-                  ? 'bg-white border-slate-200 shadow-sm'
-                  : 'bg-[#0a0a10] border-white/[0.08]'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-violet-400" />
-                  <h3
-                    className={`text-xl font-bold font-display ${
-                      isLight ? 'text-slate-900' : 'text-white'
-                    }`}
-                  >
-                    Architectural Discussion ({comments.length})
-                  </h3>
-                </div>
-                <span className="text-xs text-zinc-400">Moderated & Verified</span>
-              </div>
-
-              {/* Add Comment Form */}
-              <form onSubmit={handleAddComment} className="mb-8 space-y-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    value={newCommentName}
-                    onChange={(e) => setNewCommentName(e.target.value)}
-                    placeholder="Your Name / Handle"
-                    required
-                    className={`px-3.5 py-2 rounded-xl text-xs border outline-none transition-all ${
-                      isLight
-                        ? 'bg-slate-50 border-slate-200 text-slate-900 focus:border-violet-600 focus:bg-white'
-                        : 'bg-white/[0.03] border-white/[0.08] text-white focus:border-violet-500 focus:bg-white/[0.06]'
-                    }`}
-                  />
-                  <input
-                    type="text"
-                    value={newCommentRole}
-                    onChange={(e) => setNewCommentRole(e.target.value)}
-                    placeholder="Role & Organization (e.g. Lead Architect @ ACME)"
-                    className={`px-3.5 py-2 rounded-xl text-xs border outline-none transition-all ${
-                      isLight
-                        ? 'bg-slate-50 border-slate-200 text-slate-900 focus:border-violet-600 focus:bg-white'
-                        : 'bg-white/[0.03] border-white/[0.08] text-white focus:border-violet-500 focus:bg-white/[0.06]'
-                    }`}
-                  />
-                </div>
-                <textarea
-                  value={newCommentText}
-                  onChange={(e) => setNewCommentText(e.target.value)}
-                  placeholder="Contribute architectural thoughts, edge cases, or implementation questions..."
-                  rows={3}
-                  required
-                  className={`w-full p-3.5 rounded-xl text-xs border outline-none transition-all resize-none ${
-                    isLight
-                      ? 'bg-slate-50 border-slate-200 text-slate-900 focus:border-violet-600 focus:bg-white'
-                      : 'bg-white/[0.03] border-white/[0.08] text-white focus:border-violet-500 focus:bg-white/[0.06]'
-                  }`}
-                />
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-zinc-500">
-                    Peer-reviewed enterprise knowledge network
-                  </span>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold shadow-md shadow-violet-600/30 transition-all hover:scale-[1.02]"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Post Comment</span>
-                  </button>
-                </div>
-                {commentSubmitted && (
-                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>Your comment has been published to the discussion stream.</span>
-                  </div>
-                )}
-              </form>
-
-              {/* Comments List */}
-              <div className="space-y-4">
-                {comments.map((comment) => (
-                  <div
-                    key={comment.id}
-                    className={`p-4 sm:p-5 rounded-xl border transition-colors ${
-                      isLight
-                        ? 'bg-slate-50 border-slate-200'
-                        : 'bg-white/[0.02] border-white/[0.06]'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-600 to-indigo-600 text-white font-bold text-xs flex items-center justify-center">
-                          {comment.authorAvatar || 'EA'}
-                        </div>
-                        <div>
-                          <div className="font-bold text-xs sm:text-sm text-zinc-200">
-                            {comment.authorName}
-                          </div>
-                          {comment.authorRole && (
-                            <div className="text-[11px] text-violet-400 font-medium">
-                              {comment.authorRole}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <span className="text-[11px] text-zinc-500">{comment.date}</span>
-                    </div>
-                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed pl-10">
-                      {comment.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
           </div>
 
           {/* Sticky Right Sidebar (4 Columns on Desktop) */}
