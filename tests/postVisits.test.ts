@@ -15,9 +15,9 @@ describe('post visits come from the API, never invented', () => {
   it('is 0 when the API does not report visits', () => {
     expect(mapPostToBlogPost(base).views).toBe(0);
   });
-  it('the post page shows the pill only for a positive count', () => {
+  it('the post page shows the real session count through the visits pill', () => {
     const src = fs.readFileSync(path.resolve(process.cwd(), 'src/components/blog/BlogPostPage.tsx'), 'utf8');
-    expect(src).toMatch(/post\.views > 0 && \(/);
-    expect(src).toMatch(/post\.views === 1 \? 'visit' : 'visits'/);
+    expect(src).toContain('<VisitsPill visits={eng.visits} />');
+    expect(src).not.toMatch(/4820|\|\| 48/);
   });
 });
