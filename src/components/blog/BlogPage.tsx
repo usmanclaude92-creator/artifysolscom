@@ -19,6 +19,7 @@ import { publicApi, mapPostToBlogPost } from '../../lib/publicApi';
 import { ListSkeleton } from '../ListSkeleton';
 import { ApiClientError } from '../../lib/apiClient';
 import { BlogPostPage } from './BlogPostPage';
+import { MediaImg } from '../MediaImg';
 import { updatePageSeo, generateCategoryKeywords, generateDynamicKeywords } from '../../utils/seo';
 
 // Crisp X / Twitter brand icon component
@@ -485,11 +486,12 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               {/* Right Visual Image Side */}
               <div className="lg:col-span-5 relative min-h-[220px] lg:min-h-full overflow-hidden bg-black/40">
                 {featuredPost.coverImage ? (
-                  <img
-                    src={featuredPost.coverImage}
+                  <MediaImg
+                    url={featuredPost.coverImage}
                     alt={featuredPost.title}
                     className="w-full h-full object-contain"
-                    referrerPolicy="no-referrer"
+                    sizes="(max-width: 1024px) 100vw, 40vw"
+                    priority
                   />
                 ) : (
                   <div
@@ -652,11 +654,12 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                   >
                   {post.coverImage ? (
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/40">
-                      <img
-                        src={post.coverImage}
+                      <MediaImg
+                        url={post.coverImage}
                         alt={post.title}
                         className="w-full h-full object-contain"
-                        referrerPolicy="no-referrer"
+                        sizes="(max-width: 640px) 100vw, 400px"
+                        lazy
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
                       <div className="absolute top-3 left-3">

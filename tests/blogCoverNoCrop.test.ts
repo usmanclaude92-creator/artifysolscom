@@ -9,7 +9,8 @@ describe('blog post cover image', () => {
   it('shows the whole picture instead of cropping it to a fixed strip', () => {
     expect(cover).toContain('object-contain');
     expect(cover).not.toContain('object-cover');
-    const img = cover.slice(cover.indexOf('<img'), cover.indexOf('/>', cover.indexOf('<img')));
+    const start = cover.indexOf('<MediaImg');
+    const img = cover.slice(start, cover.indexOf('/>', start));
     expect(img).toContain('h-auto');
     expect(img).not.toMatch(/aspect-\[/);
   });
