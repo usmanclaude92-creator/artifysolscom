@@ -73,7 +73,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     let cancelled = false;
     setIsLoading(true);
     setLoadError(null);
-    Promise.all([publicApi.listPosts({ limit: 50 }), publicApi.listCategories()])
+    Promise.all([publicApi.listPosts({ limit: 50, fields: 'card' }), publicApi.listCategories()])
       .then(([{ posts: rows }, cats]) => {
         if (cancelled) return;
         setPosts(rows.map(mapPostToBlogPost));
@@ -224,7 +224,15 @@ export const BlogPage: React.FC<BlogPageProps> = ({
     }
   }, [activePost, selectedCategory, categories]);
 
-  const handleOpenReader = (post: BlogPost) => {
+  // The hub list is loaded without article bodies (?fields=card), so opening a post fetches the full article first;
+  // if that request fails the card's own data is shown rather than leaving the click dead.
+  const handleOpenReader = async (card: BlogPost) => {
+    let post = card;
+    try {
+      post = mapPostToBlogPost(await publicApi.getPostBySlug(card.slug));
+    } catch {
+      /* keep the card data */
+    }
     setActivePost(post);
     if (typeof window !== 'undefined') {
       const path = `/blog/${post.slug}`;

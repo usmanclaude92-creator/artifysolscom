@@ -47,6 +47,8 @@ export interface PublicPost {
   slug: string;
   title: string;
   body: string;
+  /** Real reading time computed by the API from the full body; present so listings can omit `body` (`?fields=card`). */
+  readingMinutes?: number;
   excerpt: string | null;
   seo: Record<string, unknown>;
   category: { slug: string; name: string } | null;
@@ -336,6 +338,8 @@ export const publicApi = {
     search?: string;
     category?: string;
     tag?: string;
+    /** "card" asks the API to leave out each article body — listing cards never render it. */
+    fields?: 'card';
   } = {}): Promise<{ posts: PublicPost[]; total: number }> {
     const query = new URLSearchParams();
     if (params.page) query.set('page', String(params.page));
@@ -343,6 +347,7 @@ export const publicApi = {
     if (params.search) query.set('search', params.search);
     if (params.category) query.set('category', params.category);
     if (params.tag) query.set('tag', params.tag);
+    if (params.fields) query.set('fields', params.fields);
     const qs = query.toString();
     const { posts } = await apiClient.get<{ posts: PublicPost[] }>(`/public/posts${qs ? `?${qs}` : ''}`);
     return { posts, total: posts.length };
@@ -476,7 +481,7 @@ const FALLBACK_BLOG_CATEGORY: BlogCategory = 'AI Research & Insights';
 export function mapPostToBlogPost(post: PublicPost): BlogPost {
   const plainText = post.body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   const wordCount = plainText ? plainText.split(' ').length : 0;
-  const readTime = `${Math.max(1, Math.round(wordCount / 200))} min read`;
+  const readTime = `${post.readingMinutes ?? Math.max(1, Math.round(wordCount / 200))} min read`;
   // Phase 7 (Artify-Backend) added a real, author-written excerpt field —
   // prefer it over the auto-truncated body when the author actually set one.
   const derivedExcerpt = plainText.length > 220 ? `${plainText.slice(0, 217)}...` : plainText;
