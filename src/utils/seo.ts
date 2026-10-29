@@ -580,6 +580,9 @@ export function updatePageSeo(config: SeoConfig): () => void {
 /**
  * Generates comprehensive SEO config and structured data for an individual Blog Post.
  */
+/** Ratings below this count stay out of the structured data. */
+const MIN_RATINGS_FOR_SCHEMA = 5;
+
 export function generateBlogPostSeo(
   post: BlogPost,
   options?: {
@@ -597,13 +600,16 @@ export function generateBlogPostSeo(
   const modifiedIso = post.lastModified ? new Date(post.lastModified).toISOString() : publishIso;
 
   const keywordsList = generateBlogPostKeywords(post);
+  const structuredKeywords = Array.from(
+    new Set([...(post.seo?.focusKeywords ?? []), ...(post.tags ?? [])].map((k) => k.trim()).filter(Boolean))
+  );
 
   // Generate Schema.org Graph (BlogPosting/TechArticle + BreadcrumbList + Organization)
   const schemaGraph = {
     '@context': 'https://schema.org',
     '@graph': [
       {
-        '@type': post.seo?.schemaType || 'TechArticle',
+        '@type': post.seo?.schemaType || 'BlogPosting',
         '@id': `${postUrl}#article`,
         isPartOf: {
           '@type': 'WebSite',
@@ -622,13 +628,15 @@ export function generateBlogPostSeo(
         datePublished: publishIso,
         dateModified: modifiedIso,
         articleSection: post.category,
-        keywords: keywordsList.join(', '),
+        // Only the keywords the author actually set: the padded list above is for the meta tag, not for structured data.
+        ...(structuredKeywords.length > 0 ? { keywords: structuredKeywords.join(', ') } : {}),
         inLanguage: 'en-US',
         author: {
           '@type': 'Person',
           name: post.author.name,
-          jobTitle: post.author.role,
-          image: post.author.avatar,
+          ...(post.author.role ? { jobTitle: post.author.role } : {}),
+          // An avatar that is not a real image address (the initial letter the UI shows) is left out.
+          ...(/^(https?:)?\//.test(post.author.avatar || '') ? { image: post.author.avatar } : {}),
           worksFor: {
             '@type': 'Organization',
             name: DEFAULT_SITE_NAME,
@@ -641,10 +649,11 @@ export function generateBlogPostSeo(
           url: baseUrl,
           logo: {
             '@type': 'ImageObject',
-            url: `${baseUrl}/favicon.svg`,
+            url: `${baseUrl}/logo.png`,
           },
         },
-        ...(realRating && realRatingCount
+        // One or two votes is not a rating worth publishing to search engines.
+        ...(realRating && realRatingCount && realRatingCount >= MIN_RATINGS_FOR_SCHEMA
           ? {
               aggregateRating: {
                 '@type': 'AggregateRating',
@@ -674,7 +683,7 @@ export function generateBlogPostSeo(
             '@type': 'ListItem',
             position: 2,
             name: 'Intelligence Feed',
-            item: `${baseUrl}#blog`,
+            item: `${baseUrl}/blog`,
           },
           {
             '@type': 'ListItem',

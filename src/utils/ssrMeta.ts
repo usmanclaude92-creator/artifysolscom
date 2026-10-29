@@ -21,6 +21,16 @@ import { generateBlogPostSeo, type SeoConfig } from './seo.js';
 import { resolveApiBaseUrl } from './sitemap.js';
 import { mapPostToBlogPost, type PublicPage, type PublicPost, type PublicProduct, type PublicCaseStudy } from '../lib/publicApi.js';
 import { socialImageUrl } from '../lib/imageUrl.js';
+import {
+  blogArchiveContentHtml,
+  caseStudyContentHtml,
+  caseStudyIndexContentHtml,
+  pageContentHtml,
+  postContentHtml,
+  productCatalogContentHtml,
+  productContentHtml,
+  staticPageContentHtml,
+} from './crawlerContent.js';
 import { hasStaticRouteMeta, staticPageSeo, formatPageTitle, composeTitle } from './routeMeta.js';
 
 const DEFAULT_BASE_URL = 'https://artifysols.com';
@@ -272,6 +282,8 @@ export interface SsrResult {
   redirect: { toPath: string; statusCode: number } | null;
   /** True only for the built-in homepage (not a CMS homepage override): the prerendered hero stays in the document. */
   heroShell?: boolean;
+  /** Plain HTML copy of the page's real content for crawlers that do not run JavaScript (see crawlerContent.ts). */
+  contentHtml?: string;
 }
 
 /**
@@ -306,6 +318,59 @@ async function resolveRedirectChain(
     result = { toPath: next.toPath, statusCode: result.statusCode };
   }
   return result;
+}
+
+/** Schema type per static page; anything not listed is a plain WebPage. */
+const STATIC_PAGE_SCHEMA_TYPE: Record<string, string> = {
+  '/about': 'AboutPage',
+  '/contact': 'ContactPage',
+  '/ai-solutions': 'CollectionPage',
+  '/solutions': 'CollectionPage',
+  '/case-studies': 'CollectionPage',
+  '/industries': 'CollectionPage',
+};
+
+/** WebPage + breadcrumb data for a static page, tied to the site-wide Organization/WebSite entities declared in index.html. */
+export function buildStaticPageJsonLd(path: string, seo: { title: string; description: string; canonicalUrl: string }): Record<string, unknown> {
+  const origin = new URL(seo.canonicalUrl).origin;
+  const crumbName = seo.title.split(/\s[|\-–]\s/)[0]!.trim();
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': STATIC_PAGE_SCHEMA_TYPE[path] ?? 'WebPage',
+        '@id': `${seo.canonicalUrl}#webpage`,
+        url: seo.canonicalUrl,
+        name: seo.title,
+        description: seo.description,
+        inLanguage: 'en-US',
+        isPartOf: { '@id': `${origin}/#website` },
+        about: { '@id': `${origin}/#organization` },
+        breadcrumb: { '@id': `${seo.canonicalUrl}#breadcrumb` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${seo.canonicalUrl}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: origin },
+          { '@type': 'ListItem', position: 2, name: crumbName, item: seo.canonicalUrl },
+        ],
+      },
+    ],
+  };
+}
+
+/** Crawler copy for a static route: the live catalog/case-study lists for the API-driven pages, the captured page text for the rest. */
+async function staticRouteContent(path: string, apiBase: string): Promise<string | undefined> {
+  if (path === '/ai-solutions' || path === '/solutions') {
+    const data = await fetchPublicJson<{ products: PublicProduct[] }>(apiBase, '/public/products?limit=50');
+    return productCatalogContentHtml(data?.products ?? []);
+  }
+  if (path === '/case-studies') {
+    const data = await fetchPublicJson<{ caseStudies: PublicCaseStudy[] }>(apiBase, '/public/case-studies?limit=50');
+    return caseStudyIndexContentHtml(data?.caseStudies ?? []);
+  }
+  return staticPageContentHtml(path) ?? undefined;
 }
 
 /** The orchestrator api/index.ts's catch-all handler calls for every HTML document request. */
@@ -348,20 +413,23 @@ async function renderRouteSeo(pathname: string, baseUrl: string, explicitApiBase
 
   if (route.kind === 'static-page') {
     const seo = staticPageSeo(route.path, baseUrl);
-    return { meta: { ...seo, title: formatPageTitle(seo.title) }, status: 200, redirect: null };
+    const title = formatPageTitle(seo.title);
+    const meta: SeoConfig = { ...seo, title, jsonLd: seo.robots ? undefined : buildStaticPageJsonLd(route.path, { ...seo, title }) };
+    return { meta, status: 200, redirect: null, contentHtml: await staticRouteContent(route.path, apiBase) };
   }
 
   if (route.kind === 'ecosystem') {
-    return { meta: buildEcosystemMeta(baseUrl), status: 200, redirect: null };
+    return { meta: buildEcosystemMeta(baseUrl), status: 200, redirect: null, contentHtml: staticPageContentHtml('/ecosystem') ?? undefined };
   }
 
   if (route.kind === 'blog-archive') {
-    return { meta: buildBlogArchiveMeta(baseUrl), status: 200, redirect: null };
+    const list = await fetchPublicJson<{ posts: PublicPost[] }>(apiBase, '/public/posts?limit=50&fields=card');
+    return { meta: buildBlogArchiveMeta(baseUrl), status: 200, redirect: null, contentHtml: blogArchiveContentHtml(list?.posts ?? []) };
   }
 
   if (route.kind === 'blog-post') {
     const post = await fetchPublicJson<{ post: PublicPost }>(apiBase, `/public/posts/${encodeURIComponent(route.slug)}`).then((d) => d?.post ?? null);
-    if (post) return { meta: buildPostMeta(post, baseUrl), status: 200, redirect: null };
+    if (post) return { meta: buildPostMeta(post, baseUrl), status: 200, redirect: null, contentHtml: postContentHtml(post) };
     const redirect = await resolveRedirectChain(apiBase, `/blog/${route.slug}`);
     if (redirect) return { meta: null, status: 200, redirect };
     return { meta: { title: '404 — Not Found', description: 'This article could not be found.', robots: 'noindex, nofollow' }, status: 404, redirect: null };
@@ -371,7 +439,7 @@ async function renderRouteSeo(pathname: string, baseUrl: string, explicitApiBase
     const product = await fetchPublicJson<{ product: PublicProduct }>(apiBase, `/public/products/${encodeURIComponent(route.slug)}`).then(
       (d) => d?.product ?? null
     );
-    if (product) return { meta: buildProductMeta(product, baseUrl), status: 200, redirect: null };
+    if (product) return { meta: buildProductMeta(product, baseUrl), status: 200, redirect: null, contentHtml: productContentHtml(product) };
     return { meta: { title: '404 — Not Found', description: 'This solution could not be found.', robots: 'noindex, nofollow' }, status: 404, redirect: null };
   }
 
@@ -379,7 +447,7 @@ async function renderRouteSeo(pathname: string, baseUrl: string, explicitApiBase
     const caseStudy = await fetchPublicJson<{ caseStudy: PublicCaseStudy }>(apiBase, `/public/case-studies/${encodeURIComponent(route.slug)}`).then(
       (d) => d?.caseStudy ?? null
     );
-    if (caseStudy) return { meta: buildCaseStudyMeta(caseStudy, baseUrl), status: 200, redirect: null };
+    if (caseStudy) return { meta: buildCaseStudyMeta(caseStudy, baseUrl), status: 200, redirect: null, contentHtml: caseStudyContentHtml(caseStudy) };
     const redirect = await resolveRedirectChain(apiBase, `/case-studies/${route.slug}`);
     if (redirect) return { meta: null, status: 200, redirect };
     return { meta: { title: '404 — Not Found', description: 'This case study could not be found.', robots: 'noindex, nofollow' }, status: 404, redirect: null };
@@ -387,7 +455,7 @@ async function renderRouteSeo(pathname: string, baseUrl: string, explicitApiBase
 
   // cms-page
   const page = await fetchPublicJson<{ page: PublicPage }>(apiBase, `/public/pages/${encodeURIComponent(route.slug)}`).then((d) => d?.page ?? null);
-  if (page) return { meta: buildCmsPageMeta(page, baseUrl, `/${route.slug}`), status: 200, redirect: null };
+  if (page) return { meta: buildCmsPageMeta(page, baseUrl, `/${route.slug}`), status: 200, redirect: null, contentHtml: pageContentHtml(page) };
   const redirect = await resolveRedirectChain(apiBase, `/${route.slug}`);
   if (redirect) return { meta: null, status: 200, redirect };
   // No matching page and no redirect: genuinely unknown path. Leave
