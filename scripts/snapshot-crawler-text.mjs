@@ -26,18 +26,36 @@ for (const route of routes) {
     await page.waitForTimeout(120);
   }
   await page.waitForTimeout(800);
-  snapshots[route] = await page.evaluate(() => {
-    const seen = new Set();
-    const blocks = [];
-    document.querySelectorAll('h1, h2, h3, p, li').forEach((el) => {
-      if (el.closest('header, footer, nav, button, form, [role="dialog"], [data-ssr-content]')) return;
-      const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
-      if (text.length < 3 || seen.has(text)) return;
-      seen.add(text);
-      blocks.push({ tag: el.tagName.toLowerCase(), text });
+  const collect = () =>
+    page.evaluate(() => {
+      const blocks = [];
+      document.querySelectorAll('h1, h2, h3, p, li').forEach((el) => {
+        if (el.closest('header, footer, nav, button, form, [role="dialog"], [data-ssr-content]')) return;
+        const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+        if (text.length >= 3) blocks.push({ tag: el.tagName.toLowerCase(), text });
+      });
+      return blocks;
     });
-    return blocks;
-  });
+
+  let blocks = await collect();
+  // The industries page shows one sector at a time behind a picker: click through every sector so each one's copy is captured.
+  if (route === '/industries') {
+    const pickers = page.locator('[data-section="industries"] button').filter({ hasNotText: /build|blueprint|solution|request/i });
+    const count = await pickers.count();
+    for (let i = 0; i < count; i++) {
+      await pickers.nth(i).click().catch(() => {});
+      await page.waitForTimeout(400);
+      blocks = blocks.concat(await collect());
+    }
+  }
+
+  // De-duplicate, and drop list items that are just a card's heading + paragraph glued together (the same text is captured
+  // separately as a heading and a paragraph).
+  const seen = new Set();
+  blocks = blocks.filter((b) => (seen.has(b.text) ? false : (seen.add(b.text), true)));
+  const texts = blocks.map((b) => b.text);
+  blocks = blocks.filter((b) => !(b.tag === 'li' && texts.some((t) => t !== b.text && t.length >= 12 && b.text.includes(t))));
+  snapshots[route] = blocks;
   console.log(route, snapshots[route].length, 'blocks');
 }
 await browser.close();

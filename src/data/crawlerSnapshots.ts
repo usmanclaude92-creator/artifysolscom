@@ -324,6 +324,242 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
   {
    "tag": "p",
    "text": "Simulates 500+ macro and customer churn scenarios daily to project 18-month liquidity curve with high statistical confidence."
+  },
+  {
+   "tag": "h3",
+   "text": "Healthcare"
+  },
+  {
+   "tag": "p",
+   "text": "Intelligent clinical workflows, zero-delay prior authorization, and administrative automation"
+  },
+  {
+   "tag": "p",
+   "text": "Intelligent administration, patient intake workflows, clinical document structuring, predictive scheduling, and operational triage."
+  },
+  {
+   "tag": "p",
+   "text": "Parses EHR medical records against insurance criteria, cross-referencing CMS guidelines and generating evidence dossiers in minutes."
+  },
+  {
+   "tag": "p",
+   "text": "Analyzes historical patient cancellation probabilities and surgical durations to dynamically schedule staff and operating rooms."
+  },
+  {
+   "tag": "p",
+   "text": "Provides 24/7 autonomous pre-op guidance and post-discharge symptom monitoring with clinical escalation triggers."
+  },
+  {
+   "tag": "h3",
+   "text": "Construction"
+  },
+  {
+   "tag": "p",
+   "text": "Site-to-office intelligence, sub-contractor telemetry, and automated cost control"
+  },
+  {
+   "tag": "p",
+   "text": "Project intelligence, automated cost control, procurement orchestration, safety compliance tracking, workforce coordination, and dynamic progress auditing."
+  },
+  {
+   "tag": "p",
+   "text": "Compares field requests with original BIM drawings, master contracts, and labor logs to flag duplicate charges or unauthorized scope changes."
+  },
+  {
+   "tag": "p",
+   "text": "Field supers dictate site progress via mobile audio. The AI structures weather data, crew counts, safety events, and uploads to Procore instantly."
+  },
+  {
+   "tag": "p",
+   "text": "Monitors supplier lead times and weather patterns to auto-dispatch purchase orders before critical path construction bottlenecks occur."
+  },
+  {
+   "tag": "h3",
+   "text": "Real Estate"
+  },
+  {
+   "tag": "p",
+   "text": "Autonomous lease underwriting, smart tenant portals, and asset intelligence"
+  },
+  {
+   "tag": "p",
+   "text": "Property management, lead qualification intelligence, lease document automation, predictive maintenance, financial analysis, and investor reporting."
+  },
+  {
+   "tag": "p",
+   "text": "Extracts 80+ covenants, escalation clauses, co-tenancy rights, and CAM charges from 100-page commercial lease agreements into structured DBs."
+  },
+  {
+   "tag": "p",
+   "text": "Correlates IoT sensor data, HVAC telemetry, and resident work orders to schedule proactive maintenance before major equipment failure."
+  },
+  {
+   "tag": "h3",
+   "text": "Retail & E-Commerce"
+  },
+  {
+   "tag": "p",
+   "text": "Dynamic demand sensing, personalized omnichannel journeys, and autonomous support"
+  },
+  {
+   "tag": "p",
+   "text": "Inventory intelligence, real-time demand forecasting, autonomous customer support, dynamic pricing, and return prevention systems."
+  },
+  {
+   "tag": "p",
+   "text": "Calculates SKU velocity across 40 regional fulfillment nodes and dynamically triggers supplier replenishments before stockouts occur."
+  },
+  {
+   "tag": "p",
+   "text": "Resolves complex order modifications, returns, and personalized styling queries with access to live Shopify & CRM data."
+  },
+  {
+   "tag": "h3",
+   "text": "Manufacturing"
+  },
+  {
+   "tag": "p",
+   "text": "Shop-floor AI telemetry, predictive quality control, and supply chain orchestration"
+  },
+  {
+   "tag": "p",
+   "text": "Production intelligence, supply-chain automation, visual and acoustic quality analytics, dynamic plant scheduling, and OEE optimization."
+  },
+  {
+   "tag": "p",
+   "text": "Analyzes millisecond-level telemetry from CNC machines and assembly line PLCs to pinpoint micro-vibrations indicating impending tool wear."
+  },
+  {
+   "tag": "p",
+   "text": "Recalculates shop floor schedules automatically when rush orders arrive or machine maintenance is required, minimizing changeover waste."
+  },
+  {
+   "tag": "h3",
+   "text": "Education"
+  },
+  {
+   "tag": "p",
+   "text": "Adaptive pedagogical systems, administrative automation, and learner analytics"
+  },
+  {
+   "tag": "p",
+   "text": "Intelligent learning platforms, automated grading and feedback, admissions pipeline orchestration, retention analytics, and student support."
+  },
+  {
+   "tag": "p",
+   "text": "Analyzes LMS engagement, assignment submission lags, and forum sentiment to identify at-risk students 6 weeks before midterms."
+  },
+  {
+   "tag": "h3",
+   "text": "Hospitality"
+  },
+  {
+   "tag": "p",
+   "text": "Autonomous guest concierge, revenue optimization, and dynamic staff allocation"
+  },
+  {
+   "tag": "p",
+   "text": "Guest personalization, multi-channel booking orchestration, dynamic rate management, housekeeping optimization, and sentiment monitoring."
+  },
+  {
+   "tag": "p",
+   "text": "Handles restaurant reservations, late check-outs, room upgrades, and local itinerary curation over WhatsApp and in-room tablets."
+  },
+  {
+   "tag": "h3",
+   "text": "Professional Services"
+  },
+  {
+   "tag": "p",
+   "text": "Knowledge graph synthesis, matter triage, and automated deliverable synthesis"
+  },
+  {
+   "tag": "p",
+   "text": "Automated document intelligence, firm-wide knowledge retrieval, client onboarding workflows, billing code compliance, and contract review."
+  },
+  {
+   "tag": "p",
+   "text": "Searches 10 years of prior proposals, case studies, and partner bios to construct 90% complete RFP proposals matching tender specifications."
+  },
+  {
+   "tag": "h3",
+   "text": "Government & Public Sector"
+  },
+  {
+   "tag": "p",
+   "text": "Secure, sovereign document intelligence, citizen services, and FOIA automation"
+  },
+  {
+   "tag": "p",
+   "text": "Citizen-facing query automation, secure FOIA document redacting, permit lifecycle workflows, compliance auditing, and cross-agency data harmonization."
+  },
+  {
+   "tag": "p",
+   "text": "Identifies and redacts PII, confidential addresses, and protected identifiers across millions of legacy PDF pages with auditable certainty."
+  },
+  {
+   "tag": "h3",
+   "text": "Logistics & Fleet"
+  },
+  {
+   "tag": "p",
+   "text": "Dynamic routing intelligence, customs clearance automation, and real-time cargo visibility"
+  },
+  {
+   "tag": "p",
+   "text": "Fleet telematics analytics, predictive route optimization, bill of lading document processing, warehouse slotting, and exception management."
+  },
+  {
+   "tag": "p",
+   "text": "Extracts HS codes, weights, and consignee data from multi-lingual shipping documents and validates against trade tariffs."
+  },
+  {
+   "tag": "h3",
+   "text": "Energy & Utilities"
+  },
+  {
+   "tag": "p",
+   "text": "Grid load forecasting, renewable asset telemetry, and predictive maintenance"
+  },
+  {
+   "tag": "p",
+   "text": "Asset intelligence, SCADA telemetry analysis, grid balancing forecasts, pipeline integrity monitoring, and regulatory environmental reporting."
+  },
+  {
+   "tag": "p",
+   "text": "Combines satellite weather forecasts with wind turbine yaw telemetry to output high-accuracy next-day generation bids to power markets."
+  },
+  {
+   "tag": "h3",
+   "text": "Media & Entertainment"
+  },
+  {
+   "tag": "p",
+   "text": "Intelligent asset tagging, automated localization, and audience engagement systems"
+  },
+  {
+   "tag": "p",
+   "text": "Content pipeline workflows, multimodal video indexing, autonomous subtitle and localization pipelines, copyright compliance, and audience sentiment analytics."
+  },
+  {
+   "tag": "p",
+   "text": "Scans thousands of hours of raw footage, detecting speakers, emotions, brand logos, and transcribing dialogues for instant editorial retrieval."
+  },
+  {
+   "tag": "h3",
+   "text": "And Beyond..."
+  },
+  {
+   "tag": "p",
+   "text": "Tailored intelligence for unique, proprietary enterprise models"
+  },
+  {
+   "tag": "p",
+   "text": "If your business has data, human workflows, repetitive systems, or critical decisions—Artify engineers a custom AI layer specifically around you."
+  },
+  {
+   "tag": "p",
+   "text": "We map your proprietary operations, connect legacy databases, and deploy autonomous agents tailored with your exact business taxonomy."
   }
  ],
  "/contact": [
@@ -462,20 +698,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "These are the areas of the business we design and connect. Each engagement is scoped to what your organization needs — you start where it matters most and extend from there."
   },
   {
-   "tag": "li",
-   "text": "PeoplePeople & WorkforceRosters, attendance, roles and the day-to-day operations of your teams."
-  },
-  {
    "tag": "h3",
    "text": "People & Workforce"
   },
   {
    "tag": "p",
    "text": "Rosters, attendance, roles and the day-to-day operations of your teams."
-  },
-  {
-   "tag": "li",
-   "text": "CoreEnterprise Resource PlanningThe operational backbone: master data, ledgers and cross-entity visibility."
   },
   {
    "tag": "h3",
@@ -486,20 +714,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "The operational backbone: master data, ledgers and cross-entity visibility."
   },
   {
-   "tag": "li",
-   "text": "CoreFinance & AccountingLedgers, payables, receivables and reporting tied to real operations."
-  },
-  {
    "tag": "h3",
    "text": "Finance & Accounting"
   },
   {
    "tag": "p",
    "text": "Ledgers, payables, receivables and reporting tied to real operations."
-  },
-  {
-   "tag": "li",
-   "text": "CorePayroll & WPSPayroll runs and wage-protection compliance fed directly by attendance data."
   },
   {
    "tag": "h3",
@@ -510,20 +730,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Payroll runs and wage-protection compliance fed directly by attendance data."
   },
   {
-   "tag": "li",
-   "text": "PeopleHuman Capital ManagementEmployee lifecycle from onboarding to development and offboarding."
-  },
-  {
    "tag": "h3",
    "text": "Human Capital Management"
   },
   {
    "tag": "p",
    "text": "Employee lifecycle from onboarding to development and offboarding."
-  },
-  {
-   "tag": "li",
-   "text": "OperationsProject & Construction ManagementProjects, procurement, site progress and cost control in one thread."
   },
   {
    "tag": "h3",
@@ -534,20 +746,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Projects, procurement, site progress and cost control in one thread."
   },
   {
-   "tag": "li",
-   "text": "OperationsIndustry-Specific SolutionsWorkflows shaped around the rules and rhythms of your sector."
-  },
-  {
    "tag": "h3",
    "text": "Industry-Specific Solutions"
   },
   {
    "tag": "p",
    "text": "Workflows shaped around the rules and rhythms of your sector."
-  },
-  {
-   "tag": "li",
-   "text": "OperationsCustom Enterprise ApplicationsPurpose-built applications for processes no off-the-shelf tool fits."
   },
   {
    "tag": "h3",
@@ -558,20 +762,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Purpose-built applications for processes no off-the-shelf tool fits."
   },
   {
-   "tag": "li",
-   "text": "IntelligenceData & IntelligenceShared business data, reporting and analytics across every area."
-  },
-  {
    "tag": "h3",
    "text": "Data & Intelligence"
   },
   {
    "tag": "p",
    "text": "Shared business data, reporting and analytics across every area."
-  },
-  {
-   "tag": "li",
-   "text": "IntelligenceAI & AutomationGoverned AI assistance and automation, with people approving what matters."
   },
   {
    "tag": "h3",
@@ -582,20 +778,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Governed AI assistance and automation, with people approving what matters."
   },
   {
-   "tag": "li",
-   "text": "ExperienceClient / Customer ExperiencePortals and touchpoints that show customers the same truth you see."
-  },
-  {
    "tag": "h3",
    "text": "Client / Customer Experience"
   },
   {
    "tag": "p",
    "text": "Portals and touchpoints that show customers the same truth you see."
-  },
-  {
-   "tag": "li",
-   "text": "ExperienceIntegrations & External SystemsSecure connections to the banks, ERPs, CRMs and tools you already run."
   },
   {
    "tag": "h3",
@@ -630,24 +818,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "When every layer shares the same records, a single business event travels the whole way — without being re-typed, re-checked or lost."
   },
   {
-   "tag": "li",
-   "text": "01PeopleThe roles and teams who run the business, with the access they need."
-  },
-  {
    "tag": "p",
    "text": "The roles and teams who run the business, with the access they need."
   },
   {
-   "tag": "li",
-   "text": "02ProcessesWorkflows and policies modelled the way your business actually works."
-  },
-  {
    "tag": "p",
    "text": "Workflows and policies modelled the way your business actually works."
-  },
-  {
-   "tag": "li",
-   "text": "03ApplicationsThe modules your teams use, built to share one set of records."
   },
   {
    "tag": "h3",
@@ -658,20 +834,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "The modules your teams use, built to share one set of records."
   },
   {
-   "tag": "li",
-   "text": "04Shared DataOne consistent source of business truth, with controlled access."
-  },
-  {
    "tag": "h3",
    "text": "Shared Data"
   },
   {
    "tag": "p",
    "text": "One consistent source of business truth, with controlled access."
-  },
-  {
-   "tag": "li",
-   "text": "05AI IntelligenceAnalysis and recommendations grounded in that shared data."
   },
   {
    "tag": "h3",
@@ -682,20 +850,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Analysis and recommendations grounded in that shared data."
   },
   {
-   "tag": "li",
-   "text": "06Automated ExecutionApproved actions carried out inside your own systems."
-  },
-  {
    "tag": "h3",
    "text": "Automated Execution"
   },
   {
    "tag": "p",
    "text": "Approved actions carried out inside your own systems."
-  },
-  {
-   "tag": "li",
-   "text": "07Business DecisionsLeaders see what is happening and decide with confidence."
   },
   {
    "tag": "h3",
@@ -786,20 +946,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "The architecture is configured around how you operate: the workflows you follow, the policies you enforce, the data you keep and the operational requirements you must meet. When the business changes, the system is changed to match — not the other way round."
   },
   {
-   "tag": "li",
-   "text": "WorkflowsApproval paths and processes modelled as you run them."
-  },
-  {
    "tag": "h3",
    "text": "Workflows"
   },
   {
    "tag": "p",
    "text": "Approval paths and processes modelled as you run them."
-  },
-  {
-   "tag": "li",
-   "text": "PoliciesRules, limits and controls encoded into the system."
   },
   {
    "tag": "h3",
@@ -810,16 +962,8 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Rules, limits and controls encoded into the system."
   },
   {
-   "tag": "li",
-   "text": "DataRecords and fields shaped to your organization."
-  },
-  {
    "tag": "p",
    "text": "Records and fields shaped to your organization."
-  },
-  {
-   "tag": "li",
-   "text": "OperationsRequirements such as compliance and reporting built in."
   },
   {
    "tag": "h3",
@@ -834,20 +978,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "One Source of Truth,Under Your Control."
   },
   {
-   "tag": "li",
-   "text": "Consistent business dataEach fact is recorded once and reused, so modules agree with each other."
-  },
-  {
    "tag": "h3",
    "text": "Consistent business data"
   },
   {
    "tag": "p",
    "text": "Each fact is recorded once and reused, so modules agree with each other."
-  },
-  {
-   "tag": "li",
-   "text": "Controlled accessRole-based permissions decide who sees and changes what."
   },
   {
    "tag": "h3",
@@ -858,20 +994,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Role-based permissions decide who sees and changes what."
   },
   {
-   "tag": "li",
-   "text": "Cross-module visibilityFollow a business event across finance, operations and people."
-  },
-  {
    "tag": "h3",
    "text": "Cross-module visibility"
   },
   {
    "tag": "p",
    "text": "Follow a business event across finance, operations and people."
-  },
-  {
-   "tag": "li",
-   "text": "TraceabilityActions and changes are recorded so they can be reviewed later."
   },
   {
    "tag": "h3",
@@ -882,20 +1010,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Actions and changes are recorded so they can be reviewed later."
   },
   {
-   "tag": "li",
-   "text": "Operational intelligenceReports and insights built on live operational records."
-  },
-  {
    "tag": "h3",
    "text": "Operational intelligence"
   },
   {
    "tag": "p",
    "text": "Reports and insights built on live operational records."
-  },
-  {
-   "tag": "li",
-   "text": "Secure integrationsConnections to external systems are authenticated and scoped."
   },
   {
    "tag": "h3",
@@ -1014,20 +1134,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Designed as a Whole,Not Assembled in Pieces."
   },
   {
-   "tag": "li",
-   "text": "Built Around Your BusinessWe start from your workflows, policies and data, not from a template."
-  },
-  {
    "tag": "h3",
    "text": "Built Around Your Business"
   },
   {
    "tag": "p",
    "text": "We start from your workflows, policies and data, not from a template."
-  },
-  {
-   "tag": "li",
-   "text": "Connected by DesignModules share records from day one instead of being stitched together later."
   },
   {
    "tag": "h3",
@@ -1038,20 +1150,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Modules share records from day one instead of being stitched together later."
   },
   {
-   "tag": "li",
-   "text": "Intelligent by ArchitectureAI sits on top of shared data, with clear boundaries and approvals."
-  },
-  {
    "tag": "h3",
    "text": "Intelligent by Architecture"
   },
   {
    "tag": "p",
    "text": "AI sits on top of shared data, with clear boundaries and approvals."
-  },
-  {
-   "tag": "li",
-   "text": "Modular and ScalableStart with the areas that matter and extend as the business grows."
   },
   {
    "tag": "h3",
@@ -1062,20 +1166,12 @@ export const CRAWLER_SNAPSHOTS: Record<string, { tag: string; text: string }[]> 
    "text": "Start with the areas that matter and extend as the business grows."
   },
   {
-   "tag": "li",
-   "text": "Secure and GovernedPermissions, audit trails and controlled integrations are part of the base."
-  },
-  {
    "tag": "h3",
    "text": "Secure and Governed"
   },
   {
    "tag": "p",
    "text": "Permissions, audit trails and controlled integrations are part of the base."
-  },
-  {
-   "tag": "li",
-   "text": "Human-Centered AIPeople stay in charge: AI recommends, humans approve the actions that matter."
   },
   {
    "tag": "h3",
