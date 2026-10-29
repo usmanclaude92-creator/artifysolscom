@@ -28,6 +28,7 @@ interface RemoteProduct {
   slug: string;
   name: string;
   shortDescription: string;
+  updatedAt?: string | null;
 }
 
 // Phase 11 (Case Studies + Content Relationships) — mirrors RemotePost's
@@ -166,31 +167,36 @@ async function fetchLandingPages(base: string): Promise<RemoteLandingPage[]> {
 export async function getSitemapUrlList(customBaseUrl?: string, apiBaseUrl?: string): Promise<SitemapUrlEntry[]> {
   const baseUrl = (customBaseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL)).replace(/\/+$/, '');
   const { posts, products, caseStudies, landingPages } = await fetchPublicData(apiBaseUrl);
-  const currentDate = formatSitemapDate();
+  // `lastmod` is only ever a real content date. Stamping "today" on pages that did not change teaches Google to ignore the
+  // field for the whole site, so pages without a real date simply omit it.
+  const latestOf = (items: { updatedAt?: string | null; publishedAt?: string | null }[]): string | undefined => {
+    const times = items.map((i) => new Date(i.updatedAt || i.publishedAt || '').getTime()).filter((t) => !isNaN(t));
+    return times.length > 0 ? formatSitemapDate(Math.max(...times)) : undefined;
+  };
 
   const entries: SitemapUrlEntry[] = [];
 
   // 1. Core Top-Level Landing Pages
   entries.push(
-    { loc: `${baseUrl}/`, lastmod: currentDate, changefreq: 'daily', priority: 1.0, type: 'core', title: 'Artify Solutions' },
-    { loc: `${baseUrl}/ai-solutions`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'AI Solutions' },
-    { loc: `${baseUrl}/blog`, lastmod: currentDate, changefreq: 'daily', priority: 0.9, type: 'core', title: 'Blog' },
-    { loc: `${baseUrl}/case-studies`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Case Studies' },
-    { loc: `${baseUrl}/services`, lastmod: currentDate, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Services' },
-    { loc: `${baseUrl}/industries`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Industries' },
-    { loc: `${baseUrl}/ecosystem`, lastmod: currentDate, changefreq: 'monthly', priority: 0.85, type: 'core', title: 'Our Ecosystem' },
-    { loc: `${baseUrl}/about`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'About' },
-    { loc: `${baseUrl}/contact`, lastmod: currentDate, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' },
-    { loc: `${baseUrl}/privacy`, lastmod: currentDate, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Privacy Policy' },
-    { loc: `${baseUrl}/terms`, lastmod: currentDate, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Terms of Service' },
-    { loc: `${baseUrl}/data-deletion`, lastmod: currentDate, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Data Deletion Instructions' }
+    { loc: `${baseUrl}/`, changefreq: 'daily', priority: 1.0, type: 'core', title: 'Artify Solutions' },
+    { loc: `${baseUrl}/ai-solutions`, changefreq: 'daily', priority: 0.9, type: 'core', title: 'AI Solutions' },
+    { loc: `${baseUrl}/blog`, lastmod: latestOf(posts), changefreq: 'daily', priority: 0.9, type: 'core', title: 'Blog' },
+    { loc: `${baseUrl}/case-studies`, lastmod: latestOf(caseStudies), changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Case Studies' },
+    { loc: `${baseUrl}/services`, changefreq: 'weekly', priority: 0.85, type: 'core', title: 'Services' },
+    { loc: `${baseUrl}/industries`, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Industries' },
+    { loc: `${baseUrl}/ecosystem`, changefreq: 'monthly', priority: 0.85, type: 'core', title: 'Our Ecosystem' },
+    { loc: `${baseUrl}/about`, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'About' },
+    { loc: `${baseUrl}/contact`, changefreq: 'monthly', priority: 0.8, type: 'core', title: 'Contact' },
+    { loc: `${baseUrl}/privacy`, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Privacy Policy' },
+    { loc: `${baseUrl}/terms`, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Terms of Service' },
+    { loc: `${baseUrl}/data-deletion`, changefreq: 'yearly', priority: 0.3, type: 'core', title: 'Data Deletion Instructions' }
   );
 
   // 2. Dynamic Product Detail Routes
   products.forEach((product) => {
     entries.push({
       loc: `${baseUrl}/ai-solutions/${product.slug}`,
-      lastmod: currentDate,
+      lastmod: product.updatedAt ? formatSitemapDate(product.updatedAt) : undefined,
       changefreq: 'weekly',
       priority: 0.85,
       type: 'product',
@@ -281,18 +287,62 @@ ${xmlUrls}
 }
 
 /**
+ * Crawlers that fetch pages for search and AI answer engines. They are named explicitly so the policy is on record rather than
+ * implied by the wildcard group; a named group replaces the wildcard one, so each repeats the same two Disallow rules.
+ */
+export const AI_CRAWLER_USER_AGENTS = [
+  'GPTBot',
+  'OAI-SearchBot',
+  'ChatGPT-User',
+  'ClaudeBot',
+  'Claude-SearchBot',
+  'Claude-User',
+  'PerplexityBot',
+  'Perplexity-User',
+  'Google-Extended',
+  'Applebot-Extended',
+  'Bingbot',
+] as const;
+
+const ROBOTS_DISALLOW = ['/api/', '/portal/admin/'];
+
+/**
  * Generates robots.txt content referencing the dynamic XML sitemap.
  */
 export function generateRobotsTxt(customBaseUrl?: string): string {
   const baseUrl = (customBaseUrl || (typeof window !== 'undefined' ? window.location.origin : DEFAULT_BASE_URL)).replace(/\/+$/, '');
+  const rules = ['Allow: /', ...ROBOTS_DISALLOW.map((d) => `Disallow: ${d}`)].join('\n');
+  const aiGroups = AI_CRAWLER_USER_AGENTS.map((ua) => `User-agent: ${ua}\n${rules}`).join('\n\n');
 
   return `# Robots.txt for Artify Solutions (artifysols.com)
 User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /portal/admin/
+${rules}
+
+# Search and AI answer-engine crawlers are welcome on all public pages.
+
+${aiGroups}
 
 # Search Engine Sitemap Index
 Sitemap: ${baseUrl}/sitemap.xml
 `;
+}
+
+/**
+ * /llms.txt: a plain-markdown map of the site for AI answer engines (llmstxt.org). Built from the same live API data as the
+ * sitemap, so it lists only what is actually published.
+ */
+export async function generateLlmsTxt(customBaseUrl?: string, apiBaseUrl?: string): Promise<string> {
+  const entries = await getSitemapUrlList(customBaseUrl, apiBaseUrl);
+  const link = (e: SitemapUrlEntry) => `- [${e.title || e.loc}](${e.loc})`;
+  const core = entries.filter((e) => e.type === 'core' && !/\/(privacy|terms|data-deletion)$/.test(e.loc));
+  const legal = entries.filter((e) => e.type === 'core' && /\/(privacy|terms|data-deletion)$/.test(e.loc));
+  const products = entries.filter((e) => e.type === 'product');
+  const articles = entries.filter((e) => e.type === 'article' && /\/blog\//.test(e.loc));
+  const caseStudies = entries.filter((e) => e.type === 'article' && /\/case-studies\//.test(e.loc));
+  const section = (heading: string, items: SitemapUrlEntry[]) => (items.length ? `\n## ${heading}\n\n${items.map(link).join('\n')}\n` : '');
+
+  return `# Artify Solutions
+
+> Artify Solutions builds AI-native software, autonomous agent swarms, business automation and fully customized digital solutions designed around an organization's unique workflows.
+${section('Key pages', core)}${section('Solutions', products)}${section('Articles', articles)}${section('Case studies', caseStudies)}${section('Legal', legal)}`;
 }

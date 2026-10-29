@@ -1,0 +1,14 @@
+{
+  "name": "Artify Solutions",
+  "short_name": "Artify",
+  "description": "AI-native software, autonomous agent swarms and business automation.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#050505",
+  "theme_color": "#050505",
+  "icons": [
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

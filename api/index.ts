@@ -2,8 +2,9 @@ import express from "express";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { GoogleGenAI } from "@google/genai";
-import { generateSitemapXml, generateRobotsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
+import { generateSitemapXml, generateRobotsTxt, generateLlmsTxt, getSitemapUrlList } from "../src/utils/sitemap.js";
 import { renderSeoForPath, injectMetaIntoHtml, stripHeroShell, addCatalogHints, CATALOG_PATHS } from "../src/utils/ssrMeta.js";
+import { injectContentIntoHtml } from "../src/utils/crawlerContent.js";
 import { buildCspReportOnly, summarizeCspReports, CSP_REPORT_PATH } from "../src/utils/csp.js";
 import { renderLegalHtml } from "../src/legal/renderLegalHtml.js";
 import { handleLandingPage, handleLandingPreview, handleLandingSubmit, type LandingContext, type LandingResponse } from "../src/landing/landingHandlers.js";
@@ -64,6 +65,19 @@ app.get(["/robots.txt", "/api/robots.txt"], (req, res) => {
   } catch (err: any) {
     console.error("Error generating robots.txt:", err);
     res.status(500).send("User-agent: *\nAllow: /\n");
+  }
+});
+
+// llms.txt — markdown site map for AI answer engines
+app.get("/llms.txt", async (req, res) => {
+  try {
+    const body = await generateLlmsTxt(getBaseUrl(req), process.env.PLATFORM_API_BASE_URL);
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400");
+    res.status(200).send(body);
+  } catch (err) {
+    console.error("Error generating llms.txt:", err);
+    res.status(500).send("# Artify Solutions\n");
   }
 });
 
@@ -317,7 +331,8 @@ app.get("*", async (req, res, next) => {
     const template = await getIndexHtmlTemplate(baseUrl);
     const html = result.heroShell ? template : stripHeroShell(template);
     const withMeta = result.meta ? injectMetaIntoHtml(html, result.meta, { statusIsError: result.status >= 400 }) : html;
-    const finalHtml = CATALOG_PATHS.includes(req.path) ? addCatalogHints(withMeta, process.env.PLATFORM_API_BASE_URL) : withMeta;
+    const withContent = result.contentHtml && result.status < 400 ? injectContentIntoHtml(withMeta, result.contentHtml) : withMeta;
+    const finalHtml = CATALOG_PATHS.includes(req.path) ? addCatalogHints(withContent, process.env.PLATFORM_API_BASE_URL) : withContent;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Content-Security-Policy-Report-Only", cspFor(template));

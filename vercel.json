@@ -100,6 +100,10 @@
       "destination": "/api/index"
     },
     {
+      "source": "/llms.txt",
+      "destination": "/api/index"
+    },
+    {
       "source": "/api/(.*)",
       "destination": "/api/index"
     },
