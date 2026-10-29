@@ -77,25 +77,27 @@ ${list('Benefits', product.benefits)}${list('Features', product.features)}
 </article>`;
 }
 
+/** A list of links, or nothing at all when there is nothing to list. */
+const listOrNothing = (items: string[]) => (items.length > 0 ? `<ul>${items.join('')}</ul>` : '');
+
 export function blogArchiveContentHtml(posts: PublicPost[]): string {
   return `<h1>Intelligence Feed &amp; Research Articles</h1>
-<ul>${posts
-    .map((p) => `<li><a href="/blog/${encodeURIComponent(p.slug)}">${escapeHtml(p.title)}</a>${p.excerpt ? ` — ${escapeHtml(p.excerpt)}` : ''}</li>`)
-    .join('')}</ul>`;
+${listOrNothing(posts
+    .map((p) => `<li><a href="/blog/${encodeURIComponent(p.slug)}">${escapeHtml(p.title)}</a>${p.excerpt ? ` — ${escapeHtml(p.excerpt)}` : ''}</li>`))}`;
 }
 
 export function productCatalogContentHtml(products: PublicProduct[]): string {
   return `<h1>AI Solutions &amp; Product Catalog</h1>
-<ul>${products
-    .map((p) => `<li><a href="/ai-solutions/${encodeURIComponent(p.slug)}">${escapeHtml(p.name)}</a> — ${escapeHtml(p.shortDescription)}</li>`)
-    .join('')}</ul>`;
+${listOrNothing(
+    products.map((p) => `<li><a href="/ai-solutions/${encodeURIComponent(p.slug)}">${escapeHtml(p.name)}</a> — ${escapeHtml(p.shortDescription)}</li>`)
+  )}`;
 }
 
 export function caseStudyIndexContentHtml(items: { slug: string; title: string; excerpt: string | null }[]): string {
   return `<h1>Enterprise AI Case Studies</h1>
-<ul>${items
-    .map((c) => `<li><a href="/case-studies/${encodeURIComponent(c.slug)}">${escapeHtml(c.title)}</a>${c.excerpt ? ` — ${escapeHtml(c.excerpt)}` : ''}</li>`)
-    .join('')}</ul>`;
+${listOrNothing(
+    items.map((c) => `<li><a href="/case-studies/${encodeURIComponent(c.slug)}">${escapeHtml(c.title)}</a>${c.excerpt ? ` — ${escapeHtml(c.excerpt)}` : ''}</li>`)
+  )}`;
 }
 
 /** The visible copy of a static page, from src/data/crawlerSnapshots.ts (regenerate with scripts/snapshot-crawler-text.mjs). */

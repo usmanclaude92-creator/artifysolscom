@@ -7,6 +7,8 @@ import {
   postContentHtml,
   blogArchiveContentHtml,
   staticPageContentHtml,
+  caseStudyIndexContentHtml,
+  productCatalogContentHtml,
   injectContentIntoHtml,
   wrapCrawlerContent,
 } from '../src/utils/crawlerContent';
@@ -48,6 +50,26 @@ describe('crawler content', () => {
       expect(html, path).toMatch(/<h1>/);
       expect(html!.length, path).toBeGreaterThan(400);
     }
+  });
+
+  it('captures every industry sector, not only the one the picker opens on', () => {
+    const html = staticPageContentHtml('/industries')!;
+    for (const sector of ['Finance &amp; Accounting', 'Healthcare', 'Construction', 'Logistics &amp; Fleet', 'Energy &amp; Utilities']) {
+      expect(html).toContain(`<h3>${sector}</h3>`);
+    }
+  });
+
+  it('does not repeat a card as a glued list item plus a heading and paragraph', () => {
+    const html = staticPageContentHtml('/ecosystem')!;
+    expect(html).not.toMatch(/<li>PeoplePeople/);
+    expect(html).toContain('<h3>People &amp; Workforce</h3>');
+  });
+
+  it('leaves out a list when there is nothing to list', () => {
+    expect(caseStudyIndexContentHtml([])).toBe('<h1>Enterprise AI Case Studies</h1>\n');
+    expect(caseStudyIndexContentHtml([])).not.toContain('<ul>');
+    expect(blogArchiveContentHtml([])).not.toContain('<ul>');
+    expect(productCatalogContentHtml([])).not.toContain('<ul>');
   });
 
   it('puts the content in the empty root, clipped off-screen, and is a no-op without the anchor', () => {
