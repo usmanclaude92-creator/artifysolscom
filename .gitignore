@@ -6,3 +6,6 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Generated blog feature images (see design/blog-images/README.md)
+design/blog-images/output/
