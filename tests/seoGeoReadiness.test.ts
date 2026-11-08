@@ -219,6 +219,15 @@ describe('structured data', () => {
   });
 });
 
+describe('ads.txt', () => {
+  it('declares the AdSense publisher as DIRECT, one well-formed record per line', async () => {
+    const fs = await import('node:fs');
+    const lines = fs.readFileSync('public/ads.txt', 'utf8').trim().split('\n');
+    expect(lines).toEqual(['google.com, pub-5321065144371084, DIRECT, f08c47fec0942fa0']);
+    expect(lines[0]).toMatch(/^google\.com, pub-\d{16}, DIRECT, [0-9a-f]{16}$/);
+  });
+});
+
 describe('small files', () => {
   it('ships a web manifest and links it from the document head', async () => {
     const fs = await import('node:fs');
