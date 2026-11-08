@@ -30,12 +30,15 @@ const outDir = path.resolve(opt('out') || path.join(here, 'output'));
 const bgDir = opt('bg') ? path.resolve(opt('bg')) : null;
 const only = opt('slug');
 
-// 1. The original logo must be exactly the file the brand approved.
+// 1. The original logos must be exactly the files the brand approved.
 const logoPath = path.join(root, tokens.logo.file);
-const sha = crypto.createHash('sha256').update(fs.readFileSync(logoPath)).digest('hex');
-if (sha !== tokens.logoSha256) {
-  console.error(`Logo check failed: ${tokens.logo.file} does not match the approved file (sha256 ${sha}). Restore the original logo; do not edit it.`);
-  process.exit(1);
+const logoDarkPath = path.join(root, tokens.logoDark.file);
+for (const [file, expected] of [[logoPath, tokens.logoSha256], [logoDarkPath, tokens.logoDark.sha256]]) {
+  const sha = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  if (sha !== expected) {
+    console.error(`Logo check failed: ${path.relative(root, file)} does not match the approved file (sha256 ${sha}). Restore the original logo; do not edit it.`);
+    process.exit(1);
+  }
 }
 
 // 2. Content rules.
@@ -67,6 +70,7 @@ for (const a of selected) {
   const html = buildHtml(a, tokens, {
     fontsUrl: pathToFileURL(path.join(root, tokens.fonts.dir)).href,
     logoUrl: pathToFileURL(logoPath).href,
+    logoDarkUrl: pathToFileURL(logoDarkPath).href,
     backgroundUrl: bgFile && fs.existsSync(bgFile) ? pathToFileURL(bgFile).href : null,
   });
   const htmlFile = path.join(tmp, `${a.slug}.html`);

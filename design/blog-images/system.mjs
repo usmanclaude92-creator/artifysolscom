@@ -10,11 +10,23 @@
  * The logo is only ever cropped and scaled uniformly: there is deliberately no filter, blend mode, recolour or redraw.
  */
 import { artHtml, ART_TYPES } from './art.mjs';
+import { showcaseHtml, ICON_NAMES, OBJECT_NAMES } from './showcase.mjs';
+
+export const DEVICE_TYPES = ['table', 'chart', 'cards', 'bands'];
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 /** Every string the image will show. */
 export function visibleText(article) {
+  if (article.layout !== 'simple-light') {
+    const dev = article.device || {};
+    return [
+      ...(article.titleWhite || []), ...(article.titleViolet || []), article.lead,
+      dev.title, ...(dev.headers || []), ...(dev.statuses || []), ...(dev.tiles || []), ...(dev.bands || []),
+      ...(dev.cards || []).flatMap((c) => [c.label, c.status]),
+      ...(article.features || []).map((f) => f.label), article.cta?.pre, article.cta?.brand,
+    ].filter(Boolean).map(String);
+  }
   const art = article.art || {};
   const labels = Object.values(art.labels || {}).flat();
   return [article.kicker, ...(article.titleLines || []), article.subtitle, ...labels].filter(Boolean).map(String);
@@ -22,12 +34,27 @@ export function visibleText(article) {
 
 export function lintArticle(article, tokens) {
   const problems = [];
-  const need = ['slug', 'kicker', 'titleLines', 'subtitle', 'art'];
-  for (const k of need) if (!article[k]) problems.push(`missing "${k}"`);
+  const simple = article.layout === 'simple-light';
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(article.slug || '')) problems.push('slug must be lowercase-hyphenated');
-  if (article.art && !ART_TYPES.includes(article.art.type)) problems.push(`unknown art type "${article.art.type}" (use one of: ${ART_TYPES.join(', ')})`);
-  if ((article.titleLines || []).length > 4) problems.push('title may use at most 4 lines');
-  if ((article.subtitle || '').length > 80) problems.push('subtitle should be 80 characters or fewer');
+  if (simple) {
+    for (const k of ['slug', 'kicker', 'titleLines', 'subtitle', 'art']) if (!article[k]) problems.push(`missing "${k}"`);
+    if (article.art && !ART_TYPES.includes(article.art.type)) problems.push(`unknown art type "${article.art.type}" (use one of: ${ART_TYPES.join(', ')})`);
+    if ((article.titleLines || []).length > 4) problems.push('title may use at most 4 lines');
+    if ((article.subtitle || '').length > 80) problems.push('subtitle should be 80 characters or fewer');
+  } else {
+    for (const k of ['slug', 'lead', 'device', 'features', 'cta']) if (!article[k]) problems.push(`missing "${k}"`);
+    const titleLines = (article.titleWhite || []).length + (article.titleViolet || []).length;
+    if (titleLines === 0 || titleLines > 3) problems.push('title needs 1 to 3 lines in titleWhite/titleViolet');
+    if ((article.lead || '').length > 34) problems.push('lead should be 34 characters or fewer');
+    if (article.device && !DEVICE_TYPES.includes(article.device.type)) problems.push(`unknown device type "${article.device.type}" (use one of: ${DEVICE_TYPES.join(', ')})`);
+    if ((article.features || []).length !== 4) problems.push('features must have exactly 4 items');
+    for (const f of article.features || []) {
+      if (!ICON_NAMES.includes(f.icon)) problems.push(`unknown icon "${f.icon}"`);
+      if ((f.label || '').length > 26) problems.push(`feature label "${f.label}" is longer than 26 characters`);
+    }
+    for (const o of article.objects || []) if (!OBJECT_NAMES.includes(o)) problems.push(`unknown object "${o}" (use one of: ${OBJECT_NAMES.join(', ')})`);
+    if (article.cta && !tokens.cta.brands.includes(article.cta.brand)) problems.push(`cta.brand must be one of: ${tokens.cta.brands.join(', ')}`);
+  }
 
   const forbidden = [...tokens.forbidden.geography, ...tokens.forbidden.currency];
   const allowGeo = new Set((article.allowTerms || []).map((t) => t.toLowerCase()));
@@ -45,6 +72,7 @@ export function lintArticle(article, tokens) {
 }
 
 export function buildHtml(article, tokens, assets) {
+  if (article.layout !== 'simple-light') return showcaseHtml(article, tokens, assets);
   const c = tokens.colors;
   const { width: W, height: H } = tokens.canvas;
   const lines = article.titleLines;
