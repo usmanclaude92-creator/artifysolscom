@@ -311,6 +311,14 @@ export const Footer: React.FC<FooterProps> = ({
               </li>
               <li>
                 <a
+                  href="https://tools.artifysols.com"
+                  className="text-left text-subtle-text hover:text-foreground transition-colors block"
+                >
+                  Free Online Tools
+                </a>
+              </li>
+              <li>
+                <a
                   href="/contact"
                   onClick={(e) => {
                     if (onNavigateToContact) {
