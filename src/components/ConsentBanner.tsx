@@ -27,20 +27,30 @@ export const ConsentBanner: React.FC = () => {
     <div
       role="dialog"
       aria-label="Analytics cookies"
-      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-xl rounded-2xl border border-white/15 bg-[#0b1220] p-4 text-sm text-slate-200 shadow-2xl sm:bottom-5"
+      className="fixed inset-x-0 bottom-0 z-[60] border-t border-card-border bg-card/95 text-foreground shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur-md"
     >
-      <p className="leading-relaxed">
-        We would like to use Google Analytics to understand how the site is used. It is off unless you accept, and you can change your mind at any time from
-        &ldquo;Cookie settings&rdquo; in the footer. See our{' '}
-        <a href="/privacy" className="underline underline-offset-2 hover:text-white">Privacy Policy</a>.
-      </p>
-      <div className="mt-3 flex gap-2">
-        <button type="button" onClick={() => choose('rejected')} className="flex-1 rounded-lg border border-white/25 px-4 py-2 font-semibold text-white hover:bg-white/10">
-          Reject
-        </button>
-        <button type="button" onClick={() => choose('accepted')} className="flex-1 rounded-lg border border-white/25 px-4 py-2 font-semibold text-white hover:bg-white/10">
-          Accept
-        </button>
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6">
+        <p className="text-xs leading-relaxed text-foreground-secondary sm:text-sm">
+          We would like to use Google Analytics to understand how the site is used. It is off unless you accept, and you can change your mind at any time from
+          &ldquo;Cookie settings&rdquo; in the footer. See our{' '}
+          <a href="/privacy" className="font-semibold text-primary underline underline-offset-2 hover:text-primary-hover">Privacy Policy</a>.
+        </p>
+        <div className="flex shrink-0 gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => choose('rejected')}
+            className="flex-1 rounded-xl border border-card-border bg-card px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:bg-surface-hover sm:flex-none"
+          >
+            Reject
+          </button>
+          <button
+            type="button"
+            onClick={() => choose('accepted')}
+            className="flex-1 rounded-xl border border-primary bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover sm:flex-none"
+          >
+            Accept
+          </button>
+        </div>
       </div>
     </div>
   );
