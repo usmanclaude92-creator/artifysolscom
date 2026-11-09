@@ -28,6 +28,7 @@ import { ConsultantMessage, AppRoute } from './types';
 import { updatePageSeo } from './utils/seo';
 import { publicApi, PublicPage } from './lib/publicApi';
 import { analytics } from './lib/analytics';
+import { trackPageView as trackGaPageView } from './lib/consent';
 import { HERO_INSTANT } from './lib/heroShell';
 import {
   AnimatedSection,
@@ -39,6 +40,7 @@ import {
 // Code-splitting: the home route is the only one eagerly bundled. Every other
 // route, the client portal (which pulls in the chart library) and the modal
 // overlays are fetched on demand, keeping them out of the initial payload.
+const ConsentBanner = lazy(() => import('./components/ConsentBanner').then((m) => ({ default: m.ConsentBanner })));
 const AuthModal = lazy(() => import('./components/portal/AuthModal').then((m) => ({ default: m.AuthModal })));
 const PremiumThemesModal = lazy(() => import('./components/PremiumThemesModal').then((m) => ({ default: m.PremiumThemesModal })));
 const BusinessMap = lazy(() => import('./components/BusinessMap').then((m) => ({ default: m.BusinessMap })));
@@ -304,6 +306,7 @@ function MainAppContent() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     analytics.trackPageView(window.location.pathname);
+    trackGaPageView(window.location.pathname + window.location.search);
   }, [activeRoute, activeProductSlug, activePageSlug, activeCaseStudySlug]);
 
   // Theme synchronization with atomic DOM updates
@@ -963,6 +966,12 @@ function MainAppContent() {
         onOpenAuditSpec={() => setIsAuditSpecOpen(true)}
         onOpenGlobalSearch={() => setIsGlobalSearchOpen(true)}
       />
+
+      <LoadFailureBoundary silent>
+        <Suspense fallback={null}>
+          <ConsentBanner />
+        </Suspense>
+      </LoadFailureBoundary>
 
       {/* Overlay modals. Each is mounted only while open so its chunk is
           fetched on first use rather than shipped in the initial bundle.
