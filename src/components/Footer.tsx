@@ -1,3 +1,4 @@
+import { reopenConsent } from '../lib/consent';
 import React from 'react';
 import {
   Bot,
@@ -471,6 +472,14 @@ export const Footer: React.FC<FooterProps> = ({
             >
               Privacy Policy
             </a>
+            <span>•</span>
+            <button
+              type="button"
+              onClick={reopenConsent}
+              className="hover:text-foreground transition-colors underline-offset-2 hover:underline"
+            >
+              Cookie settings
+            </button>
             <span>•</span>
             <a
               href="/terms"

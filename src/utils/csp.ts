@@ -11,6 +11,8 @@ const API_ORIGIN = 'https://cc.artifysols.com';
 const MEDIA_ORIGIN = 'https://cfkymotcnccgvkpmcevp.supabase.co';
 const SAMPLE_IMAGE_ORIGIN = 'https://images.unsplash.com';
 const TURNSTILE_ORIGIN = 'https://challenges.cloudflare.com';
+const GTAG_ORIGIN = 'https://www.googletagmanager.com';
+const GA_ORIGINS = 'https://www.googletagmanager.com https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com';
 
 const sha256 = (s: string) => `'sha256-${createHash('sha256').update(s).digest('base64')}'`;
 
@@ -27,14 +29,14 @@ export function inlineHashes(html: string): { scripts: string[]; handlers: strin
 
 export function buildCspReportOnly(html: string, apiOrigin: string = API_ORIGIN): string {
   const { scripts, handlers } = inlineHashes(html);
-  const scriptSrc = ["'self'", ...scripts, ...(handlers.length ? ["'unsafe-hashes'", ...handlers] : []), TURNSTILE_ORIGIN];
+  const scriptSrc = ["'self'", ...scripts, ...(handlers.length ? ["'unsafe-hashes'", ...handlers] : []), TURNSTILE_ORIGIN, GTAG_ORIGIN];
   return [
     "default-src 'self'",
     `script-src ${scriptSrc.join(' ')}`,
     "style-src 'self' 'unsafe-inline'",
-    `img-src 'self' data: blob: ${MEDIA_ORIGIN} ${SAMPLE_IMAGE_ORIGIN}`,
+    `img-src 'self' data: blob: ${MEDIA_ORIGIN} ${SAMPLE_IMAGE_ORIGIN} ${GA_ORIGINS}`,
     "font-src 'self'",
-    `connect-src 'self' ${apiOrigin} ${TURNSTILE_ORIGIN}`,
+    `connect-src 'self' ${apiOrigin} ${TURNSTILE_ORIGIN} ${GA_ORIGINS}`,
     `frame-src ${TURNSTILE_ORIGIN}`,
     "object-src 'none'",
     "base-uri 'self'",

@@ -123,6 +123,14 @@ const PRIVACY: LegalDoc = {
       heading: '11. Changes',
       paragraphs: ['If we make a material change we will update the date at the top of this page and, where the change affects how we use data you gave us, tell you directly.'],
     },
+    {
+      heading: '12. Cookies and website analytics',
+      paragraphs: [
+        'Our own page-view counts (section 6) do not use cookies. Separately, we would like to use Google Analytics 4 (Google) to understand how the website is used. It is switched off unless you press Accept on the banner: until then, no Google analytics script is loaded and no Google cookies are set. If you press Reject, nothing is loaded.',
+        'If you accept, Google Analytics sets cookies and receives your page views, approximate location, device and browser information, and a pseudonymous identifier. We do not use it for advertising and do not enable advertising features. Google processes this data under its own terms.',
+        'You can change your choice at any time with "Cookie settings" in the footer. Choosing Reject there stops further collection; you can also clear the cookies in your browser.',
+      ],
+    },
   ],
 };
 
