@@ -20,7 +20,7 @@ export interface PostEngagementState {
   submitComment: (input: { name: string; role?: string; body: string; website?: string }) => Promise<void>;
 }
 
-export function usePostEngagement(post: BlogPost): PostEngagementState {
+export function usePostEngagement(post: BlogPost, readOnly = false): PostEngagementState {
   const slug = post.slug || post.id;
   const [likes, setLikes] = useState(post.likes || 0);
   const [liked, setLiked] = useState(false);
@@ -36,7 +36,7 @@ export function usePostEngagement(post: BlogPost): PostEngagementState {
   }, [slug, post.likes, post.rating, post.ratingCount]);
 
   const toggleLike = useCallback(() => {
-    if (busy.current) return;
+    if (readOnly || busy.current) return;
     busy.current = true;
     const next = !liked;
     setLiked(next);
@@ -54,23 +54,25 @@ export function usePostEngagement(post: BlogPost): PostEngagementState {
       .finally(() => {
         busy.current = false;
       });
-  }, [liked, slug]);
+  }, [liked, slug, readOnly]);
 
   const rate = useCallback(
     async (score: number) => {
+      if (readOnly) return;
       const res = await publicApi.setPostRating(slug, getReaderId(), score);
       setRating(res.rating);
       setUserRating(score);
       writeRated(slug, score);
     },
-    [slug]
+    [slug, readOnly]
   );
 
   const submitComment = useCallback(
     async (input: { name: string; role?: string; body: string; website?: string }) => {
+      if (readOnly) throw new Error('This is a preview, so comments are switched off.');
       await publicApi.addPostComment(slug, input);
     },
-    [slug]
+    [slug, readOnly]
   );
 
   return { visits: post.views || 0, likes, liked, rating, userRating, comments: post.comments || [], toggleLike, rate, submitComment };

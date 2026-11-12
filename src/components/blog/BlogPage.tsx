@@ -20,6 +20,7 @@ import { ListSkeleton } from '../ListSkeleton';
 import { ApiClientError } from '../../lib/apiClient';
 import { BlogPostPage } from './BlogPostPage';
 import { MediaImg } from '../MediaImg';
+import { previewTokenFromSearch } from '../../utils/previewMode';
 import { updatePageSeo, generateCategoryKeywords, generateDynamicKeywords } from '../../utils/seo';
 
 // Crisp X / Twitter brand icon component
@@ -57,6 +58,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
   const [selectedType, setSelectedType] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [activePost, setActivePost] = useState<BlogPost | null>(null);
+  const [previewNotice, setPreviewNotice] = useState<string | null>(null);
   const [postNotFound, setPostNotFound] = useState(false);
 
   // Newsletter state
@@ -134,6 +136,21 @@ export const BlogPage: React.FC<BlogPageProps> = ({
 
     const resolveSlug = async (slug: string) => {
       try {
+        // Opened from the Control Center "Preview" button: render the saved (unpublished or live) content exactly as it will appear.
+        const previewToken = typeof window !== 'undefined' ? previewTokenFromSearch(window.location.search) : null;
+        if (previewToken) {
+          const draft = await publicApi.getPostPreview(previewToken);
+          if (!cancelled) {
+            setActivePost(mapPostToBlogPost(draft));
+            setPreviewNotice(
+              draft.previewStatus === 'PUBLISHED'
+                ? 'Preview: this shows your latest saved version of a live post. This page is private.'
+                : 'Preview: this post is not published yet. This page is private and only visible with this link.'
+            );
+            setPostNotFound(false);
+          }
+          return;
+        }
         const post = await publicApi.getPostBySlug(slug);
         if (!cancelled) {
           setActivePost(mapPostToBlogPost(post));
@@ -261,6 +278,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           theme={theme}
           onBackToHub={() => {
             setActivePost(null);
+            setPreviewNotice(null);
             if (typeof window !== 'undefined' && window.location.pathname !== '/blog') {
               window.history.pushState({}, '', '/blog');
             }
@@ -271,6 +289,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
           onOpenSolutionBuilder={onOpenSolutionBuilder}
           onOpenConsultant={onOpenConsultant}
           onToggleTheme={onToggleTheme}
+          previewNotice={previewNotice}
         />
       </div>
     );

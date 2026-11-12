@@ -93,6 +93,8 @@ interface BlogPostPageProps {
   onOpenSolutionBuilder?: () => void;
   onOpenConsultant?: () => void;
   onToggleTheme?: (event?: React.MouseEvent) => void;
+  /** Set when opened from the Control Center preview link: shows a banner and switches reader engagement off. */
+  previewNotice?: string | null;
 }
 
 export const BlogPostPage: React.FC<BlogPostPageProps> = ({
@@ -106,6 +108,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   onOpenSolutionBuilder,
   onOpenConsultant,
   onToggleTheme,
+  previewNotice,
 }) => {
   const { user } = useAuth();
   const isAuthorizedEditor = Boolean(
@@ -132,7 +135,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   const [activeSectionId, setActiveSectionId] = useState<string>('');
 
   // Real reader engagement (visits, likes, ratings, approved comments) from the public API; starts at zero.
-  const eng = usePostEngagement(post);
+  const eng = usePostEngagement(post, !!previewNotice);
   const currentRating = eng.rating.average;
   const ratingCount = eng.rating.count;
 
@@ -385,6 +388,15 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
   }, [contentHtml]);
 
   return (
+    <>
+    {previewNotice && (
+      <div
+        role="status"
+        className="fixed top-0 inset-x-0 z-[70] bg-amber-400 text-slate-900 text-center text-xs sm:text-sm font-semibold px-3 py-2 shadow"
+      >
+        {previewNotice}
+      </div>
+    )}
     <article
       id="artify-blog-post-page"
       className={`min-h-screen pt-20 sm:pt-24 transition-colors duration-200 ${
@@ -1327,5 +1339,6 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
         </div>
       )}
     </article>
+    </>
   );
 };

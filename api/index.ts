@@ -317,8 +317,15 @@ app.get("*", async (req, res, next) => {
   // failure here must never take the whole site down, so it degrades to
   // "no override" (the exact previous behavior) rather than erroring.
   let result: Awaited<ReturnType<typeof renderSeoForPath>> = { meta: null, status: 200, redirect: null };
+  // A private blog preview (?preview=<token> from the Control Center) is not a public URL: no SEO lookup (the slug may be an
+  // unpublished draft that would 404), no crawler content, never cached, never indexable.
+  const isBlogPreview = req.path.startsWith("/blog/") && typeof req.query.preview === "string" && req.query.preview.length > 0;
   try {
-    result = await renderSeoForPath(req.path, baseUrl, process.env.PLATFORM_API_BASE_URL);
+    if (isBlogPreview) {
+      result = { meta: { title: "Post preview | Artify Solutions", description: "Private post preview.", robots: "noindex, nofollow" }, status: 200, redirect: null };
+    } else {
+      result = await renderSeoForPath(req.path, baseUrl, process.env.PLATFORM_API_BASE_URL);
+    }
   } catch (err) {
     console.error("SSR meta computation failed, serving the static document unchanged:", err);
   }
@@ -336,7 +343,8 @@ app.get("*", async (req, res, next) => {
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.setHeader("Content-Security-Policy-Report-Only", cspFor(template));
-    res.setHeader("Cache-Control", "public, max-age=0, s-maxage=600, stale-while-revalidate=86400");
+    res.setHeader("Cache-Control", isBlogPreview ? "no-store" : "public, max-age=0, s-maxage=600, stale-while-revalidate=86400");
+    if (isBlogPreview) res.setHeader("X-Robots-Tag", "noindex, nofollow");
     res.status(result.status).send(finalHtml);
   } catch (err) {
     // Fetching the deployment's own static index.html failed — a genuine
