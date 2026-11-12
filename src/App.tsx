@@ -1078,7 +1078,7 @@ function MainAppContent() {
 
       {/* Floating Quick Action Launcher */}
       <div
-        className="fixed bottom-6 right-6 z-40 flex items-center"
+        className={`fixed bottom-6 right-6 z-40 items-center ${typeof window !== 'undefined' && previewTokenFromSearch(window.location.search) ? 'hidden' : 'flex'}`}
         onMouseEnter={() => {
           setIsHoveringLauncher(true);
           playHoverSound();

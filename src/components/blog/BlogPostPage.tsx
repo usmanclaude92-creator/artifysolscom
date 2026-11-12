@@ -392,7 +392,7 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({
     {previewNotice && (
       <div
         role="status"
-        className="fixed top-0 inset-x-0 z-[70] bg-amber-400 text-slate-900 text-center text-xs sm:text-sm font-semibold px-3 py-2 shadow"
+        className="fixed bottom-0 inset-x-0 z-[100000] bg-amber-400 text-slate-900 text-center text-xs sm:text-sm font-semibold px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.18)]"
       >
         {previewNotice}
       </div>
