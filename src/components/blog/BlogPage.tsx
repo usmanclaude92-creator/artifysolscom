@@ -531,10 +531,12 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none lg:bg-gradient-to-r lg:from-black/50 lg:via-transparent lg:to-transparent" />
                 <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-zinc-300 pointer-events-none">
-                  <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10 font-mono-code">
-                    {featuredPost.type}
-                  </span>
-                  <span className="text-[10px] text-zinc-400">Research Brief</span>
+                  {featuredPost.type !== 'Article' && (
+                    <span className="px-2 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10 font-mono-code">
+                      {featuredPost.type}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-zinc-400 ml-auto">Research Brief</span>
                 </div>
               </div>
             </div>
@@ -689,21 +691,24 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         lazy
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
-                      <div className="absolute top-3 left-3">
-                        <span
-                          className={`font-mono-code uppercase px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-md ${
-                            post.type === 'News'
-                              ? 'bg-sky-500 text-white'
-                              : post.type === 'Case Study'
-                              ? 'bg-emerald-600 text-white'
-                              : post.type === 'Whitepaper'
-                              ? 'bg-amber-600 text-white'
-                              : 'bg-violet-600 text-white'
-                          }`}
-                        >
-                          {post.type}
-                        </span>
-                      </div>
+                      {/* The plain "Article" label adds nothing (almost every post is one); only News / Case Study / Whitepaper are labelled. */}
+                      {post.type !== 'Article' && (
+                        <div className="absolute top-3 left-3">
+                          <span
+                            className={`font-mono-code uppercase px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-md ${
+                              post.type === 'News'
+                                ? 'bg-sky-500 text-white'
+                                : post.type === 'Case Study'
+                                ? 'bg-emerald-600 text-white'
+                                : post.type === 'Whitepaper'
+                                ? 'bg-amber-600 text-white'
+                                : 'bg-violet-600 text-white'
+                            }`}
+                          >
+                            {post.type}
+                          </span>
+                        </div>
+                      )}
                       <span className="absolute bottom-2 right-3 text-[10px] text-zinc-300 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded font-mono-code">
                         {post.readTime}
                       </span>
@@ -714,20 +719,22 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         post.coverGradient || 'from-violet-950 to-indigo-950'
                       } flex items-center justify-between p-4`}
                     >
-                      <span
-                        className={`font-mono-code uppercase px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          post.type === 'News'
-                            ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
-                            : post.type === 'Case Study'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : post.type === 'Whitepaper'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                            : 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                        }`}
-                      >
-                        {post.type}
-                      </span>
-                      <span className="text-[10px] text-zinc-400 font-mono-code">{post.readTime}</span>
+                      {post.type !== 'Article' && (
+                        <span
+                          className={`font-mono-code uppercase px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            post.type === 'News'
+                              ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                              : post.type === 'Case Study'
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : post.type === 'Whitepaper'
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              : 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                          }`}
+                        >
+                          {post.type}
+                        </span>
+                      )}
+                      <span className="text-[10px] text-zinc-400 font-mono-code ml-auto">{post.readTime}</span>
                     </div>
                   )}
                   </a>
