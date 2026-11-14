@@ -1,5 +1,6 @@
 import React from 'react';
 import { CONSENT_EVENT, initConsent, readConsent, setConsent } from '../lib/consent';
+import { previewTokenFromSearch } from '../utils/previewMode';
 
 /** Analytics consent bar. Appears only after the page is idle so it never competes with the hero for first paint. */
 export const ConsentBanner: React.FC = () => {
@@ -7,10 +8,11 @@ export const ConsentBanner: React.FC = () => {
 
   React.useEffect(() => {
     initConsent();
-    const show = () => setVisible(readConsent() === null);
+    // A private post preview is not a public visit: no consent prompt over it.
+    const show = () => setVisible(readConsent() === null && !previewTokenFromSearch(window.location.search));
     const idle = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
     const handle = idle ? idle(show, { timeout: 3000 }) : window.setTimeout(show, 1500);
-    const onChange = () => setVisible(readConsent() === null);
+    const onChange = () => setVisible(readConsent() === null && !previewTokenFromSearch(window.location.search));
     window.addEventListener(CONSENT_EVENT, onChange);
     return () => {
       window.removeEventListener(CONSENT_EVENT, onChange);

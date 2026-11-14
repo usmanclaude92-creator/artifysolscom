@@ -366,6 +366,12 @@ export const publicApi = {
     return apiClient.post<{ status: 'pending' }>(`/public/posts/${encodeURIComponent(slug)}/comments`, input);
   },
 
+  /** Private preview of a post's current content (draft or live) by token from the Control Center. Never cached. */
+  async getPostPreview(token: string): Promise<PublicPost & { previewStatus?: string }> {
+    const { post } = await apiClient.get<{ post: PublicPost & { previewStatus?: string } }>(`/public/post-preview/${encodeURIComponent(token)}`);
+    return post;
+  },
+
   async getPostBySlug(slug: string): Promise<PublicPost> {
     const { post } = await apiClient.get<{ post: PublicPost }>(`/public/posts/${encodeURIComponent(slug)}`);
     return post;

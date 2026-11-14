@@ -29,6 +29,7 @@ import { updatePageSeo } from './utils/seo';
 import { publicApi, PublicPage } from './lib/publicApi';
 import { analytics } from './lib/analytics';
 import { trackPageView as trackGaPageView } from './lib/consent';
+import { previewTokenFromSearch } from './utils/previewMode';
 import { HERO_INSTANT } from './lib/heroShell';
 import {
   AnimatedSection,
@@ -305,6 +306,7 @@ function MainAppContent() {
   // also changes one of this effect's own dependencies).
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (previewTokenFromSearch(window.location.search)) return; // a private preview is not real traffic
     analytics.trackPageView(window.location.pathname);
     trackGaPageView(window.location.pathname + window.location.search);
   }, [activeRoute, activeProductSlug, activePageSlug, activeCaseStudySlug]);
@@ -1076,7 +1078,7 @@ function MainAppContent() {
 
       {/* Floating Quick Action Launcher */}
       <div
-        className="fixed bottom-6 right-6 z-40 flex items-center"
+        className={`fixed bottom-6 right-6 z-40 items-center ${typeof window !== 'undefined' && previewTokenFromSearch(window.location.search) ? 'hidden' : 'flex'}`}
         onMouseEnter={() => {
           setIsHoveringLauncher(true);
           playHoverSound();
