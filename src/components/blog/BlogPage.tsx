@@ -660,7 +660,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredPosts.map((post) => (
                 <div
                   key={post.id}
@@ -779,12 +779,12 @@ export const BlogPage: React.FC<BlogPageProps> = ({
 
                     {/* Footer Author & Reactions */}
                     <div
-                      className={`mt-4 pt-4 border-t flex items-center justify-between ${
+                      className={`mt-4 pt-4 border-t flex flex-wrap items-center justify-between gap-x-2 gap-y-3 ${
                         isLight ? 'border-slate-100' : 'border-white/[0.06]'
                       }`}
                     >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-7 h-7 rounded-full bg-violet-600/30 border border-violet-400/30 flex items-center justify-center text-[10px] font-bold text-violet-300">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 shrink-0 rounded-full bg-violet-600/30 border border-violet-400/30 flex items-center justify-center text-[10px] font-bold text-violet-300">
                           {post.author.avatar}
                         </div>
                         <div className="min-w-0">
@@ -805,7 +805,7 @@ export const BlogPage: React.FC<BlogPageProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
